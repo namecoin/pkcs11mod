@@ -35,7 +35,7 @@ import "C"
 
 import (
 	"io"
-//	"unsafe"
+	"unsafe"
 	"log"
 	"os"
 )
@@ -50,6 +50,11 @@ func init() {
 	log.SetOutput(f)
 	logfile = f
 	log.Println("Namecoin PKCS#11 module loading")
+}
+
+//export GoLog
+func GoLog(s unsafe.Pointer) {
+	log.Println(C.GoString((*C.char)(s)))
 }
 
 //export Go_Initialize

@@ -2,6 +2,10 @@
 
 #include "pkcs11go.h"
 
+CK_RV Go_Initialize();
+CK_RV Go_GetInfo(CK_INFO_PTR);
+void GoLog(const char*);
+
 CK_FUNCTION_LIST pkcs11_functions = 
 {
 	{2, 20},
@@ -83,6 +87,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_Initialize)(CK_VOID_PTR pInitArgs)
 
 CK_DEFINE_FUNCTION(CK_RV, C_Finalize)(CK_VOID_PTR pReserved)
 {
+	GoLog("C_Finalize");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
@@ -106,96 +111,113 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetFunctionList)(CK_FUNCTION_LIST_PTR_PTR ppFunction
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetSlotList)(CK_BBOOL tokenPresent, CK_SLOT_ID_PTR pSlotList, CK_ULONG_PTR pulCount)
 {
+	GoLog("C_GetSlotList");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetSlotInfo)(CK_SLOT_ID slotID, CK_SLOT_INFO_PTR pInfo)
 {
+	GoLog("C_GetSlotInfo");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetTokenInfo)(CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR pInfo)
 {
+	GoLog("C_GetTokenInfo");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetMechanismList)(CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount)
 {
+	GoLog("C_GetMechanismList");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetMechanismInfo)(CK_SLOT_ID slotID, CK_MECHANISM_TYPE type, CK_MECHANISM_INFO_PTR pInfo)
 {
+	GoLog("C_GetMechanismInfo");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_InitToken)(CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel)
 {
+	GoLog("C_InitToken");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_InitPIN)(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen)
 {
+	GoLog("C_InitPIN");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SetPIN)(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen)
 {
+	GoLog("C_SetPIN");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_OpenSession)(CK_SLOT_ID slotID, CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY Notify, CK_SESSION_HANDLE_PTR phSession)
 {
+	GoLog("C_OpenSession");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_CloseSession)(CK_SESSION_HANDLE hSession)
 {
+	GoLog("C_CloseSession");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_CloseAllSessions)(CK_SLOT_ID slotID)
-{
+{	
+	GoLog("C_CloseAllSessions");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetSessionInfo)(CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo)
 {
+	GoLog("C_GetSessionInfo");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetOperationState)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pOperationState, CK_ULONG_PTR pulOperationStateLen)
 {
+	GoLog("C_GetOperationState");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SetOperationState)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pOperationState, CK_ULONG ulOperationStateLen, CK_OBJECT_HANDLE hEncryptionKey, CK_OBJECT_HANDLE hAuthenticationKey)
 {
+
+	GoLog("C_SetOperationState");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_Login)(CK_SESSION_HANDLE hSession, CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen)
 {
+	GoLog("C_Login");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_Logout)(CK_SESSION_HANDLE hSession)
-{
+{	
+	GoLog("C_Logout");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
