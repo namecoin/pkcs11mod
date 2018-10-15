@@ -14,15 +14,15 @@ package main
 
 /*
 #cgo windows CFLAGS: -DPACKED_STRUCTURES
-#cgo windows LDFLAGS: -lltdl
-#cgo linux LDFLAGS: -lltdl -ldl
+#cgo windows LDFLAGS: -lltdl -lpkcs11_exported -L .
+#cgo linux LDFLAGS: -lltdl -lpkcs11_exported -ldl -L .
 #cgo darwin CFLAGS: -I/usr/local/share/libtool
-#cgo darwin LDFLAGS: -lltdl -L/usr/local/lib/
+#cgo darwin LDFLAGS: -lltdl -lpkcs11_exported -L/usr/local/lib/ -L .
 #cgo openbsd CFLAGS: -I/usr/local/include/
-#cgo openbsd LDFLAGS: -lltdl -L/usr/local/lib/
+#cgo openbsd LDFLAGS: -lltdl -lpkcs11_exported -L/usr/local/lib/ -L .
 #cgo freebsd CFLAGS: -I/usr/local/include/
-#cgo freebsd LDFLAGS: -lltdl -L/usr/local/lib/
-#cgo LDFLAGS: -lltdl
+#cgo freebsd LDFLAGS: -lltdl -lpkcs11_exported -L/usr/local/lib/ -L .
+#cgo LDFLAGS: -lltdl -lpkcs11_exported -L .
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,6 +30,7 @@ package main
 #include <ltdl.h>
 #include <unistd.h>
 #include "namecoin.h"
+#include "pkcs11go.h"
 */
 import "C"
 
@@ -51,45 +52,42 @@ func init() {
 	log.Println("Namecoin PKCS#11 module loading")
 }
 
-//export C_Initialize
-func C_Initialize() error {
+//export Go_Initialize
+func Go_Initialize() C.CK_RV {
 	log.Println("Initialized!!!")
-	return nil
+	return C.CKR_OK
 }
 
-//export C_GetInfo
-func C_GetInfo() (string, error) {
+// The exported functions below this point are totally unused and are probably totally broken.
+
+//export Go_GetInfo
+func Go_GetInfo() (string, error) {
 	log.Println("Get Info")
 	return "hello", nil
 }
 
-//export C_GetSlotList
-func C_GetSlotList(tokenPresent bool) ([]uint, error) {
+//export Go_GetSlotList
+func Go_GetSlotList(tokenPresent bool) ([]uint, error) {
 	log.Println("GetSlotList")
 	return nil, nil
 }
 
-//export C_GetTokenInfo
-func C_GetTokenInfo(slotID uint) (string, error) {
+//export Go_GetTokenInfo
+func Go_GetTokenInfo(slotID uint) (string, error) {
 	log.Println("GetTokenInfo")
 	return "ok", nil
 }
 
-//export C_OpenSession
-func C_OpenSession(slotID uint, flags uint) (uint, error) {
+//export Go_OpenSession
+func Go_OpenSession(slotID uint, flags uint) (uint, error) {
 	log.Println("OpenSession")
 	return 42, nil
 }
 
-//export C_GetMechanismList
-func C_GetMechanismList(slotID uint) ([]string, error) {
+//export Go_GetMechanismList
+func Go_GetMechanismList(slotID uint) ([]string, error) {
 	log.Println("GetMechanismList")
 	return nil, nil
 }
 
-//export C_GetFunctionList
-func C_GetFunctionList(thing uintptr) ([]string, error) {
-	log.Println("GetFunctionList") // actually broken
-	return nil, nil
-}
 func main() {}
