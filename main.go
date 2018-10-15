@@ -14,20 +14,19 @@ package main
 
 /*
 #cgo windows CFLAGS: -DPACKED_STRUCTURES
-#cgo windows LDFLAGS: -lltdl -lpkcs11_exported -L .
-#cgo linux LDFLAGS: -lltdl -lpkcs11_exported -ldl -L .
+#cgo windows LDFLAGS: -lpkcs11_exported -L .
+#cgo linux LDFLAGS: -lpkcs11_exported -ldl -L .
 #cgo darwin CFLAGS: -I/usr/local/share/libtool
-#cgo darwin LDFLAGS: -lltdl -lpkcs11_exported -L/usr/local/lib/ -L .
+#cgo darwin LDFLAGS: -lpkcs11_exported -L/usr/local/lib/ -L .
 #cgo openbsd CFLAGS: -I/usr/local/include/
-#cgo openbsd LDFLAGS: -lltdl -lpkcs11_exported -L/usr/local/lib/ -L .
+#cgo openbsd LDFLAGS: -lpkcs11_exported -L/usr/local/lib/ -L .
 #cgo freebsd CFLAGS: -I/usr/local/include/
-#cgo freebsd LDFLAGS: -lltdl -lpkcs11_exported -L/usr/local/lib/ -L .
-#cgo LDFLAGS: -lltdl -lpkcs11_exported -L .
+#cgo freebsd LDFLAGS: -lpkcs11_exported -L/usr/local/lib/ -L .
+#cgo LDFLAGS: -lpkcs11_exported -L .
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ltdl.h>
 #include <unistd.h>
 #include "namecoin.h"
 #include "pkcs11go.h"
@@ -36,6 +35,7 @@ import "C"
 
 import (
 	"io"
+//	"unsafe"
 	"log"
 	"os"
 )
@@ -58,36 +58,51 @@ func Go_Initialize() C.CK_RV {
 	return C.CKR_OK
 }
 
-// The exported functions below this point are totally unused and are probably totally broken.
-
 //export Go_GetInfo
-func Go_GetInfo() (string, error) {
-	log.Println("Get Info")
-	return "hello", nil
+func Go_GetInfo(p C.CK_INFO_PTR) C.CK_RV {
+	if (p == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+	log.Println("GetInfo")
+	p.cryptokiVersion.major = C.uchar(0x02);
+	p.cryptokiVersion.minor = C.uchar(0x14);
+	p.flags = 0
+	p.libraryVersion.major = C.NCTLS_Version_Major
+	p.libraryVersion.minor = C.NCTLS_Version_Minor
+	for x := 0; x < 32; x++ {
+		p.manufacturerID[x] = ' '
+		p.libraryDescription[x] = ' '
+	}
+	for i, ch := range C.NCTLS_ManufacturerID {
+		p.manufacturerID[i] = C.uchar(ch)
+	}
+	return C.CKR_OK
 }
 
+// The exported functions below this point are totally unused and are probably totally broken.
+
 //export Go_GetSlotList
-func Go_GetSlotList(tokenPresent bool) ([]uint, error) {
+func Go_GetSlotList(tokenPresent bool) C.CK_RV {
 	log.Println("GetSlotList")
-	return nil, nil
+	return C.CKR_OK
 }
 
 //export Go_GetTokenInfo
-func Go_GetTokenInfo(slotID uint) (string, error) {
+func Go_GetTokenInfo(slotID uint) C.CK_RV {
 	log.Println("GetTokenInfo")
-	return "ok", nil
+	return C.CKR_OK
 }
 
 //export Go_OpenSession
-func Go_OpenSession(slotID uint, flags uint) (uint, error) {
+func Go_OpenSession(slotID uint, flags uint) C.CK_RV {
 	log.Println("OpenSession")
-	return 42, nil
+	return C.CKR_OK
 }
 
 //export Go_GetMechanismList
-func Go_GetMechanismList(slotID uint) ([]string, error) {
+func Go_GetMechanismList(slotID uint) C.CK_RV {
 	log.Println("GetMechanismList")
-	return nil, nil
+	return C.CKR_OK
 }
 
 func main() {}

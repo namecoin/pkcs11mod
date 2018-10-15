@@ -89,7 +89,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_Finalize)(CK_VOID_PTR pReserved)
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetInfo)(CK_INFO_PTR pInfo)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GetInfo(pInfo);
 }
 
 
