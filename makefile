@@ -7,4 +7,6 @@ pkcs11_exported.a: pkcs11_exported.o
 pkcs11_exported.o:
 	${CC} -c pkcs11_exported.c
 clean:
-	rm libnamecoin.h libnamecoin.so pkcs11_exported.a pkcs11_exported.o
+	rm -vf libnamecoin.h libnamecoin.so pkcs11_exported.a \
+		pkcs11_exported.o libpkcs11_exported.a libpkcs11_exported.o
+

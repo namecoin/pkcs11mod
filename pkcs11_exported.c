@@ -1,6 +1,6 @@
 // Based on https://github.com/Pkcs11Interop/pkcs11-mock/blob/d9adaaf39e0f41283cfa373597ed4b457ae28c39/src/pkcs11-mock.c
 
-#include "pkcs11go.h"
+#include "spec/pkcs11go.h"
 
 CK_RV Go_Initialize();
 CK_RV Go_GetInfo(CK_INFO_PTR);

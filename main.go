@@ -28,8 +28,8 @@ package main
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "spec/pkcs11go.h"
 #include "namecoin.h"
-#include "pkcs11go.h"
 */
 import "C"
 
