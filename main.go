@@ -41,6 +41,7 @@ import (
 )
 
 var logfile io.Closer
+var backend Backend
 
 func init() {
 	f, err := os.OpenFile(os.Getenv("HOME")+"/testlogfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
@@ -50,6 +51,8 @@ func init() {
 	log.SetOutput(f)
 	logfile = f
 	log.Println("Namecoin PKCS#11 module loading")
+
+	backend = BackendNamecoin{}
 }
 
 //export GoLog
@@ -59,8 +62,8 @@ func GoLog(s unsafe.Pointer) {
 
 //export Go_Initialize
 func Go_Initialize() C.CK_RV {
-	log.Println("Initialized!!!")
-	return C.CKR_OK
+	err := backend.Initialize()
+	return fromError(err)
 }
 
 //export Go_Finalize
