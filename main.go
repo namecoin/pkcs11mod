@@ -63,6 +63,12 @@ func Go_Initialize() C.CK_RV {
 	return C.CKR_OK
 }
 
+//export Go_Finalize
+func Go_Finalize() C.CK_RV {
+	log.Println("Go_Finalize")
+	return C.CKR_OK
+}
+
 //export Go_GetInfo
 func Go_GetInfo(p C.CK_INFO_PTR) C.CK_RV {
 	if (p == nil) {

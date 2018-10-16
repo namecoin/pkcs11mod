@@ -3,6 +3,7 @@
 #include "spec/pkcs11go.h"
 
 CK_RV Go_Initialize();
+CK_RV Go_Finalize();
 CK_RV Go_GetInfo(CK_INFO_PTR);
 void GoLog(const char*);
 
@@ -87,8 +88,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_Initialize)(CK_VOID_PTR pInitArgs)
 
 CK_DEFINE_FUNCTION(CK_RV, C_Finalize)(CK_VOID_PTR pReserved)
 {
-	GoLog("C_Finalize");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_Finalize();
 }
 
 
