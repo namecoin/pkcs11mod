@@ -13,3 +13,8 @@ func (b BackendNamecoin) Initialize() error {
 	log.Println("Namecoin pkcs11 backend initialized")
 	return nil
 }
+
+func (b BackendNamecoin) Finalize() error {
+	log.Println("Namecoin pkcs11 backend closing")
+	return nil
+}

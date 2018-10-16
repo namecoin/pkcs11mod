@@ -5,4 +5,5 @@ package main
 // Backend is an interface compatible with pkcs11.Ctx.
 type Backend interface {
 	Initialize() error
+	Finalize() error
 }

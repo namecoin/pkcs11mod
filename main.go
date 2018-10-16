@@ -68,8 +68,8 @@ func Go_Initialize() C.CK_RV {
 
 //export Go_Finalize
 func Go_Finalize() C.CK_RV {
-	log.Println("Go_Finalize")
-	return C.CKR_OK
+	err := backend.Finalize()
+	return fromError(err)
 }
 
 //export Go_GetInfo
