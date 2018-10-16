@@ -74,23 +74,50 @@ func Go_Finalize() C.CK_RV {
 
 //export Go_GetInfo
 func Go_GetInfo(p C.CK_INFO_PTR) C.CK_RV {
+	// TODO: Packing on Windows may break in this function.  Should we be
+	// using C.ckInfo here?
+
 	if (p == nil) {
 		return C.CKR_ARGUMENTS_BAD;
 	}
-	log.Println("GetInfo")
-	p.cryptokiVersion.major = C.uchar(0x02);
-	p.cryptokiVersion.minor = C.uchar(0x14);
-	p.flags = 0
-	p.libraryVersion.major = C.NCTLS_Version_Major
-	p.libraryVersion.minor = C.NCTLS_Version_Minor
+
+	info, err := backend.GetInfo()
+	if err != nil {
+		return fromError(err)
+	}
+
+	p.cryptokiVersion.major = C.CK_BYTE(info.CryptokiVersion.Major)
+	p.cryptokiVersion.minor = C.CK_BYTE(info.CryptokiVersion.Minor)
+	p.flags = C.CK_FLAGS(info.Flags)
+	p.libraryVersion.major = C.CK_BYTE(info.LibraryVersion.Major)
+	p.libraryVersion.minor = C.CK_BYTE(info.LibraryVersion.Minor)
+
+	// CK_INFO strings have a max length of 32, as per Sec. 3.1 of the
+	// PKCS#11 spec.
+	if len(info.ManufacturerID) > 32 {
+		info.ManufacturerID = info.ManufacturerID[:32]
+	}
+	if len(info.LibraryDescription) > 32 {
+		info.LibraryDescription = info.LibraryDescription[:32]
+	}
+
+	// CK_INFO strings must be padded with the space character and not
+	// null-terminated, as per Sec. 3.1 of the PKCS#11 spec.
 	for x := 0; x < 32; x++ {
-		p.manufacturerID[x] = ' '
-		p.libraryDescription[x] = ' '
+		p.manufacturerID[x] = C.CK_UTF8CHAR(' ')
+		p.libraryDescription[x] = C.CK_UTF8CHAR(' ')
 	}
-	for i, ch := range C.NCTLS_ManufacturerID {
-		p.manufacturerID[i] = C.uchar(ch)
+
+	// Copy the ManufacturerID
+	for i, ch := range info.ManufacturerID {
+		p.manufacturerID[i] = C.CK_UTF8CHAR(ch)
 	}
-	return C.CKR_OK
+	// Copy the LibraryDescription
+	for i, ch := range info.LibraryDescription {
+		p.libraryDescription[i] = C.CK_UTF8CHAR(ch)
+	}
+
+	return fromError(err)
 }
 
 // The exported functions below this point are totally unused and are probably totally broken.
