@@ -2,12 +2,10 @@ NAME ?= 'libnamecoin.so'
 .PHONY: ${NAME} clean cleanmoz
 
 # build the shared object
-${NAME}: pkcs11_exported.a
+${NAME}:
+	go generate github.com/namecoin/nctls.so/pkcs11mod
+	go get github.com/namecoin/nctls.so/pkcs11mod
 	CGO_ENABLED=1 go build -buildmode c-shared -o ${NAME}
-pkcs11_exported.a: pkcs11_exported.o
-	ar cru libpkcs11_exported.a pkcs11_exported.o
-pkcs11_exported.o:
-	${CC} -c pkcs11_exported.c
 
 # install libnamecoin.h and libnamecoin.so to /usr/local/namecoin/
 install:
@@ -16,8 +14,7 @@ install:
 	install libnamecoin.so /usr/local/namecoin/
 
 clean: cleanmoz
-	rm -vf libnamecoin.h libnamecoin.so pkcs11_exported.a \
-		pkcs11_exported.o libpkcs11_exported.a libpkcs11_exported.o
+	rm -vf libnamecoin.h libnamecoin.so
 cleanmoz:
 	rm -rvf moz/web-ext-artifacts
 

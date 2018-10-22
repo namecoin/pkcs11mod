@@ -1,6 +1,6 @@
 // Copyright 2018 Namecoin Developers GPLv3+
 
-package main
+package pkcs11mod
 
 /*
 #include "spec/pkcs11go.h"

@@ -1,6 +1,6 @@
 // Copyright 2018 Namecoin Developers GPLv3+
 
-package main
+package pkcs11mod
 
 import (
 	"github.com/miekg/pkcs11"
