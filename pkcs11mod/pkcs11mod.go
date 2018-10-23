@@ -114,13 +114,41 @@ func Go_GetInfo(p C.CK_INFO_PTR) C.CK_RV {
 	return fromError(err)
 }
 
-// The exported functions below this point are totally unused and are probably totally broken.
-
 //export Go_GetSlotList
-func Go_GetSlotList(tokenPresent bool) C.CK_RV {
-	log.Println("GetSlotList")
-	return C.CKR_OK
+func Go_GetSlotList(tokenPresent C.CK_BBOOL, pSlotList C.CK_SLOT_ID_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
+	if (pulCount == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	goTokenPresent := fromCBBool(tokenPresent)
+
+	slotList, err := backend.GetSlotList(goTokenPresent)
+	if err != nil {
+		return fromError(err)
+	}
+
+	goCount := uint(len(slotList))
+
+	if pSlotList == nil {
+		// Only return the number of slots
+		*pulCount = C.CK_ULONG(goCount)
+	} else {
+		// Return number of slots and list of slots
+
+		// Check to make sure that the buffer is big enough
+		goRequestedCount := uint(*pulCount)
+		if goRequestedCount < goCount {
+			return C.CKR_BUFFER_TOO_SMALL
+		}
+
+		*pulCount = C.CK_ULONG(goCount)
+		fromList(slotList, C.CK_ULONG_PTR(pSlotList), goCount)
+	}
+
+	return fromError(err)
 }
+
+// The exported functions below this point are totally unused and are probably totally broken.
 
 //export Go_GetTokenInfo
 func Go_GetTokenInfo(slotID uint) C.CK_RV {

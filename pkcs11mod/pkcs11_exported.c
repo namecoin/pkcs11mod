@@ -111,8 +111,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetFunctionList)(CK_FUNCTION_LIST_PTR_PTR ppFunction
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetSlotList)(CK_BBOOL tokenPresent, CK_SLOT_ID_PTR pSlotList, CK_ULONG_PTR pulCount)
 {
-	GoLog("C_GetSlotList");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GetSlotList(tokenPresent, pSlotList, pulCount);
 }
 
 
