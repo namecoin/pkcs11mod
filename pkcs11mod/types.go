@@ -77,3 +77,37 @@ func toTemplate(clist C.CK_ATTRIBUTE_PTR, size C.CK_ULONG) []*pkcs11.Attribute {
 	}
 	return l2
 }
+
+// toTemplate converts from a []*pkcs11.Attribute to a C style array that
+// already contains a template as is passed to C_GetAttributeValue.
+func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error {
+	l1 := make([]C.CK_ATTRIBUTE_PTR, int(len(template)))
+	for i := 0; i < len(l1); i++ {
+		l1[i] = C.IndexAttributePtr(clist, C.CK_ULONG(i))
+	}
+	bufferTooSmall := false
+	for i, x := range template {
+		c := l1[i]
+		cLen := C.CK_ULONG(uint(len(x.Value)))
+		if C.getAttributePval(c) == nil {
+			c.ulValueLen = cLen
+		} else if c.ulValueLen >= cLen {
+			buf := unsafe.Pointer(C.getAttributePval(c))
+
+			// Adapted from solution 3 of https://stackoverflow.com/a/35675259
+			goBuf := (*[1 << 30]byte)(buf)
+			copy(goBuf[:], x.Value)
+
+			c.ulValueLen = cLen
+		} else {
+			c.ulValueLen = C.CK_UNAVAILABLE_INFORMATION
+			bufferTooSmall = true
+		}
+	}
+
+	if bufferTooSmall {
+		return pkcs11.Error(pkcs11.CKR_BUFFER_TOO_SMALL)
+	}
+
+	return nil
+}

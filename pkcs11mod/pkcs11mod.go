@@ -354,6 +354,25 @@ func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJEC
 	return fromError(err)
 }
 
+//export Go_GetAttributeValue
+func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
+	if (pTemplate == nil && ulCount > 0) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+	goObjectHandle := pkcs11.ObjectHandle(objectHandle)
+	goTemplate := toTemplate(pTemplate, ulCount)
+
+	goResults, err := backend.GetAttributeValue(goSessionHandle, goObjectHandle, goTemplate)
+	if err != nil {
+		return fromError(err)
+	}
+
+	err = fromTemplate(goResults, pTemplate)
+	return fromError(err)
+}
+
 //export Go_FindObjectsInit
 func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
 	if (pTemplate == nil && ulCount > 0) {

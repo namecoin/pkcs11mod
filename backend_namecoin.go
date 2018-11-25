@@ -57,6 +57,10 @@ func (b BackendNamecoin) GetObjectSize(sh pkcs11.SessionHandle, oh pkcs11.Object
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
+func (b BackendNamecoin) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle, a []*pkcs11.Attribute) ([]*pkcs11.Attribute, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
+
 func (b BackendNamecoin) FindObjectsInit(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
