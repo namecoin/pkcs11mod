@@ -200,6 +200,106 @@ func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
 	return fromError(err)
 }
 
+//export Go_GetTokenInfo
+func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
+	if (pInfo == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	goSlotID := uint(slotID)
+
+	tokenInfo, err := backend.GetTokenInfo(goSlotID)
+	if err != nil {
+		return fromError(err)
+	}
+
+	pInfo.flags = C.CK_FLAGS(tokenInfo.Flags)
+	pInfo.ulMaxSessionCount = C.CK_ULONG(tokenInfo.MaxSessionCount)
+	pInfo.ulSessionCount = C.CK_ULONG(tokenInfo.SessionCount)
+	pInfo.ulMaxRwSessionCount = C.CK_ULONG(tokenInfo.MaxRwSessionCount)
+	pInfo.ulRwSessionCount = C.CK_ULONG(tokenInfo.RwSessionCount)
+	pInfo.ulMaxPinLen = C.CK_ULONG(tokenInfo.MaxPinLen)
+	pInfo.ulMinPinLen = C.CK_ULONG(tokenInfo.MinPinLen)
+	pInfo.ulTotalPublicMemory = C.CK_ULONG(tokenInfo.TotalPublicMemory)
+	pInfo.ulFreePublicMemory = C.CK_ULONG(tokenInfo.FreePublicMemory)
+	pInfo.ulTotalPrivateMemory = C.CK_ULONG(tokenInfo.TotalPrivateMemory)
+	pInfo.ulFreePrivateMemory = C.CK_ULONG(tokenInfo.FreePrivateMemory)
+	pInfo.hardwareVersion.major = C.CK_BYTE(tokenInfo.HardwareVersion.Major)
+	pInfo.hardwareVersion.minor = C.CK_BYTE(tokenInfo.HardwareVersion.Minor)
+	pInfo.firmwareVersion.major = C.CK_BYTE(tokenInfo.FirmwareVersion.Major)
+	pInfo.firmwareVersion.minor = C.CK_BYTE(tokenInfo.FirmwareVersion.Minor)
+
+	// CK_TOKEN_INFO label has a max length of 32, as per Sec. 3.2 of the
+	// PKCS#11 spec.
+	if len(tokenInfo.Label) > 32 {
+		tokenInfo.Label = tokenInfo.Label[:32]
+	}
+
+	// CK_TOKEN_INFO manufacturerID has a max length of 32, as per Sec. 3.2
+	// of the PKCS#11 spec.
+	if len(tokenInfo.ManufacturerID) > 32 {
+		tokenInfo.ManufacturerID = tokenInfo.ManufacturerID[:32]
+	}
+
+	// CK_TOKEN_INFO model has a max length of 16, as per Sec. 3.2 of the
+	// PKCS#11 spec.
+	if len(tokenInfo.Model) > 16 {
+		tokenInfo.Model = tokenInfo.Model[:16]
+	}
+
+	// CK_TOKEN_INFO serialNumber has a max length of 16, as per Sec. 3.2
+	// of the PKCS#11 spec.
+	if len(tokenInfo.SerialNumber) > 16 {
+		tokenInfo.SerialNumber = tokenInfo.SerialNumber[:16]
+	}
+
+	// CK_TOKEN_INFO utcTime has a max length of 16, as per Sec. 3.2 of the
+	// PKCS#11 spec.
+	if len(tokenInfo.UTCTime) > 16 {
+		tokenInfo.UTCTime = tokenInfo.UTCTime[:16]
+	}
+
+	// CK_TOKEN_INFO strings must be padded with the space character
+	// (except for utcTime which is padded with '0') and not null-
+	// terminated, as per Sec. 3.2 of the PKCS#11 spec.
+	for x := 0; x < 32; x++ {
+		pInfo.label[x] = C.CK_UTF8CHAR(' ')
+		pInfo.manufacturerID[x] = C.CK_UTF8CHAR(' ')
+	}
+	for x := 0; x < 16; x++ {
+		pInfo.model[x] = C.CK_UTF8CHAR(' ')
+	}
+	for x := 0; x < 16; x++ {
+		pInfo.serialNumber[x] = C.CK_CHAR(' ')
+	}
+	for x := 0; x < 16; x++ {
+		pInfo.utcTime[x] = C.CK_CHAR('0')
+	}
+
+	// Copy the Label
+	for i, ch := range tokenInfo.Label {
+		pInfo.label[i] = C.CK_UTF8CHAR(ch)
+	}
+	// Copy the ManufacturerID
+	for i, ch := range tokenInfo.ManufacturerID {
+		pInfo.manufacturerID[i] = C.CK_UTF8CHAR(ch)
+	}
+	// Copy the Model
+	for i, ch := range tokenInfo.Model {
+		pInfo.model[i] = C.CK_UTF8CHAR(ch)
+	}
+	// Copy the SerialNumber
+	for i, ch := range tokenInfo.SerialNumber {
+		pInfo.serialNumber[i] = C.CK_CHAR(ch)
+	}
+	// Copy the UTCTime
+	for i, ch := range tokenInfo.UTCTime {
+		pInfo.utcTime[i] = C.CK_CHAR(ch)
+	}
+
+	return fromError(err)
+}
+
 //export Go_OpenSession
 func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
 	if (phSession == nil) {
@@ -220,12 +320,6 @@ func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSIO
 }
 
 // The exported functions below this point are totally unused and are probably totally broken.
-
-//export Go_GetTokenInfo
-func Go_GetTokenInfo(slotID uint) C.CK_RV {
-	log.Println("GetTokenInfo")
-	return C.CKR_OK
-}
 
 //export Go_GetMechanismList
 func Go_GetMechanismList(slotID uint) C.CK_RV {

@@ -44,6 +44,12 @@ func (b BackendProxy) GetSlotInfo(slotID uint) (pkcs11.SlotInfo, error) {
 	return slotInfo, err
 }
 
+func (b BackendProxy) GetTokenInfo(slotID uint) (pkcs11.TokenInfo, error) {
+	tokenInfo, err := realBackend.GetTokenInfo(slotID)
+	log.Printf("Proxy pkcs11 backend GetTokenInfo: result is %v\n", tokenInfo)
+	return tokenInfo, err
+}
+
 func (b BackendProxy) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle, error) {
 	sessionHandle, err := realBackend.OpenSession(slotID, flags)
 	log.Printf("Proxy pkcs11 backend OpenSession: result is %v\n", sessionHandle)
