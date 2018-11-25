@@ -17,4 +17,5 @@ type Backend interface {
 	OpenSession(uint, uint) (pkcs11.SessionHandle, error)
 	Login(pkcs11.SessionHandle, uint, string) error
 	FindObjectsInit(pkcs11.SessionHandle, []*pkcs11.Attribute) error
+	FindObjects(pkcs11.SessionHandle, int) ([]pkcs11.ObjectHandle, bool, error)
 }

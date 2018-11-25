@@ -323,6 +323,10 @@ func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSIO
 
 //export Go_Login
 func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
+	if (pPin == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goUserType := uint(userType)
 	goPin := string(C.GoBytes(unsafe.Pointer(pPin), C.int(ulPinLen)))
@@ -333,10 +337,38 @@ func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C
 
 //export Go_FindObjectsInit
 func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
+	if (pTemplate == nil && ulCount > 0) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goTemplate := toTemplate(pTemplate, ulCount)
 
 	err := backend.FindObjectsInit(goSessionHandle, goTemplate)
+	return fromError(err)
+}
+
+//export Go_FindObjects
+func Go_FindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HANDLE_PTR, ulMaxObjectCount C.CK_ULONG, pulObjectCount C.CK_ULONG_PTR) C.CK_RV {
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+	goMax := int(ulMaxObjectCount)
+
+	if (phObject == nil && goMax > 0) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+	if (pulObjectCount == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	objectHandles, _, err := backend.FindObjects(goSessionHandle, goMax)
+	if err != nil {
+		return fromError(err)
+	}
+
+	goCount := uint(len(objectHandles))
+	*pulObjectCount = C.CK_ULONG(goCount)
+	fromObjectHandleList(objectHandles, C.CK_ULONG_PTR(phObject), goCount)
+
 	return fromError(err)
 }
 

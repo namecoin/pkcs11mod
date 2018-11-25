@@ -36,6 +36,13 @@ func fromList(goList []uint, cList C.CK_ULONG_PTR, goSize uint) {
 	}
 }
 
+// fromObjectHandleList converts from a []pkcs11.ObjectHandle to a C style array.
+func fromObjectHandleList(goList []pkcs11.ObjectHandle, cList C.CK_ULONG_PTR, goSize uint) {
+	for i := 0; uint(i) < goSize; i++ {
+		C.SetIndex(cList, C.CK_ULONG(i), C.CK_ULONG(goList[i]))
+	}
+}
+
 // fromCBBool converts a CK_BBOOL to a bool.
 func fromCBBool(x C.CK_BBOOL) bool {
 	// Any nonzero value means true, and zero means false.

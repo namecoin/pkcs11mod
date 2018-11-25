@@ -56,3 +56,7 @@ func (b BackendNamecoin) Login(sh pkcs11.SessionHandle, userType uint, pin strin
 func (b BackendNamecoin) FindObjectsInit(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
+
+func (b BackendNamecoin) FindObjects(sh pkcs11.SessionHandle, max int) ([]pkcs11.ObjectHandle, bool, error) {
+	return nil, false, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
