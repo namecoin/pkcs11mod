@@ -12,4 +12,5 @@ type Backend interface {
 	Finalize() error
 	GetInfo() (pkcs11.Info, error)
 	GetSlotList(bool) ([]uint, error)
+	GetSlotInfo(uint) (pkcs11.SlotInfo, error)
 }

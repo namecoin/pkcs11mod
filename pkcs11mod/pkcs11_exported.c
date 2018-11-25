@@ -5,6 +5,9 @@
 CK_RV Go_Initialize();
 CK_RV Go_Finalize();
 CK_RV Go_GetInfo(CK_INFO_PTR);
+CK_RV Go_GetSlotList(CK_BBOOL, CK_SLOT_ID_PTR, CK_ULONG_PTR);
+CK_RV Go_GetSlotInfo(CK_SLOT_ID, CK_SLOT_INFO_PTR);
+
 void GoLog(const char*);
 
 CK_FUNCTION_LIST pkcs11_functions = 
@@ -117,8 +120,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetSlotList)(CK_BBOOL tokenPresent, CK_SLOT_ID_PTR p
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetSlotInfo)(CK_SLOT_ID slotID, CK_SLOT_INFO_PTR pInfo)
 {
-	GoLog("C_GetSlotInfo");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GetSlotInfo(slotID, pInfo);
 }
 
 

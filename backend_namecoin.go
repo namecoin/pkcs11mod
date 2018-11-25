@@ -36,3 +36,7 @@ func (b BackendNamecoin) GetInfo() (pkcs11.Info, error) {
 func (b BackendNamecoin) GetSlotList(tokenPresent bool) ([]uint, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
+
+func (b BackendNamecoin) GetSlotInfo(slotID uint) (pkcs11.SlotInfo, error) {
+	return pkcs11.SlotInfo{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}

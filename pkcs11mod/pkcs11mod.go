@@ -148,6 +148,58 @@ func Go_GetSlotList(tokenPresent C.CK_BBOOL, pSlotList C.CK_SLOT_ID_PTR, pulCoun
 	return fromError(err)
 }
 
+//export Go_GetSlotInfo
+func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
+	if (pInfo == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	goSlotID := uint(slotID)
+
+	slotInfo, err := backend.GetSlotInfo(goSlotID)
+	if err != nil {
+		return fromError(err)
+	}
+
+	pInfo.flags = C.CK_FLAGS(slotInfo.Flags)
+	pInfo.hardwareVersion.major = C.CK_BYTE(slotInfo.HardwareVersion.Major)
+	pInfo.hardwareVersion.minor = C.CK_BYTE(slotInfo.HardwareVersion.Minor)
+	pInfo.firmwareVersion.major = C.CK_BYTE(slotInfo.FirmwareVersion.Major)
+	pInfo.firmwareVersion.minor = C.CK_BYTE(slotInfo.FirmwareVersion.Minor)
+
+	// CK_SLOT_INFO slotDescription has a max length of 64, as per Sec. 3.2
+	// of the PKCS#11 spec.
+	if len(slotInfo.SlotDescription) > 64 {
+		slotInfo.SlotDescription = slotInfo.SlotDescription[:64]
+	}
+
+	// CK_SLOT_INFO manufacturerID has a max length of 32, as per Sec. 3.2
+	// of the PKCS#11 spec.
+	if len(slotInfo.ManufacturerID) > 32 {
+		slotInfo.ManufacturerID = slotInfo.ManufacturerID[:32]
+	}
+
+	// CK_SLOT_INFO strings must be padded with the space character and not
+	// null-terminated, as per Sec. 3.2 of the PKCS#11 spec.
+	for x := 0; x < 64; x++ {
+		pInfo.slotDescription[x] = C.CK_UTF8CHAR(' ')
+	}
+	for x := 0; x < 32; x++ {
+		pInfo.manufacturerID[x] = C.CK_UTF8CHAR(' ')
+	}
+
+	// Copy the SlotDescription
+	for i, ch := range slotInfo.SlotDescription {
+		pInfo.slotDescription[i] = C.CK_UTF8CHAR(ch)
+	}
+	// Copy the ManufacturerID
+	for i, ch := range slotInfo.ManufacturerID {
+		pInfo.manufacturerID[i] = C.CK_UTF8CHAR(ch)
+	}
+
+	return fromError(err)
+}
+
 // The exported functions below this point are totally unused and are probably totally broken.
 
 //export Go_GetTokenInfo

@@ -37,3 +37,9 @@ func (b BackendProxy) GetSlotList(tokenPresent bool) ([]uint, error) {
 	log.Printf("Proxy pkcs11 backend GetSlotList: result is %v\n", slotList)
 	return slotList, err
 }
+
+func (b BackendProxy) GetSlotInfo(slotID uint) (pkcs11.SlotInfo, error) {
+	slotInfo, err := realBackend.GetSlotInfo(slotID)
+	log.Printf("Proxy pkcs11 backend GetSlotInfo: result is %v\n", slotInfo)
+	return slotInfo, err
+}
