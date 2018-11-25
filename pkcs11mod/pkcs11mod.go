@@ -335,6 +335,25 @@ func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C
 	return fromError(err)
 }
 
+//export Go_GetObjectSize
+func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pulSize C.CK_ULONG_PTR) C.CK_RV {
+	if (pulSize == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+	goObjectHandle := pkcs11.ObjectHandle(objectHandle)
+
+	goSize, err := backend.GetObjectSize(goSessionHandle, goObjectHandle)
+	if err != nil {
+		return fromError(err)
+	}
+
+	*pulSize = C.CK_ULONG(goSize)
+
+	return fromError(err)
+}
+
 //export Go_FindObjectsInit
 func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
 	if (pTemplate == nil && ulCount > 0) {

@@ -62,6 +62,12 @@ func (b BackendProxy) Login(sh pkcs11.SessionHandle, userType uint, pin string) 
 	return err
 }
 
+func (b BackendProxy) GetObjectSize(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle) (uint, error) {
+	size, err := realBackend.GetObjectSize(sh, oh)
+	log.Printf("Proxy pkcs11 backend GetObjectSize: result is %v\n", size)
+	return size, err
+}
+
 func (b BackendProxy) FindObjectsInit(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) error {
 	err := realBackend.FindObjectsInit(sh, temp)
 	log.Printf("Proxy pkcs11 backend FindObjectsInit\n")
