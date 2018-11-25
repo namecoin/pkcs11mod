@@ -1,4 +1,4 @@
-// Copyright 2018 Namecoin Developers GPLv3+
+// Copyright 2018 Namecoin Developers LGPLv3+
 
 package pkcs11mod
 
