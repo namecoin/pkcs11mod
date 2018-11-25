@@ -61,3 +61,9 @@ func (b BackendProxy) Login(sh pkcs11.SessionHandle, userType uint, pin string) 
 	log.Printf("Proxy pkcs11 backend Login\n")
 	return err
 }
+
+func (b BackendProxy) FindObjectsInit(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) error {
+	err := realBackend.FindObjectsInit(sh, temp)
+	log.Printf("Proxy pkcs11 backend FindObjectsInit\n")
+	return err
+}

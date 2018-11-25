@@ -331,6 +331,15 @@ func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C
 	return fromError(err)
 }
 
+//export Go_FindObjectsInit
+func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+	goTemplate := toTemplate(pTemplate, ulCount)
+
+	err := backend.FindObjectsInit(goSessionHandle, goTemplate)
+	return fromError(err)
+}
+
 // The exported functions below this point are totally unused and are probably totally broken.
 
 //export Go_GetMechanismList

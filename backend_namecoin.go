@@ -52,3 +52,7 @@ func (b BackendNamecoin) OpenSession(slotID uint, flags uint) (pkcs11.SessionHan
 func (b BackendNamecoin) Login(sh pkcs11.SessionHandle, userType uint, pin string) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
+
+func (b BackendNamecoin) FindObjectsInit(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) error {
+	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}

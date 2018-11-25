@@ -10,6 +10,7 @@ CK_RV Go_GetSlotInfo(CK_SLOT_ID, CK_SLOT_INFO_PTR);
 CK_RV Go_GetTokenInfo(CK_SLOT_ID, CK_TOKEN_INFO_PTR);
 CK_RV Go_OpenSession(CK_SLOT_ID, CK_FLAGS, CK_SESSION_HANDLE_PTR);
 CK_RV Go_Login(CK_SESSION_HANDLE, CK_USER_TYPE, CK_UTF8CHAR_PTR, CK_ULONG);
+CK_RV Go_FindObjectsInit(CK_SESSION_HANDLE, CK_ATTRIBUTE_PTR, CK_ULONG);
 
 void GoLog(const char*);
 
@@ -261,7 +262,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_SetAttributeValue)(CK_SESSION_HANDLE hSession, CK_OB
 
 CK_DEFINE_FUNCTION(CK_RV, C_FindObjectsInit)(CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_FindObjectsInit(hSession, pTemplate, ulCount);
 }
 
 

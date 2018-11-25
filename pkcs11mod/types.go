@@ -9,10 +9,23 @@ void SetIndex(CK_ULONG_PTR array, CK_ULONG i, CK_ULONG val)
 {
 	array[i] = val;
 }
+
+CK_ATTRIBUTE_PTR IndexAttributePtr(CK_ATTRIBUTE_PTR array, CK_ULONG i)
+{
+	return &(array[i]);
+}
+
+// Copied verbatim from miekg/pkcs11 pkcs11.go
+static inline CK_VOID_PTR getAttributePval(CK_ATTRIBUTE_PTR a)
+{
+	return a->pValue;
+}
 */
 import "C"
 
 import (
+	"unsafe"
+
 	"github.com/miekg/pkcs11"
 )
 
@@ -34,4 +47,26 @@ func fromError(e error) C.CK_RV {
 		return C.CKR_OK
 	}
 	return C.CK_RV(e.(pkcs11.Error))
+}
+
+// toTemplate converts from a C style array to a []*pkcs11.Attribute.
+// It doesn't free the input array.
+func toTemplate(clist C.CK_ATTRIBUTE_PTR, size C.CK_ULONG) []*pkcs11.Attribute {
+	l1 := make([]C.CK_ATTRIBUTE_PTR, int(size))
+	for i := 0; i < len(l1); i++ {
+		l1[i] = C.IndexAttributePtr(clist, C.CK_ULONG(i))
+	}
+	// defer C.free(unsafe.Pointer(clist)) // Removed compared to miekg implementation since it's not desired here
+	l2 := make([]*pkcs11.Attribute, int(size))
+	for i, c := range l1 {
+		x := new(pkcs11.Attribute)
+		x.Type = uint(c._type)
+		if int(c.ulValueLen) != -1 {
+			buf := unsafe.Pointer(C.getAttributePval(c))
+			x.Value = C.GoBytes(buf, C.int(c.ulValueLen))
+			//C.free(buf) // Removed compared to miekg implementation since it's not desired here
+		}
+		l2[i] = x
+	}
+	return l2
 }
