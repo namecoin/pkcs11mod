@@ -30,6 +30,8 @@ import (
 	"log"
 	"os"
 	"unsafe"
+
+	"github.com/miekg/pkcs11"
 )
 
 var logfile io.Closer
@@ -316,6 +318,16 @@ func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSIO
 
 	*phSession = C.CK_SESSION_HANDLE(sessionHandle)
 
+	return fromError(err)
+}
+
+//export Go_Login
+func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+	goUserType := uint(userType)
+	goPin := string(C.GoBytes(unsafe.Pointer(pPin), C.int(ulPinLen)))
+
+	err := backend.Login(goSessionHandle, goUserType, goPin)
 	return fromError(err)
 }
 
