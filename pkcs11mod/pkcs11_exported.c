@@ -252,6 +252,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetObjectSize)(CK_SESSION_HANDLE hSession, CK_OBJECT
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetAttributeValue)(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount)
 {
+	GoLog("C_GetAttributeValue");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
@@ -276,6 +277,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_FindObjects)(CK_SESSION_HANDLE hSession, CK_OBJECT_H
 
 CK_DEFINE_FUNCTION(CK_RV, C_FindObjectsFinal)(CK_SESSION_HANDLE hSession)
 {
+	GoLog("C_FindObjectsFinal");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
