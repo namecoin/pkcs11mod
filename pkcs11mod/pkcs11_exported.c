@@ -7,6 +7,7 @@ CK_RV Go_Finalize();
 CK_RV Go_GetInfo(CK_INFO_PTR);
 CK_RV Go_GetSlotList(CK_BBOOL, CK_SLOT_ID_PTR, CK_ULONG_PTR);
 CK_RV Go_GetSlotInfo(CK_SLOT_ID, CK_SLOT_INFO_PTR);
+CK_RV Go_OpenSession(CK_SLOT_ID, CK_FLAGS, CK_SESSION_HANDLE_PTR);
 
 void GoLog(const char*);
 
@@ -168,8 +169,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_SetPIN)(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR 
 
 CK_DEFINE_FUNCTION(CK_RV, C_OpenSession)(CK_SLOT_ID slotID, CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY Notify, CK_SESSION_HANDLE_PTR phSession)
 {
-	GoLog("C_OpenSession");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_OpenSession(slotID, flags, phSession);
 }
 
 

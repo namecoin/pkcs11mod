@@ -200,17 +200,30 @@ func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
 	return fromError(err)
 }
 
+//export Go_OpenSession
+func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
+	if (phSession == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	goSlotID := uint(slotID)
+	goFlags := uint(flags)
+
+	sessionHandle, err := backend.OpenSession(goSlotID, goFlags)
+	if err != nil {
+		return fromError(err)
+	}
+
+	*phSession = C.CK_SESSION_HANDLE(sessionHandle)
+
+	return fromError(err)
+}
+
 // The exported functions below this point are totally unused and are probably totally broken.
 
 //export Go_GetTokenInfo
 func Go_GetTokenInfo(slotID uint) C.CK_RV {
 	log.Println("GetTokenInfo")
-	return C.CKR_OK
-}
-
-//export Go_OpenSession
-func Go_OpenSession(slotID uint, flags uint) C.CK_RV {
-	log.Println("OpenSession")
 	return C.CKR_OK
 }
 

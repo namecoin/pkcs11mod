@@ -13,4 +13,5 @@ type Backend interface {
 	GetInfo() (pkcs11.Info, error)
 	GetSlotList(bool) ([]uint, error)
 	GetSlotInfo(uint) (pkcs11.SlotInfo, error)
+	OpenSession(uint, uint) (pkcs11.SessionHandle, error)
 }
