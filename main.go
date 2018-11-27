@@ -17,7 +17,7 @@ import (
 )
 
 func init() {
-	backend := BackendNamecoin{}
+	backend := NewBackendNamecoin()
 
 	pkcs11mod.SetBackend(backend)
 }
