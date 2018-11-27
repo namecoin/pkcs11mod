@@ -10,7 +10,6 @@ ${NAME}:
 # install libnamecoin.h and libnamecoin.so to /usr/local/namecoin/
 install:
 	mkdir -p /usr/local/namecoin
-	install libnamecoin.h /usr/local/namecoin/
 	install libnamecoin.so /usr/local/namecoin/
 
 clean: cleanmoz
@@ -34,9 +33,14 @@ moz-install:
 	install moz/namecoin_module.json /usr/lib/mozilla/pkcs11-modules/
 
 
+# add pkcs11 module to NSS shared database
+nss-shared-install:
+	./install_nssdb.sh ~/.pki/nssdb
+
+
 all: clean ${NAME} moz-ext
 	@echo now run "${MAKE} all-install" to install all (requires root)
 
 # install all the things
-install-all: install moz-install
+install-all: install moz-install nss-shared-install
 	@echo now the mozilla extension zip file is ready to install on this machine
