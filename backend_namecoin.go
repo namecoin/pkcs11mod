@@ -103,6 +103,11 @@ func (b BackendNamecoin) GetTokenInfo(slotID uint) (pkcs11.TokenInfo, error) {
 	return tokenInfo, nil
 }
 
+func (b BackendNamecoin) GetMechanismList(slotID uint) ([]*pkcs11.Mechanism, error) {
+	// Namecoin doesn't implement any mechanisms
+	return []*pkcs11.Mechanism{}, nil
+}
+
 // Only call this while b.sessionMutex is write-locked
 func (b BackendNamecoin) nextAvailableSessionHandle() pkcs11.SessionHandle {
 	sessionHandle := pkcs11.SessionHandle(1)

@@ -36,6 +36,14 @@ func fromList(goList []uint, cList C.CK_ULONG_PTR, goSize uint) {
 	}
 }
 
+// fromMechanismList converts from a []*pkcs11.Mechanism to a C style array of
+// mechanism types.
+func fromMechanismList(goList []*pkcs11.Mechanism, cList C.CK_ULONG_PTR, goSize uint) {
+	for i := 0; uint(i) < goSize; i++ {
+		C.SetIndex(cList, C.CK_ULONG(i), C.CK_ULONG(goList[i].Mechanism))
+	}
+}
+
 // fromObjectHandleList converts from a []pkcs11.ObjectHandle to a C style array.
 func fromObjectHandleList(goList []pkcs11.ObjectHandle, cList C.CK_ULONG_PTR, goSize uint) {
 	for i := 0; uint(i) < goSize; i++ {

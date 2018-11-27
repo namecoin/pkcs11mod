@@ -50,6 +50,12 @@ func (b BackendProxy) GetTokenInfo(slotID uint) (pkcs11.TokenInfo, error) {
 	return tokenInfo, err
 }
 
+func (b BackendProxy) GetMechanismList(slotID uint) ([]*pkcs11.Mechanism, error) {
+	mechanismList, err := realBackend.GetMechanismList(slotID)
+	log.Printf("Proxy pkcs11 backend GetMechanismList: result is %v\n", mechanismList)
+	return mechanismList, err
+}
+
 func (b BackendProxy) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle, error) {
 	sessionHandle, err := realBackend.OpenSession(slotID, flags)
 	log.Printf("Proxy pkcs11 backend OpenSession: result is %v\n", sessionHandle)

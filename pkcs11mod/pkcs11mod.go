@@ -302,6 +302,40 @@ func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
 	return fromError(err)
 }
 
+//export Go_GetMechanismList
+func Go_GetMechanismList(slotID C.CK_SLOT_ID, pMechanismList C.CK_MECHANISM_TYPE_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
+	if (pulCount == nil) {
+		return C.CKR_ARGUMENTS_BAD;
+	}
+
+	goSlotID := uint(slotID)
+
+	mechanismList, err := backend.GetMechanismList(goSlotID)
+	if err != nil {
+		return fromError(err)
+	}
+
+	goCount := uint(len(mechanismList))
+
+	if pMechanismList == nil {
+		// Only return the number of mechanisms
+		*pulCount = C.CK_ULONG(goCount)
+	} else {
+		// Return number of mechanisms and list of mechanisms
+
+		// Check to make sure that the buffer is big enough
+		goRequestedCount := uint(*pulCount)
+		if goRequestedCount < goCount {
+			return C.CKR_BUFFER_TOO_SMALL
+		}
+
+		*pulCount = C.CK_ULONG(goCount)
+		fromMechanismList(mechanismList, C.CK_ULONG_PTR(pMechanismList), goCount)
+	}
+
+	return fromError(err)
+}
+
 //export Go_OpenSession
 func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
 	if (phSession == nil) {
@@ -432,12 +466,4 @@ func Go_FindObjectsFinal(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 
 	err := backend.FindObjectsFinal(goSessionHandle)
 	return fromError(err)
-}
-
-// The exported functions below this point are totally unused and are probably totally broken.
-
-//export Go_GetMechanismList
-func Go_GetMechanismList(slotID uint) C.CK_RV {
-	log.Println("GetMechanismList")
-	return C.CKR_OK
 }
