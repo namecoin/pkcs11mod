@@ -3,6 +3,8 @@
 package main
 
 import (
+	"crypto/x509/pkix"
+	"encoding/asn1"
 	"log"
 	"sync"
 
@@ -172,15 +174,39 @@ func (b BackendNamecoin) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Ob
 
 func (b BackendNamecoin) FindObjectsInit(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) error {
 	var attrTypes []uint
+	foundName := false
 
 	for _, attr := range temp {
+		if attr.Type == pkcs11.CKA_ISSUER || attr.Type == pkcs11.CKA_SUBJECT {
+			var dn1 pkix.RDNSequence
+			if rest, err := asn1.Unmarshal(attr.Value, &dn1); err != nil {
+				log.Printf("Error unmarshaling X.509 issuer or subject: %v\n", err)
+				continue
+			} else if len(rest) != 0 {
+				log.Printf("Error: trailing data after X.509 issuer or subject\n")
+				continue
+			}
+
+			var dn2 pkix.Name
+			dn2.FillFromRDNSequence(&dn1)
+
+			log.Printf("CommonName: %s\n", dn2.CommonName)
+		}
+
 		attrTypes = append(attrTypes, attr.Type)
 	}
 
-	if len(temp) == 0 {
+	if foundName {
+		// We found the name, so we can start the certificate lookup
+		// procedure.
+	} else if len(attrTypes) == 0 {
 		// The application is requesting a complete list of all
 		// Namecoin certificates.  We don't support this use case, so
-		// we'll pretend that no certificates were found.
+		// we'll pretend that no certificates were found.  This variant
+		// seems to show up from pkcs11-dump.
+	} else if len(attrTypes) == 1 && attrTypes[0] == pkcs11.CKA_CLASS {
+		// Ditto.  This variant seems to show up from Chromium on
+		// GNU/Linux.
 	} else {
 		log.Printf("Unknown FindObjectsInit template types: %v\n", attrTypes)
 	}
