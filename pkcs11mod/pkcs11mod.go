@@ -321,6 +321,14 @@ func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSIO
 	return fromError(err)
 }
 
+//export Go_CloseSession
+func Go_CloseSession(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+
+	err := backend.CloseSession(goSessionHandle)
+	return fromError(err)
+}
+
 //export Go_Login
 func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
 	if (pPin == nil) {

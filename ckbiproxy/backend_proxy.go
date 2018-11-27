@@ -56,6 +56,12 @@ func (b BackendProxy) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle
 	return sessionHandle, err
 }
 
+func (b BackendProxy) CloseSession(sh pkcs11.SessionHandle) error {
+	err := realBackend.CloseSession(sh)
+	log.Printf("Proxy pkcs11 backend CloseSession\n")
+	return err
+}
+
 func (b BackendProxy) Login(sh pkcs11.SessionHandle, userType uint, pin string) error {
 	err := realBackend.Login(sh, userType, pin)
 	log.Printf("Proxy pkcs11 backend Login\n")
