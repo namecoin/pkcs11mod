@@ -53,6 +53,10 @@ func (b BackendNamecoin) Login(sh pkcs11.SessionHandle, userType uint, pin strin
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
+func (b BackendNamecoin) Logout(sh pkcs11.SessionHandle) error {
+	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
+
 func (b BackendNamecoin) GetObjectSize(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle) (uint, error) {
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }

@@ -335,6 +335,14 @@ func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C
 	return fromError(err)
 }
 
+//export Go_Logout
+func Go_Logout(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+
+	err := backend.Logout(goSessionHandle)
+	return fromError(err)
+}
+
 //export Go_GetObjectSize
 func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pulSize C.CK_ULONG_PTR) C.CK_RV {
 	if (pulSize == nil) {

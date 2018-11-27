@@ -16,6 +16,7 @@ type Backend interface {
 	GetTokenInfo(uint) (pkcs11.TokenInfo, error)
 	OpenSession(uint, uint) (pkcs11.SessionHandle, error)
 	Login(pkcs11.SessionHandle, uint, string) error
+	Logout(pkcs11.SessionHandle) error
 	GetObjectSize(pkcs11.SessionHandle, pkcs11.ObjectHandle) (uint, error)
 	GetAttributeValue(pkcs11.SessionHandle, pkcs11.ObjectHandle, []*pkcs11.Attribute) ([]*pkcs11.Attribute, error)
 	FindObjectsInit(pkcs11.SessionHandle, []*pkcs11.Attribute) error
