@@ -20,4 +20,5 @@ type Backend interface {
 	GetAttributeValue(pkcs11.SessionHandle, pkcs11.ObjectHandle, []*pkcs11.Attribute) ([]*pkcs11.Attribute, error)
 	FindObjectsInit(pkcs11.SessionHandle, []*pkcs11.Attribute) error
 	FindObjects(pkcs11.SessionHandle, int) ([]pkcs11.ObjectHandle, bool, error)
+	FindObjectsFinal(pkcs11.SessionHandle) error
 }

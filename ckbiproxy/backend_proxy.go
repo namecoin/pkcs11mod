@@ -85,3 +85,9 @@ func (b BackendProxy) FindObjects(sh pkcs11.SessionHandle, max int) ([]pkcs11.Ob
 	log.Printf("Proxy pkcs11 backend FindObjects\n")
 	return objectHandles, deprecated, err
 }
+
+func (b BackendProxy) FindObjectsFinal(sh pkcs11.SessionHandle) error {
+	err := realBackend.FindObjectsFinal(sh)
+	log.Printf("Proxy pkcs11 backend FindObjectsFinal\n")
+	return err
+}

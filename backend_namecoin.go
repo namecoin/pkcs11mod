@@ -68,3 +68,7 @@ func (b BackendNamecoin) FindObjectsInit(sh pkcs11.SessionHandle, temp []*pkcs11
 func (b BackendNamecoin) FindObjects(sh pkcs11.SessionHandle, max int) ([]pkcs11.ObjectHandle, bool, error) {
 	return nil, false, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
+
+func (b BackendNamecoin) FindObjectsFinal(sh pkcs11.SessionHandle) error {
+	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}

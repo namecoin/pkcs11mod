@@ -410,6 +410,14 @@ func Go_FindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HAND
 	return fromError(err)
 }
 
+//export Go_FindObjectsFinal
+func Go_FindObjectsFinal(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
+	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
+
+	err := backend.FindObjectsFinal(goSessionHandle)
+	return fromError(err)
+}
+
 // The exported functions below this point are totally unused and are probably totally broken.
 
 //export Go_GetMechanismList
