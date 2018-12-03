@@ -2,7 +2,7 @@
 
 **We do these experiments so you don't have to.  Do not try this at home.  No really, don't.**
 
-Original code Copyright Namecoin Developers 2018.  ckibproxy and pkcs11mod directories, and loose files in root directory, are licensed under LGPLv3+.  moz directory is licensed under GPLv3+.
+Original code Copyright Namecoin Developers 2018.  ckibproxy, fedorarealckbiproxy, and pkcs11mod directories, and loose files in root directory, are licensed under LGPLv3+.  moz directory is licensed under GPLv3+.
 
 Based on:
 
