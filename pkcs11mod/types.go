@@ -24,6 +24,7 @@ static inline CK_VOID_PTR getAttributePval(CK_ATTRIBUTE_PTR a)
 import "C"
 
 import (
+	"fmt"
 	"unsafe"
 
 	"github.com/miekg/pkcs11"
@@ -118,4 +119,21 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 	}
 
 	return nil
+}
+
+func BytesToBool(arg []byte) (bool, error) {
+	if len(arg) != 1 {
+		return false, fmt.Errorf("Invalid length: %d", len(arg))
+	}
+
+	return fromCBBool(*(*C.CK_BBOOL)(unsafe.Pointer(&arg[0]))), nil
+}
+
+func BytesToULong(arg []byte) (uint, error) {
+	// TODO: use cgo to get the actual size of ULong instead of guessing "at least 4"
+	if len(arg) < 4 {
+		return 0, fmt.Errorf("Invalid length: %d", len(arg))
+	}
+
+	return uint(*(*C.CK_ULONG)(unsafe.Pointer(&arg[0]))), nil
 }
