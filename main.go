@@ -13,7 +13,7 @@ clean:
 package main
 
 import (
-	"github.com/namecoin/nctls.so/pkcs11mod"
+	"github.com/namecoin/ncp11/pkcs11mod"
 )
 
 func init() {

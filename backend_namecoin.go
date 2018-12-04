@@ -21,7 +21,7 @@ import (
 
 	"github.com/miekg/pkcs11"
 
-	"github.com/namecoin/nctls.so/pkcs11mod"
+	"github.com/namecoin/ncp11/pkcs11mod"
 )
 
 // These are NSS-specific pkcs11 constants.
@@ -124,7 +124,7 @@ func (b BackendNamecoin) GetTokenInfo(slotID uint) (pkcs11.TokenInfo, error) {
 	tokenInfo := pkcs11.TokenInfo{
 		Label: b.description,
 		ManufacturerID: b.manufacturer,
-		Model: "nctls.so",
+		Model: "ncp11",
 		SerialNumber: "1",
 		Flags: pkcs11.CKF_WRITE_PROTECTED,
 		MaxSessionCount: 0, // CK_EFFECTIVELY_INFINITE from pkcs11 spec (not in miekg/pkcs11)

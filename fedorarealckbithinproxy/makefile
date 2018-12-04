@@ -3,8 +3,8 @@ NAME ?= 'libfedorarealckbithinproxy.so'
 
 # build the shared object
 ${NAME}:
-	go generate github.com/namecoin/nctls.so/pkcs11mod
-	go get github.com/namecoin/nctls.so/pkcs11mod
+	go generate github.com/namecoin/ncp11/pkcs11mod
+	go get github.com/namecoin/ncp11/pkcs11mod
 	CGO_ENABLED=1 go build -buildmode c-shared -o ${NAME}
 
 # install libnamecoin.h and libnamecoin.so to /usr/local/namecoin/
