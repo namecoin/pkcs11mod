@@ -1,7 +1,0 @@
-{
-  "name": "namecoin_module",
-  "description": "NamecoinTLS PKCS#11 Module",
-  "type": "pkcs11",
-  "path": "/usr/local/namecoin/libnamecoin.so",
-  "allowed_extensions": ["namecointls"]
-}
