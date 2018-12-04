@@ -45,7 +45,7 @@ In this example, your PKCS#11 module will be named `libmypkcs11module.so`.
 
 pkcs11mod is primarily motivated by the use cases that Namecoin has; as such, the PKCS#11 features we've implemented so far are mostly the features used by applications such as NSS's certificate verifier and PKCS#11 modules such as NSS's CKBI (built-in certificates).  We don't have any objection to implementing the rest of the PKCS#11 spec (and we'd happily accept pull requests to this end), but it's unlikely that we'll spend much of our free time on features that aren't relevant to Namecoin.
 
-While we do plan to use pkcs11mod in production in the future, it is not yet used in production, and any horrifying bugs in pkcs11mod probably haven't yet been noticed by us yet.
+While we do plan to use pkcs11mod in production in the future, it is not yet used in production, and any horrifying bugs in pkcs11mod probably haven't been noticed by us yet.
 
 ## Credits / License
 
