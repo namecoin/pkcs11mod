@@ -21,7 +21,6 @@ package pkcs11mod
 #include <string.h>
 #include <unistd.h>
 #include "spec/pkcs11go.h"
-#include "namecoin.h"
 */
 import "C"
 
