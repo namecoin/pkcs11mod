@@ -11,5 +11,6 @@ spec:
 
 clean:
 	rm -vf libpkcs11_exported.a pkcs11_exported.o spec/*.h
+	rmdir spec || true
 
 all: clean libpkcs11_exported.a
