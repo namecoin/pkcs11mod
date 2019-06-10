@@ -1,7 +1,5 @@
 // Copyright 2018 Namecoin Developers LGPLv3+
 
-//go:generate make clean all
-
 package pkcs11mod
 
 /*
