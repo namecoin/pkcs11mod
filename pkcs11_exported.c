@@ -1,10 +1,12 @@
 // Based on https://github.com/Pkcs11Interop/pkcs11-mock/blob/d9adaaf39e0f41283cfa373597ed4b457ae28c39/src/pkcs11-mock.c
 
+#include <string.h>
+
 #include "spec/pkcs11go.h"
 
 CK_RV Go_Initialize();
 CK_RV Go_Finalize();
-CK_RV Go_GetInfo(CK_INFO_PTR);
+CK_RV Go_GetInfo(ckInfoPtr);
 CK_RV Go_GetSlotList(CK_BBOOL, CK_SLOT_ID_PTR, CK_ULONG_PTR);
 CK_RV Go_GetSlotInfo(CK_SLOT_ID, CK_SLOT_INFO_PTR);
 CK_RV Go_GetTokenInfo(CK_SLOT_ID, CK_TOKEN_INFO_PTR);
@@ -108,7 +110,22 @@ CK_DEFINE_FUNCTION(CK_RV, C_Finalize)(CK_VOID_PTR pReserved)
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetInfo)(CK_INFO_PTR pInfo)
 {
-	return Go_GetInfo(pInfo);
+	if (NULL == pInfo)
+		return CKR_ARGUMENTS_BAD;
+
+	// Handle packing compatibility for Go.
+	// Based on CK_RV GetInfo in pkcs11.go from miekg/pkcs11
+
+	ckInfo Go_Info;
+	CK_RV ret = Go_GetInfo(&Go_Info);
+
+	pInfo->cryptokiVersion = Go_Info.cryptokiVersion;
+	memcpy(pInfo->manufacturerID, Go_Info.manufacturerID, sizeof(pInfo->manufacturerID));
+	pInfo->flags = Go_Info.flags;
+	memcpy(pInfo->libraryDescription, Go_Info.libraryDescription, sizeof(pInfo->libraryDescription));
+	pInfo->libraryVersion = Go_Info.libraryVersion;
+
+	return ret;
 }
 
 

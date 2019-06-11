@@ -66,10 +66,7 @@ func Go_Finalize() C.CK_RV {
 }
 
 //export Go_GetInfo
-func Go_GetInfo(p C.CK_INFO_PTR) C.CK_RV {
-	// TODO: Packing on Windows may break in this function.  Should we be
-	// using C.ckInfo here?
-
+func Go_GetInfo(p C.ckInfoPtr) C.CK_RV {
 	if (p == nil) {
 		return C.CKR_ARGUMENTS_BAD;
 	}
