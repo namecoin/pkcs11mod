@@ -35,12 +35,22 @@ var logfile io.Closer
 var backend Backend
 
 func init() {
-	f, err := os.OpenFile(os.Getenv("HOME")+"/testlogfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	f, err := os.OpenFile(os.Getenv("HOME")+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
-		log.Fatalf("error opening file: %v", err)
+		log.Printf("error opening file (will try fallback): %v", err)
+		f, err = os.OpenFile("./pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	}
-	log.SetOutput(f)
-	logfile = f
+	if err != nil {
+		log.Printf("error opening file (will try fallback): %v", err)
+		f, err = os.OpenFile(os.Getenv("APPDATA")+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	}
+	if err != nil {
+		log.Printf("error opening file (will fallback to console logging): %v", err)
+	}
+	if err == nil {
+		log.SetOutput(f)
+		logfile = f
+	}
 	log.Println("Namecoin PKCS#11 module loading")
 }
 
