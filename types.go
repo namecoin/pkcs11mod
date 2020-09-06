@@ -20,6 +20,7 @@ static inline CK_VOID_PTR getAttributePval(CK_ATTRIBUTE_PTR a)
 {
 	return a->pValue;
 }
+
 */
 import "C"
 
@@ -87,7 +88,7 @@ func toTemplate(clist C.CK_ATTRIBUTE_PTR, size C.CK_ULONG) []*pkcs11.Attribute {
 	return l2
 }
 
-// toTemplate converts from a []*pkcs11.Attribute to a C style array that
+// fromTemplate converts from a []*pkcs11.Attribute to a C style array that
 // already contains a template as is passed to C_GetAttributeValue.
 func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error {
 	l1 := make([]C.CK_ATTRIBUTE_PTR, int(len(template)))
@@ -136,4 +137,37 @@ func BytesToULong(arg []byte) (uint, error) {
 	}
 
 	return uint(*(*C.CK_ULONG)(unsafe.Pointer(&arg[0]))), nil
+}
+
+// toMechanism converts from a C pointer to a *pkcs11.Mechanism.
+// It doesn't free the input object.
+func toMechanism(pMechanism C.CK_MECHANISM_PTR) *pkcs11.Mechanism {
+	switch pMechanism.mechanism {
+	case C.CKM_RSA_PKCS_PSS, C.CKM_SHA1_RSA_PKCS_PSS,
+		C.CKM_SHA224_RSA_PKCS_PSS, C.CKM_SHA256_RSA_PKCS_PSS,
+		C.CKM_SHA384_RSA_PKCS_PSS, C.CKM_SHA512_RSA_PKCS_PSS,
+		C.CKM_SHA3_256_RSA_PKCS_PSS, C.CKM_SHA3_384_RSA_PKCS_PSS,
+		C.CKM_SHA3_512_RSA_PKCS_PSS, C.CKM_SHA3_224_RSA_PKCS_PSS:
+		pssParam := C.CK_RSA_PKCS_PSS_PARAMS_PTR(pMechanism.pParameter)
+		goHashAlg := uint(pssParam.hashAlg)
+		goMgf := uint(pssParam.mgf)
+		goSLen := uint(pssParam.sLen)
+		return pkcs11.NewMechanism(uint(pMechanism.mechanism), pkcs11.NewPSSParams(goHashAlg, goMgf, goSLen))
+	case C.CKM_AES_GCM:
+		gcmParam := C.CK_GCM_PARAMS_PTR(pMechanism.pParameter)
+		goIV := C.GoBytes(unsafe.Pointer(gcmParam.pIv), C.int(gcmParam.ulIvLen))
+		goAad := C.GoBytes(unsafe.Pointer(gcmParam.pAAD), C.int(gcmParam.ulAADLen))
+		goTag := int(gcmParam.ulTagBits)
+		return pkcs11.NewMechanism(uint(pMechanism.mechanism), pkcs11.NewGCMParams(goIV, goAad, goTag))
+	case C.CKM_RSA_PKCS_OAEP:
+		oaepParams := C.CK_RSA_PKCS_OAEP_PARAMS_PTR(pMechanism.pParameter)
+		goHashAlg := uint(oaepParams.hashAlg)
+		goMgf := uint(oaepParams.mgf)
+		goSourceType := uint(oaepParams.source)
+		goSourceData := C.GoBytes(unsafe.Pointer(oaepParams.pSourceData), C.int(oaepParams.ulSourceDataLen))
+		return pkcs11.NewMechanism(uint(pMechanism.mechanism), pkcs11.NewOAEPParams(goHashAlg, goMgf, goSourceType, goSourceData))
+	default:
+		return pkcs11.NewMechanism(uint(pMechanism.mechanism), nil)
+	}
+	return nil
 }
