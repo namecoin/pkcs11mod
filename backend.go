@@ -37,23 +37,19 @@ type Backend interface {
 	FindObjectsFinal(pkcs11.SessionHandle) error
 	EncryptInit(pkcs11.SessionHandle, []*pkcs11.Mechanism, pkcs11.ObjectHandle) error
 	Encrypt(pkcs11.SessionHandle, []byte) ([]byte, error)
-	EncryptNull(pkcs11.SessionHandle, []byte) (int, error)
 	EncryptUpdate(pkcs11.SessionHandle, []byte) ([]byte, error)
 	EncryptFinal(pkcs11.SessionHandle) ([]byte, error)
 	DecryptInit(pkcs11.SessionHandle, []*pkcs11.Mechanism, pkcs11.ObjectHandle) error
 	Decrypt(pkcs11.SessionHandle, []byte) ([]byte, error)
-	DecryptNull(pkcs11.SessionHandle, []byte) (int, error)
 	DecryptUpdate(pkcs11.SessionHandle, []byte) ([]byte, error)
 	DecryptFinal(pkcs11.SessionHandle) ([]byte, error)
 	DigestInit(pkcs11.SessionHandle, []*pkcs11.Mechanism) error
 	Digest(pkcs11.SessionHandle, []byte) ([]byte, error)
-	DigestNull(pkcs11.SessionHandle, []byte) (int, error)
 	DigestUpdate(pkcs11.SessionHandle, []byte) error
 	DigestKey(pkcs11.SessionHandle, pkcs11.ObjectHandle) error
 	DigestFinal(pkcs11.SessionHandle) ([]byte, error)
 	SignInit(pkcs11.SessionHandle, []*pkcs11.Mechanism, pkcs11.ObjectHandle) error
 	Sign(pkcs11.SessionHandle, []byte) ([]byte, error)
-	SignNull(pkcs11.SessionHandle, []byte) (int, error)
 	SignUpdate(pkcs11.SessionHandle, []byte) error
 	SignFinal(pkcs11.SessionHandle) ([]byte, error)
 	SignRecoverInit(pkcs11.SessionHandle, []*pkcs11.Mechanism, pkcs11.ObjectHandle) error

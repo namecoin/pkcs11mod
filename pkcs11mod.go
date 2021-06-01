@@ -26,6 +26,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"sync"
 	"unsafe"
 
 	"github.com/miekg/pkcs11"
@@ -658,6 +659,10 @@ func Go_EncryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM
 	return fromError(err)
 }
 
+// TODO: Improve multithreaded performance if needed
+var encryptDataCache = map[pkcs11.SessionHandle][]byte{}
+var encryptDataCacheMutex sync.RWMutex
+
 //export Go_Encrypt
 func Go_Encrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pEncryptedData C.CK_BYTE_PTR, pulEncryptedDataLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pulEncryptedDataLen == nil {
@@ -667,20 +672,39 @@ func Go_Encrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLe
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goData := C.GoBytes(unsafe.Pointer(pData), C.int(ulDataLen))
 
+	var encryptedData []byte
+	var err error
+
 	if pEncryptedData == nil {
-		size, err := backend.EncryptNull(goSessionHandle, goData)
+		encryptedData, err = backend.Encrypt(goSessionHandle, goData)
 		if err != nil {
 			return fromError(err)
 		}
+
+		encryptDataCacheMutex.Lock()
+		encryptDataCache[goSessionHandle] = encryptedData
+		encryptDataCacheMutex.Unlock()
+
+		size := len(encryptedData)
 		*pulEncryptedDataLen = C.CK_ULONG(size)
 		return fromError(nil)
 	}
 
 	goEncryptedData := (*[1 << 30]byte)(unsafe.Pointer(pEncryptedData))[:*pulEncryptedDataLen:*pulEncryptedDataLen]
 
-	encryptedData, err := backend.Encrypt(goSessionHandle, goData)
-	if err != nil {
-		return fromError(err)
+	var ok bool
+
+	encryptDataCacheMutex.Lock()
+	encryptedData, ok = encryptDataCache[goSessionHandle]
+	if ok {
+		delete(encryptDataCache, goSessionHandle)
+		encryptDataCacheMutex.Unlock()
+	} else {
+		encryptDataCacheMutex.Unlock()
+		encryptedData, err = backend.Encrypt(goSessionHandle, goData)
+		if err != nil {
+			return fromError(err)
+		}
 	}
 
 	if int(*pulEncryptedDataLen) < len(encryptedData) {
@@ -753,6 +777,10 @@ func Go_DecryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM
 	return fromError(err)
 }
 
+// TODO: Improve multithreaded performance if needed
+var decryptDataCache = map[pkcs11.SessionHandle][]byte{}
+var decryptDataCacheMutex sync.RWMutex
+
 //export Go_Decrypt
 func Go_Decrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR, ulEncryptedDataLen C.CK_ULONG, pData C.CK_BYTE_PTR, pulDataLen C.CK_ULONG_PTR) C.CK_RV {
 	if pEncryptedData == nil || pulDataLen == nil {
@@ -762,20 +790,39 @@ func Go_Decrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR,
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goEncryptedData := C.GoBytes(unsafe.Pointer(pEncryptedData), C.int(ulEncryptedDataLen))
 
+	var data []byte
+	var err error
+
 	if pData == nil {
-		size, err := backend.DecryptNull(goSessionHandle, goEncryptedData)
+		data, err = backend.Decrypt(goSessionHandle, goEncryptedData)
 		if err != nil {
 			return fromError(err)
 		}
+
+		decryptDataCacheMutex.Lock()
+		decryptDataCache[goSessionHandle] = data
+		decryptDataCacheMutex.Unlock()
+
+		size := len(data)
 		*pulDataLen = C.CK_ULONG(size)
 		return fromError(nil)
 	}
 
 	goData := (*[1 << 30]byte)(unsafe.Pointer(pData))[:*pulDataLen:*pulDataLen]
 
-	data, err := backend.Decrypt(goSessionHandle, goEncryptedData)
-	if err != nil {
-		return fromError(err)
+	var ok bool
+
+	decryptDataCacheMutex.Lock()
+	data, ok = decryptDataCache[goSessionHandle]
+	if ok {
+		delete(decryptDataCache, goSessionHandle)
+		decryptDataCacheMutex.Unlock()
+	} else {
+		decryptDataCacheMutex.Unlock()
+		data, err = backend.Decrypt(goSessionHandle, goEncryptedData)
+		if err != nil {
+			return fromError(err)
+		}
 	}
 
 	if int(*pulDataLen) < len(data) {
@@ -846,6 +893,10 @@ func Go_DigestInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	return fromError(err)
 }
 
+// TODO: Improve multithreaded performance if needed
+var digestDataCache = map[pkcs11.SessionHandle][]byte{}
+var digestDataCacheMutex sync.RWMutex
+
 //export Go_Digest
 func Go_Digest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pDigest C.CK_BYTE_PTR, pulDigestLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pulDigestLen == nil {
@@ -855,20 +906,38 @@ func Go_Digest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goData := C.GoBytes(unsafe.Pointer(pData), C.int(ulDataLen))
 
+	var digest []byte
+	var err error
+
 	if pDigest == nil {
-		size, err := backend.DigestNull(goSessionHandle, goData)
+		digest, err = backend.Digest(goSessionHandle, goData)
 		if err != nil {
 			return fromError(err)
 		}
 
+		digestDataCacheMutex.Lock()
+		digestDataCache[goSessionHandle] = digest
+		digestDataCacheMutex.Unlock()
+
+		size := len(digest)
 		*pulDigestLen = C.CK_ULONG(size)
 		return fromError(nil)
 	}
 	goDigest := (*[1 << 30]byte)(unsafe.Pointer(pDigest))[:*pulDigestLen:*pulDigestLen]
 
-	digest, err := backend.Digest(goSessionHandle, goData)
-	if err != nil {
-		return fromError(err)
+	var ok bool
+
+	digestDataCacheMutex.Lock()
+	digest, ok = digestDataCache[goSessionHandle]
+	if ok {
+		delete(digestDataCache, goSessionHandle)
+		digestDataCacheMutex.Unlock()
+	} else {
+		digestDataCacheMutex.Unlock()
+		digest, err = backend.Digest(goSessionHandle, goData)
+		if err != nil {
+			return fromError(err)
+		}
 	}
 
 	if int(*pulDigestLen) < len(digest) {
@@ -939,6 +1008,10 @@ func Go_SignInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PT
 	return fromError(err)
 }
 
+// TODO: Improve multithreaded performance if needed
+var signDataCache = map[pkcs11.SessionHandle][]byte{}
+var signDataCacheMutex sync.RWMutex
+
 //export Go_Sign
 func Go_Sign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pSignature C.CK_BYTE_PTR, pulSignatureLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pulSignatureLen == nil {
@@ -948,19 +1021,38 @@ func Go_Sign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goData := C.GoBytes(unsafe.Pointer(pData), C.int(ulDataLen))
 
+	var signature []byte
+	var err error
+
 	if pSignature == nil {
-		size, err := backend.SignNull(goSessionHandle, goData)
+		signature, err = backend.Sign(goSessionHandle, goData)
 		if err != nil {
 			return fromError(err)
 		}
+
+		signDataCacheMutex.Lock()
+		signDataCache[goSessionHandle] = signature
+		signDataCacheMutex.Unlock()
+
+		size := len(signature)
 		*pulSignatureLen = C.CK_ULONG(size)
 		return fromError(nil)
 	}
 	goSignature := (*[1 << 30]byte)(unsafe.Pointer(pSignature))[:*pulSignatureLen:*pulSignatureLen]
 
-	signature, err := backend.Sign(goSessionHandle, goData)
-	if err != nil {
-		return fromError(err)
+	var ok bool
+
+	signDataCacheMutex.Lock()
+	signature, ok = signDataCache[goSessionHandle]
+	if ok {
+		delete(signDataCache, goSessionHandle)
+		signDataCacheMutex.Unlock()
+	} else {
+		signDataCacheMutex.Unlock()
+		signature, err = backend.Sign(goSessionHandle, goData)
+		if err != nil {
+			return fromError(err)
+		}
 	}
 
 	if int(*pulSignatureLen) < len(signature) {
