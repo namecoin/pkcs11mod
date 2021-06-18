@@ -22,8 +22,10 @@ task:
     - source testdata/move_to_gopath.bash
   matrix:
     - env:
+        GOOS: "linux"
         GOARCH: "amd64"
     - env:
+        GOOS: "linux"
         GOARCH: "386"
         CFLAGS: "-m32"
       install_script:
@@ -31,6 +33,7 @@ task:
         - apt-get update
         - apt-get install -y gcc-multilib libc6-dev:i386
     - env:
+        GOOS: "linux"
         GOARCH: "arm"
         CC: "arm-linux-gnueabihf-gcc"
       install_script:
@@ -38,6 +41,7 @@ task:
         - apt-get update
         - apt-get install -y gcc-arm-linux-gnueabihf libc6-dev:armhf
     - env:
+        GOOS: "linux"
         GOARCH: "arm64"
         CC: "aarch64-linux-gnu-gcc"
       install_script:
@@ -45,12 +49,27 @@ task:
         - apt-get update
         - apt-get install -y gcc-aarch64-linux-gnu libc6-dev:arm64
     - env:
+        GOOS: "linux"
         GOARCH: "ppc64le"
         CC: "powerpc64le-linux-gnu-gcc"
       install_script:
         - dpkg --add-architecture ppc64el
         - apt-get update
         - apt-get install -y gcc-powerpc64le-linux-gnu libc6-dev:ppc64el
+    - env:
+        GOOS: "windows"
+        GOARCH: "amd64"
+        CC: "x86_64-w64-mingw32-gcc-win32"
+      install_script:
+        - apt-get update
+        - apt-get install -y gcc-mingw-w64-x86-64
+    - env:
+        GOOS: "windows"
+        GOARCH: "386"
+        CC: "i686-w64-mingw32-gcc-win32"
+      install_script:
+        - apt-get update
+        - apt-get install -y gcc-mingw-w64-i686
   matrix:
     - env:
         GO111MODULE: "off"
@@ -79,7 +98,6 @@ task:
     path: "dist/*"
   env:
     GO_VERSION: latest
-    GOOS: linux
 
 # TODO: Add Windows unit tests
 
