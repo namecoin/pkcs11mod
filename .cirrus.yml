@@ -99,6 +99,21 @@ task:
   env:
     GO_VERSION: latest
 
+task:
+  name: "tstclnt"
+  container:
+    image: fedora:latest
+    cpu: 1
+    memory: 1G
+  install_script:
+    - dnf install -y nss-tools
+    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+  test_script:
+    - export PATH=$PATH:/usr/lib64/nss/unsupported-tools
+    - testdata/ci-tstclnt-tests.bash
+  depends_on:
+    - "Compile Go latest linux amd64"
+
 # TODO: Add Windows unit tests
 
 # TODO: "Testing config parsing" from travis.bash
