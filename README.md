@@ -49,36 +49,7 @@ Option B: Using Go build commands with Go modules (works on any platform with Ba
 
 ## Example usage
 
-First, build pkcs11mod (see above section).
-
-Then, create a Go program like this:
-
-~~~
-package main
-
-import (
-	"github.com/miekg/pkcs11"
-	"github.com/namecoin/pkcs11mod"
-)
-
-func init() {
-	backend := pkcs11.New("/usr/lib64/nss/libnssckbi.so")
-
-	pkcs11mod.SetBackend(backend)
-}
-
-func main() {}
-~~~
-
-In this case, we're simply passing through all PKCS#11 calls to the Mozilla NSS CKBI PKCS#11 module, but you can set `backend` to any struct that implements the same API as `pkcs11.Ctx`.
-
-Then, build your program like this:
-
-~~~
-CGO_ENABLED=1 go build -buildmode c-shared -o libmypkcs11module.so
-~~~
-
-In this example, your PKCS#11 module will be named `libmypkcs11module.so`.
+See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.
 
 ## Development focus/status
 
