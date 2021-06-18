@@ -1,0 +1,72 @@
+# Attention: if you submit an improvement for a Namecoin Cirrus config, please
+# file a GitHub issue about it at the namecoin/meta repo, so that we can make
+# sure it propagates to all the other Namecoin repos.  Thanks!
+
+task:
+  name: ShellCheck
+  container:
+    image: fedora:latest
+    cpu: 1
+    memory: 1G
+  install_script: dnf install -y ShellCheck
+  lint_script: bash testdata/shellcheck.bash
+
+task:
+  name: "Compile Go $GO_VERSION $GOOS $GOARCH$MODULES_NAME"
+  alias: Compile
+  container:
+    image: golang:$GO_VERSION
+    cpu: 1
+    memory: 1G
+  path_script:
+    - source testdata/move_to_gopath.bash
+  matrix:
+    - env:
+        GO111MODULE: "off"
+        MODULES_NAME: " Modules Off"
+      fetch_script:
+        - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+        - go get -tags "$GOX_TAGS" -d -v -t github.com/$CIRRUS_REPO_FULL_NAME/...
+        - go generate github.com/$CIRRUS_REPO_FULL_NAME/...
+        - go get -tags "$GOX_TAGS" -d -v -t github.com/$CIRRUS_REPO_FULL_NAME/...
+    - env:
+        MODULES_NAME: ""
+      fetch_script:
+        - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+        - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
+        - go mod tidy
+        - go generate ./...
+        - go mod tidy
+  build_script:
+    - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+    - mkdir -p dist
+    - cd pkcs11proxy
+    - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/libpkcs11proxy.so
+  dist_script:
+    - mv $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"/dist ./dist
+  binaries_artifacts:
+    path: "dist/*"
+  env:
+    GO_VERSION: latest
+    GOARCH: amd64
+    GOOS: linux
+
+# TODO: Add Windows unit tests
+
+# TODO: "Testing config parsing" from travis.bash
+
+# TODO: Add multiple Go versions to Gox builds and unit tests
+
+# TODO: Add debug stripping and path stripping to Gox for repro builds
+
+# TODO: Re-add darwin/386 for old Go versions where it was supported
+
+# TODO: Fix upload repo for tagged commits (don't use Nightly repo for this)
+
+# TODO: Skip Signify and Release if it's not applicable
+
+# TODO: Signify Nightlies
+
+# TODO: IRC notifications on failure
+
+# TODO: Cron
