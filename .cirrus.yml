@@ -30,6 +30,27 @@ task:
         - dpkg --add-architecture i386
         - apt-get update
         - apt-get install -y gcc-multilib libc6-dev:i386
+    - env:
+        GOARCH: "arm"
+        CC: "arm-linux-gnueabihf-gcc"
+      install_script:
+        - dpkg --add-architecture armhf
+        - apt-get update
+        - apt-get install -y gcc-arm-linux-gnueabihf libc6-dev:armhf
+    - env:
+        GOARCH: "arm64"
+        CC: "aarch64-linux-gnu-gcc"
+      install_script:
+        - dpkg --add-architecture arm64
+        - apt-get update
+        - apt-get install -y gcc-aarch64-linux-gnu libc6-dev:arm64
+    - env:
+        GOARCH: "ppc64le"
+        CC: "powerpc64le-linux-gnu-gcc"
+      install_script:
+        - dpkg --add-architecture ppc64el
+        - apt-get update
+        - apt-get install -y gcc-powerpc64le-linux-gnu libc6-dev:ppc64el
   matrix:
     - env:
         GO111MODULE: "off"
