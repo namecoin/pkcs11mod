@@ -22,6 +22,16 @@ task:
     - source testdata/move_to_gopath.bash
   matrix:
     - env:
+        GOARCH: "amd64"
+    - env:
+        GOARCH: "386"
+        CFLAGS: "-m32"
+      install_script:
+        - dpkg --add-architecture i386
+        - apt-get update
+        - apt-get install -y gcc-multilib libc6-dev:i386
+  matrix:
+    - env:
         GO111MODULE: "off"
         MODULES_NAME: " Modules Off"
       fetch_script:
@@ -48,7 +58,6 @@ task:
     path: "dist/*"
   env:
     GO_VERSION: latest
-    GOARCH: amd64
     GOOS: linux
 
 # TODO: Add Windows unit tests
