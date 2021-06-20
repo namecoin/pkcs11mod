@@ -92,6 +92,8 @@ task:
     - mkdir -p dist
     - cd pkcs11proxy
     - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/libpkcs11proxy.so
+    - cd ../p11proxy
+    - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/libp11proxy.so
   dist_script:
     - mv $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"/dist ./dist
   binaries_artifacts:
