@@ -26,6 +26,11 @@ static inline CK_VOID_PTR getMechanismParam(CK_MECHANISM_PTR m)
 	return m->pParameter;
 }
 
+static inline CK_VOID_PTR getOAEPSourceData(CK_RSA_PKCS_OAEP_PARAMS_PTR params)
+{
+	return params->pSourceData;
+}
+
 */
 import "C"
 
@@ -169,7 +174,7 @@ func toMechanism(pMechanism C.CK_MECHANISM_PTR) *pkcs11.Mechanism {
 		goHashAlg := uint(oaepParams.hashAlg)
 		goMgf := uint(oaepParams.mgf)
 		goSourceType := uint(oaepParams.source)
-		goSourceData := C.GoBytes(unsafe.Pointer(oaepParams.pSourceData), C.int(oaepParams.ulSourceDataLen))
+		goSourceData := C.GoBytes(unsafe.Pointer(C.getOAEPSourceData(oaepParams)), C.int(oaepParams.ulSourceDataLen))
 		return pkcs11.NewMechanism(uint(pMechanism.mechanism), pkcs11.NewOAEPParams(goHashAlg, goMgf, goSourceType, goSourceData))
 	default:
 		return pkcs11.NewMechanism(uint(pMechanism.mechanism), nil)
