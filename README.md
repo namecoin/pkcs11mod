@@ -49,7 +49,11 @@ Option B: Using Go build commands with Go modules (works on any platform with Ba
 
 ## Example usage
 
-See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.
+See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level p11mod library (see subdirectory) instead of using pkcs11mod directly (see next section).
+
+## Should I use pkcs11mod or p11mod?
+
+p11mod is much easier to use and more idiomatic to Go.  However, p11mod implements less of the PKCS#11 specification than pkcs11mod.  If you only need functionality that p11mod has, you will probably find p11mod more pleasant to work with.  On the other hand, p11mod is much newer and less battle-tested, so you may find pkcs11mod more reliable.
 
 ## Development focus/status
 
@@ -59,7 +63,7 @@ While we do plan to use pkcs11mod in production in the future, it is not yet use
 
 ## Credits / License
 
-Original code Copyright Namecoin Developers 2018.  Licensed under LGPLv3+.
+Original code Copyright Namecoin Developers 2018-2021.  Licensed under LGPLv3+.
 
 Based on:
 
