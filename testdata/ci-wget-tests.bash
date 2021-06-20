@@ -38,3 +38,14 @@ testdata/assert-proxy-log.bash present
 
 testdata/try-wget-connect.bash untrusted-root.badssl.com fail "doesn't have a known issuer"
 testdata/assert-proxy-log.bash present
+
+echo "===== p11-kit-trust CKBI via p11proxy ====="
+
+export P11PROXY_CKBI_TARGET=/usr/lib64/pkcs11/p11-kit-trust.orig.so
+cp libp11proxy.so /usr/lib64/pkcs11/p11-kit-trust.so
+
+testdata/try-wget-connect.bash www.namecoin.org success ""
+testdata/assert-proxy-log.bash present
+
+testdata/try-wget-connect.bash untrusted-root.badssl.com fail "doesn't have a known issuer"
+testdata/assert-proxy-log.bash present
