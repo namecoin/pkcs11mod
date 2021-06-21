@@ -100,17 +100,16 @@ task:
     GO_VERSION: latest
 
 task:
-  name: "tstclnt"
+  name: "firefox"
   container:
     image: fedora:latest
     cpu: 1
     memory: 1G
   install_script:
-    - dnf install -y nss-tools
+    - dnf install -y firefox
     - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
   test_script:
-    - export PATH=$PATH:/usr/lib64/nss/unsupported-tools
-    - testdata/ci-tstclnt-tests.bash
+    - testdata/ci-firefox-tests.bash
   depends_on:
     - "Compile Go latest linux amd64"
 
@@ -129,16 +128,31 @@ task:
     - "Compile Go latest linux amd64"
 
 task:
-  name: "firefox"
+  name: "pkcs11-dump"
   container:
     image: fedora:latest
     cpu: 1
     memory: 1G
   install_script:
-    - dnf install -y firefox
+    - dnf install -y pkcs11-dump diffutils
     - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
   test_script:
-    - testdata/ci-firefox-tests.bash
+    - testdata/ci-pkcs11-dump-tests.bash
+  depends_on:
+    - "Compile Go latest linux amd64"
+
+task:
+  name: "tstclnt"
+  container:
+    image: fedora:latest
+    cpu: 1
+    memory: 1G
+  install_script:
+    - dnf install -y nss-tools
+    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+  test_script:
+    - export PATH=$PATH:/usr/lib64/nss/unsupported-tools
+    - testdata/ci-tstclnt-tests.bash
   depends_on:
     - "Compile Go latest linux amd64"
 
@@ -153,20 +167,6 @@ task:
     - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
   test_script:
     - testdata/ci-wget-tests.bash
-  depends_on:
-    - "Compile Go latest linux amd64"
-
-task:
-  name: "pkcs11-dump"
-  container:
-    image: fedora:latest
-    cpu: 1
-    memory: 1G
-  install_script:
-    - dnf install -y pkcs11-dump diffutils
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
-  test_script:
-    - testdata/ci-pkcs11-dump-tests.bash
   depends_on:
     - "Compile Go latest linux amd64"
 
