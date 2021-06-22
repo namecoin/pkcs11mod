@@ -24,38 +24,25 @@ import "C"
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
-	"os"
 	"unsafe"
 
 	"github.com/miekg/pkcs11"
 )
 
-var logfile io.Closer
-var backend Backend
-
 func init() {
-	f, err := os.OpenFile(os.Getenv("HOME")+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
-	if err != nil {
-		log.Printf("error opening file (will try fallback): %v", err)
-		f, err = os.OpenFile("./pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
-	}
-	if err != nil {
-		log.Printf("error opening file (will try fallback): %v", err)
-		f, err = os.OpenFile(os.Getenv("APPDATA")+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
-	}
-	if err != nil {
-		log.Printf("error opening file (will fallback to console logging): %v", err)
-	}
-	if err == nil {
-		log.SetOutput(f)
-		logfile = f
-	}
-	log.Println("Namecoin PKCS#11 module loading")
+	log.SetOutput(ioutil.Discard)
 }
+
+var backend Backend
 
 func SetBackend(b Backend) {
 	backend = b
+}
+
+func SetLogOutput(w io.Writer) {
+	log.SetOutput(w)
 }
 
 //export GoLog
@@ -77,8 +64,8 @@ func Go_Finalize() C.CK_RV {
 
 //export Go_GetInfo
 func Go_GetInfo(p C.ckInfoPtr) C.CK_RV {
-	if (p == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if p == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	info, err := backend.GetInfo()
@@ -122,8 +109,8 @@ func Go_GetInfo(p C.ckInfoPtr) C.CK_RV {
 
 //export Go_GetSlotList
 func Go_GetSlotList(tokenPresent C.CK_BBOOL, pSlotList C.CK_SLOT_ID_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
-	if (pulCount == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pulCount == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goTokenPresent := fromCBBool(tokenPresent)
@@ -156,8 +143,8 @@ func Go_GetSlotList(tokenPresent C.CK_BBOOL, pSlotList C.CK_SLOT_ID_PTR, pulCoun
 
 //export Go_GetSlotInfo
 func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
-	if (pInfo == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pInfo == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSlotID := uint(slotID)
@@ -208,8 +195,8 @@ func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
 
 //export Go_GetTokenInfo
 func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
-	if (pInfo == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pInfo == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSlotID := uint(slotID)
@@ -308,8 +295,8 @@ func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
 
 //export Go_GetMechanismList
 func Go_GetMechanismList(slotID C.CK_SLOT_ID, pMechanismList C.CK_MECHANISM_TYPE_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
-	if (pulCount == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pulCount == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSlotID := uint(slotID)
@@ -342,8 +329,8 @@ func Go_GetMechanismList(slotID C.CK_SLOT_ID, pMechanismList C.CK_MECHANISM_TYPE
 
 //export Go_OpenSession
 func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
-	if (phSession == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if phSession == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSlotID := uint(slotID)
@@ -369,8 +356,8 @@ func Go_CloseSession(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 
 //export Go_Login
 func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
-	if (pPin == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pPin == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
@@ -391,8 +378,8 @@ func Go_Logout(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 
 //export Go_GetObjectSize
 func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pulSize C.CK_ULONG_PTR) C.CK_RV {
-	if (pulSize == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pulSize == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
@@ -410,8 +397,8 @@ func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJEC
 
 //export Go_GetAttributeValue
 func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
-	if (pTemplate == nil && ulCount > 0) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pTemplate == nil && ulCount > 0 {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
@@ -429,8 +416,8 @@ func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_O
 
 //export Go_FindObjectsInit
 func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
-	if (pTemplate == nil && ulCount > 0) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pTemplate == nil && ulCount > 0 {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
@@ -445,11 +432,11 @@ func Go_FindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HAND
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goMax := int(ulMaxObjectCount)
 
-	if (phObject == nil && goMax > 0) {
-		return C.CKR_ARGUMENTS_BAD;
+	if phObject == nil && goMax > 0 {
+		return C.CKR_ARGUMENTS_BAD
 	}
-	if (pulObjectCount == nil) {
-		return C.CKR_ARGUMENTS_BAD;
+	if pulObjectCount == nil {
+		return C.CKR_ARGUMENTS_BAD
 	}
 
 	objectHandles, _, err := backend.FindObjects(goSessionHandle, goMax)
