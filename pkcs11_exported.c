@@ -11,16 +11,63 @@ CK_RV Go_GetSlotList(CK_BBOOL, CK_SLOT_ID_PTR, CK_ULONG_PTR);
 CK_RV Go_GetSlotInfo(CK_SLOT_ID, CK_SLOT_INFO_PTR);
 CK_RV Go_GetTokenInfo(CK_SLOT_ID, CK_TOKEN_INFO_PTR);
 CK_RV Go_GetMechanismList(CK_SLOT_ID, CK_MECHANISM_TYPE_PTR, CK_ULONG_PTR);
+CK_RV Go_GetMechanismInfo(CK_SLOT_ID, CK_MECHANISM_TYPE, CK_MECHANISM_INFO_PTR);
+CK_RV Go_InitPIN(CK_SESSION_HANDLE, CK_UTF8CHAR_PTR, CK_ULONG);
+CK_RV Go_SetPIN(CK_SESSION_HANDLE, CK_UTF8CHAR_PTR, CK_ULONG, CK_UTF8CHAR_PTR, CK_ULONG);
 CK_RV Go_OpenSession(CK_SLOT_ID, CK_FLAGS, CK_SESSION_HANDLE_PTR);
 CK_RV Go_CloseSession(CK_SESSION_HANDLE);
+CK_RV Go_CloseAllSessions(CK_SLOT_ID);
+CK_RV Go_GetSessionInfo(CK_SESSION_HANDLE,CK_SESSION_INFO_PTR);
+CK_RV Go_GetOperationState(CK_SESSION_HANDLE , CK_BYTE_PTR , CK_ULONG_PTR);
+CK_RV Go_SetOperationState(CK_SESSION_HANDLE, CK_BYTE_PTR , CK_ULONG , CK_OBJECT_HANDLE , CK_OBJECT_HANDLE );
 CK_RV Go_Login(CK_SESSION_HANDLE, CK_USER_TYPE, CK_UTF8CHAR_PTR, CK_ULONG);
 CK_RV Go_Logout(CK_SESSION_HANDLE);
+CK_RV Go_CreateObject(CK_SESSION_HANDLE, CK_ATTRIBUTE_PTR , CK_ULONG , CK_OBJECT_HANDLE_PTR );
+CK_RV Go_CopyObject(CK_SESSION_HANDLE, CK_OBJECT_HANDLE ,CK_ATTRIBUTE_PTR , CK_ULONG ,CK_OBJECT_HANDLE_PTR );
+CK_RV Go_DestroyObject(CK_SESSION_HANDLE, CK_OBJECT_HANDLE );
 CK_RV Go_GetObjectSize(CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ULONG_PTR);
 CK_RV Go_GetAttributeValue(CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR, CK_ULONG);
+CK_RV Go_SetAttributeValue(CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR, CK_ULONG);
 CK_RV Go_FindObjectsInit(CK_SESSION_HANDLE, CK_ATTRIBUTE_PTR, CK_ULONG);
 CK_RV Go_FindObjects(CK_SESSION_HANDLE, CK_OBJECT_HANDLE_PTR, CK_ULONG, CK_ULONG_PTR);
 CK_RV Go_FindObjectsFinal(CK_SESSION_HANDLE);
-
+CK_RV Go_EncryptInit(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE);
+CK_RV Go_Encrypt(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_EncryptUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_EncryptFinal(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DecryptInit(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE);
+CK_RV Go_Decrypt(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DecryptUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DecryptFinal(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DigestInit(CK_SESSION_HANDLE,CK_MECHANISM_PTR);
+CK_RV Go_Digest(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DigestUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG);
+CK_RV Go_DigestKey(CK_SESSION_HANDLE,CK_OBJECT_HANDLE);
+CK_RV Go_DigestFinal(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_SignInit(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE);
+CK_RV Go_SignUpdate(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG);
+CK_RV Go_Sign(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR);
+CK_RV Go_SignFinal(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR);
+CK_RV Go_SignRecoverInit(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE);
+CK_RV Go_SignRecover(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_VerifyInit(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE);
+CK_RV Go_Verify(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG);
+CK_RV Go_VerifyUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG);
+CK_RV Go_VerifyFinal(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG);
+CK_RV Go_VerifyRecoverInit(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE);
+CK_RV Go_VerifyRecover(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DigestEncryptUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DecryptDigestUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_SignEncryptUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_DecryptVerifyUpdate(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_GenerateKey(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_ATTRIBUTE_PTR,CK_ULONG,CK_OBJECT_HANDLE_PTR);
+CK_RV Go_GenerateKeyPair(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_ATTRIBUTE_PTR,CK_ULONG,CK_ATTRIBUTE_PTR,CK_ULONG,CK_OBJECT_HANDLE_PTR,CK_OBJECT_HANDLE_PTR);
+CK_RV Go_WrapKey(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE,CK_OBJECT_HANDLE,CK_BYTE_PTR,CK_ULONG_PTR);
+CK_RV Go_UnwrapKey(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE,CK_BYTE_PTR,CK_ULONG,CK_ATTRIBUTE_PTR,CK_ULONG,CK_OBJECT_HANDLE_PTR);
+CK_RV Go_DeriveKey(CK_SESSION_HANDLE,CK_MECHANISM_PTR,CK_OBJECT_HANDLE,CK_ATTRIBUTE_PTR,CK_ULONG,CK_OBJECT_HANDLE_PTR);
+CK_RV Go_SeedRandom(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG);
+CK_RV Go_GenerateRandom(CK_SESSION_HANDLE,CK_BYTE_PTR,CK_ULONG);
+CK_RV Go_WaitForSlotEvent(CK_FLAGS,CK_SLOT_ID_PTR,CK_VOID_PTR);
 void GoLog(const char*);
 
 CK_FUNCTION_LIST pkcs11_functions = 
@@ -166,29 +213,25 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetMechanismList)(CK_SLOT_ID slotID, CK_MECHANISM_TY
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetMechanismInfo)(CK_SLOT_ID slotID, CK_MECHANISM_TYPE type, CK_MECHANISM_INFO_PTR pInfo)
 {
-	GoLog("C_GetMechanismInfo");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GetMechanismInfo(slotID, type, pInfo);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_InitToken)(CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel)
 {
-	GoLog("C_InitToken");
 	return CKR_FUNCTION_NOT_SUPPORTED;
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_InitPIN)(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen)
 {
-	GoLog("C_InitPIN");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_InitPIN(hSession, pPin, ulPinLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SetPIN)(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen)
 {
-	GoLog("C_SetPIN");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SetPIN(hSession, pOldPin, ulOldLen, pNewPin, ulNewLen);
 }
 
 
@@ -206,30 +249,26 @@ CK_DEFINE_FUNCTION(CK_RV, C_CloseSession)(CK_SESSION_HANDLE hSession)
 
 CK_DEFINE_FUNCTION(CK_RV, C_CloseAllSessions)(CK_SLOT_ID slotID)
 {	
-	GoLog("C_CloseAllSessions");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_CloseAllSessions(slotID);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetSessionInfo)(CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo)
 {
-	GoLog("C_GetSessionInfo");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GetSessionInfo(hSession, pInfo);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GetOperationState)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pOperationState, CK_ULONG_PTR pulOperationStateLen)
 {
-	GoLog("C_GetOperationState");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GetOperationState(hSession, pOperationState, pulOperationStateLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SetOperationState)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pOperationState, CK_ULONG ulOperationStateLen, CK_OBJECT_HANDLE hEncryptionKey, CK_OBJECT_HANDLE hAuthenticationKey)
 {
 
-	GoLog("C_SetOperationState");
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SetOperationState(hSession, pOperationState, ulOperationStateLen, hEncryptionKey, hAuthenticationKey);
 }
 
 
@@ -247,19 +286,19 @@ CK_DEFINE_FUNCTION(CK_RV, C_Logout)(CK_SESSION_HANDLE hSession)
 
 CK_DEFINE_FUNCTION(CK_RV, C_CreateObject)(CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phObject)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_CreateObject(hSession, pTemplate, ulCount, phObject);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_CopyObject)(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phNewObject)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_CopyObject(hSession, hObject, pTemplate, ulCount, phNewObject);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DestroyObject)(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DestroyObject(hSession, hObject);
 }
 
 
@@ -277,7 +316,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetAttributeValue)(CK_SESSION_HANDLE hSession, CK_OB
 
 CK_DEFINE_FUNCTION(CK_RV, C_SetAttributeValue)(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SetAttributeValue(hSession, hObject, pTemplate, ulCount);
 }
 
 
@@ -301,217 +340,217 @@ CK_DEFINE_FUNCTION(CK_RV, C_FindObjectsFinal)(CK_SESSION_HANDLE hSession)
 
 CK_DEFINE_FUNCTION(CK_RV, C_EncryptInit)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_EncryptInit(hSession, pMechanism, hKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_Encrypt)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pEncryptedData, CK_ULONG_PTR pulEncryptedDataLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_Encrypt(hSession, pData, ulDataLen, pEncryptedData, pulEncryptedDataLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_EncryptUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen, CK_BYTE_PTR pEncryptedPart, CK_ULONG_PTR pulEncryptedPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_EncryptUpdate(hSession, pPart, ulPartLen, pEncryptedPart, pulEncryptedPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_EncryptFinal)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pLastEncryptedPart, CK_ULONG_PTR pulLastEncryptedPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_EncryptFinal(hSession, pLastEncryptedPart, pulLastEncryptedPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DecryptInit)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DecryptInit(hSession, pMechanism, hKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_Decrypt)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedData, CK_ULONG ulEncryptedDataLen, CK_BYTE_PTR pData, CK_ULONG_PTR pulDataLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_Decrypt(hSession, pEncryptedData, ulEncryptedDataLen, pData, pulDataLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DecryptUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedPart, CK_ULONG ulEncryptedPartLen, CK_BYTE_PTR pPart, CK_ULONG_PTR pulPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DecryptUpdate(hSession, pEncryptedPart, ulEncryptedPartLen, pPart, pulPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DecryptFinal)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pLastPart, CK_ULONG_PTR pulLastPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DecryptFinal(hSession, pLastPart, pulLastPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DigestInit)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DigestInit(hSession, pMechanism);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_Digest)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_Digest(hSession, pData, ulDataLen, pDigest, pulDigestLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DigestUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DigestUpdate(hSession, pPart, ulPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DigestKey)(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DigestKey(hSession, hKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DigestFinal)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DigestFinal(hSession, pDigest, pulDigestLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SignInit)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SignInit(hSession, pMechanism, hKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_Sign)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_Sign(hSession, pData, ulDataLen, pSignature, pulSignatureLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SignUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SignUpdate(hSession, pPart, ulPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SignFinal)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SignFinal(hSession, pSignature, pulSignatureLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SignRecoverInit)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SignRecoverInit(hSession, pMechanism, hKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SignRecover)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SignRecover(hSession, pData, ulDataLen, pSignature, pulSignatureLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_VerifyInit)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_VerifyInit(hSession, pMechanism, hKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_Verify)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_Verify(hSession, pData, ulDataLen, pSignature, ulSignatureLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_VerifyUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_VerifyUpdate(hSession, pPart, ulPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_VerifyFinal)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_VerifyFinal(hSession, pSignature, ulSignatureLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_VerifyRecoverInit)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_VerifyRecoverInit(hSession, pMechanism, hKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_VerifyRecover)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen, CK_BYTE_PTR pData, CK_ULONG_PTR pulDataLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_VerifyRecover(hSession, pSignature, ulSignatureLen, pData, pulDataLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DigestEncryptUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen, CK_BYTE_PTR pEncryptedPart, CK_ULONG_PTR pulEncryptedPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DigestEncryptUpdate(hSession, pPart, ulPartLen, pEncryptedPart, pulEncryptedPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DecryptDigestUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedPart, CK_ULONG ulEncryptedPartLen, CK_BYTE_PTR pPart, CK_ULONG_PTR pulPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DecryptDigestUpdate(hSession, pEncryptedPart, ulEncryptedPartLen, pPart, pulPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SignEncryptUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen, CK_BYTE_PTR pEncryptedPart, CK_ULONG_PTR pulEncryptedPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SignEncryptUpdate(hSession, pPart, ulPartLen, pEncryptedPart, pulEncryptedPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DecryptVerifyUpdate)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedPart, CK_ULONG ulEncryptedPartLen, CK_BYTE_PTR pPart, CK_ULONG_PTR pulPartLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DecryptVerifyUpdate(hSession, pEncryptedPart, ulEncryptedPartLen, pPart, pulPartLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GenerateKey)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GenerateKey(hSession, pMechanism, pTemplate, ulCount, phKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GenerateKeyPair)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount, CK_OBJECT_HANDLE_PTR phPublicKey, CK_OBJECT_HANDLE_PTR phPrivateKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GenerateKeyPair(hSession, pMechanism, pPublicKeyTemplate, ulPublicKeyAttributeCount, pPrivateKeyTemplate, ulPrivateKeyAttributeCount, phPublicKey, phPrivateKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_WrapKey)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hWrappingKey, CK_OBJECT_HANDLE hKey, CK_BYTE_PTR pWrappedKey, CK_ULONG_PTR pulWrappedKeyLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_WrapKey(hSession, pMechanism, hWrappingKey, hKey, pWrappedKey, pulWrappedKeyLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_UnwrapKey)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hUnwrappingKey, CK_BYTE_PTR pWrappedKey, CK_ULONG ulWrappedKeyLen, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulAttributeCount, CK_OBJECT_HANDLE_PTR phKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_UnwrapKey(hSession, pMechanism, hUnwrappingKey, pWrappedKey, ulWrappedKeyLen, pTemplate, ulAttributeCount, phKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_DeriveKey)(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hBaseKey, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulAttributeCount, CK_OBJECT_HANDLE_PTR phKey)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_DeriveKey(hSession, pMechanism, hBaseKey, pTemplate, ulAttributeCount, phKey);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_SeedRandom)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_SeedRandom(hSession, pSeed, ulSeedLen);
 }
 
 
 CK_DEFINE_FUNCTION(CK_RV, C_GenerateRandom)(CK_SESSION_HANDLE hSession, CK_BYTE_PTR RandomData, CK_ULONG ulRandomLen)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_GenerateRandom(hSession, RandomData, ulRandomLen);
 }
 
 
@@ -529,5 +568,5 @@ CK_DEFINE_FUNCTION(CK_RV, C_CancelFunction)(CK_SESSION_HANDLE hSession)
 
 CK_DEFINE_FUNCTION(CK_RV, C_WaitForSlotEvent)(CK_FLAGS flags, CK_SLOT_ID_PTR pSlot, CK_VOID_PTR pReserved)
 {
-	return CKR_FUNCTION_NOT_SUPPORTED;
+	return Go_WaitForSlotEvent(flags, pSlot, pReserved);
 }
