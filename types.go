@@ -73,7 +73,15 @@ func fromError(e error) C.CK_RV {
 	if e == nil {
 		return C.CKR_OK
 	}
-	return C.CK_RV(e.(pkcs11.Error))
+
+	pe, ok := e.(pkcs11.Error)
+	if !ok {
+		// This error doesn't map to a PKCS#11 error code.  Return a generic
+		// "function failed" error instead.
+		pe = pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
+	}
+
+	return C.CK_RV(pe)
 }
 
 // toTemplate converts from a C style array to a []*pkcs11.Attribute.

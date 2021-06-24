@@ -92,8 +92,12 @@ task:
     - mkdir -p dist
     - cd pkcs11proxy
     - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/libpkcs11proxy.so
+    - cd ../p11proxy
+    - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/libp11proxy.so
   dist_script:
-    - mv $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"/dist ./dist
+    - mv $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"/dist/*.so ./
+    - mkdir -p ./dist
+    - tar -caf ./dist/pkcs11mod.tar.gz ./*.so
   binaries_artifacts:
     path: "dist/*"
   env:
@@ -107,7 +111,8 @@ task:
     memory: 1G
   install_script:
     - dnf install -y chromium
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
   test_script:
     - testdata/ci-chromium-tests.bash
   depends_on:
@@ -121,7 +126,8 @@ task:
     memory: 1G
   install_script:
     - dnf install -y firefox
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
   test_script:
     - testdata/ci-firefox-tests.bash
   depends_on:
@@ -135,9 +141,32 @@ task:
     memory: 1G
   install_script:
     - dnf install -y gnutls-utils
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
   test_script:
     - testdata/ci-gnutls-cli-tests.bash
+  depends_on:
+    - "Compile Go latest linux amd64"
+
+task:
+  name: "opendnssec"
+  container:
+    image: fedora:latest
+    cpu: 1
+    memory: 1G
+  install_script:
+    - dnf install -y git autoconf libtool g++ softhsm opensc diffutils
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
+  opendnssec_build_script:
+    - git clone https://github.com/opendnssec/pkcs11-testing.git
+    - cd pkcs11-testing
+    - chmod +x autogen.sh
+    - ./autogen.sh
+    - ./configure --disable-dependency-tracking
+    - make install
+  test_script:
+    - testdata/ci-opendnssec-tests.bash
   depends_on:
     - "Compile Go latest linux amd64"
 
@@ -149,7 +178,8 @@ task:
     memory: 1G
   install_script:
     - dnf install -y pkcs11-dump diffutils
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
   test_script:
     - testdata/ci-pkcs11-dump-tests.bash
   depends_on:
@@ -163,7 +193,8 @@ task:
     memory: 1G
   install_script:
     - dnf install -y nss-tools
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
   test_script:
     - export PATH=$PATH:/usr/lib64/nss/unsupported-tools
     - testdata/ci-tstclnt-tests.bash
@@ -178,30 +209,10 @@ task:
     memory: 1G
   install_script:
     - dnf install -y wget
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
   test_script:
     - testdata/ci-wget-tests.bash
-  depends_on:
-    - "Compile Go latest linux amd64"
-
-task:
-  name: "opendnssec"
-  container:
-    image: fedora:latest
-    cpu: 1
-    memory: 1G
-  install_script:
-    - dnf install -y git autoconf libtool g++ softhsm opensc diffutils
-    - curl -o libpkcs11proxy.so https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/libpkcs11proxy.so
-  opendnssec_build_script:
-    - git clone https://github.com/opendnssec/pkcs11-testing.git
-    - cd pkcs11-testing
-    - chmod +x autogen.sh
-    - ./autogen.sh
-    - ./configure --disable-dependency-tracking
-    - make install
-  test_script:
-    - testdata/ci-opendnssec-tests.bash
   depends_on:
     - "Compile Go latest linux amd64"
 
