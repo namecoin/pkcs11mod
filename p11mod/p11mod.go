@@ -21,7 +21,7 @@ func SetBackend(b Backend, err error) {
 
 func init() {
 	b := &llBackend{
-		slots: []p11.Slot{},
+		slots: []Slot{},
 		sessions: map[pkcs11.SessionHandle]*llSession{},
 	}
 
@@ -35,7 +35,7 @@ type llSession struct {
 }
 
 type llBackend struct {
-	slots []p11.Slot
+	slots []Slot
 	slotsMutex sync.RWMutex
 	sessions map[pkcs11.SessionHandle]*llSession
 	sessionsMutex sync.RWMutex
@@ -91,7 +91,7 @@ func (ll *llBackend) GetSlotList(tokenPresent bool) ([]uint, error) {
 	return ids, nil
 }
 
-func (ll *llBackend) getSlotByID(slotID uint) (p11.Slot, error) {
+func (ll *llBackend) getSlotByID(slotID uint) (Slot, error) {
 	// Fast path: if the ID is already known, we can use a read-only lock.
 
 	ll.slotsMutex.RLock()

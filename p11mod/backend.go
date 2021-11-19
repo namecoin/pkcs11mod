@@ -11,5 +11,13 @@ import (
 // TODO: Upstream this to miekg.
 type Backend interface {
 	Info() (pkcs11.Info, error)
-	Slots() ([]p11.Slot, error)
+	Slots() ([]Slot, error)
+}
+
+type Slot interface {
+	ID() uint
+	Info() (pkcs11.SlotInfo, error)
+	TokenInfo() (pkcs11.TokenInfo, error)
+	OpenSession() (p11.Session, error)
+	OpenWriteSession() (p11.Session, error)
 }
