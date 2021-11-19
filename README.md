@@ -25,7 +25,7 @@ Option A: Using Go build commands without Go modules (works on any platform with
 
 6. You can now `import "github.com/namecoin/pkcs11mod"` from your Go PKCS#11 module.
 
-Option B: Using Go build commands with Go modules (works on any platform with Bash:
+Option B: Using Go build commands with Go modules (works on any platform with Bash):
 
 1. Run the following in the `pkcs11mod` directory to set up Go modules:
    
