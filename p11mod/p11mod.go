@@ -306,7 +306,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 	// Handles are 1-indexed, while our slice is 0-indexed.
 	objectIndex := int(oh-1)
 
-	if objectIndex <= 0 || objectIndex >= len(session.objects) {
+	if objectIndex < 0 || objectIndex >= len(session.objects) {
 		log.Printf("p11mod GetAttributeValue: object index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
 		return []*pkcs11.Attribute{}, pkcs11.Error(pkcs11.CKR_OBJECT_HANDLE_INVALID)
 	}
