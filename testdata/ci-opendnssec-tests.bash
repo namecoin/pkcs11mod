@@ -34,6 +34,18 @@ echo "===== test-rsaimport slot 0 (diff via p11proxy) ====="
 
 diff -I '^Modulus: [0-9A-F]\+$' test-rsaimport-default.txt test-rsaimport-p11proxy.txt || testdata/dump-proxy-log-fail.bash
 
+echo "===== test-rsapub slot 0 (default) ====="
+
+pkcs11-testing --module "$PKCS11PROXY_CKBI_TARGET" --slot "$SLOT_ID" --pin 1234 --test-rsapub | tee test-rsapub-default.txt || true
+
+echo "===== test-rsapub slot 0 (via p11proxy) ====="
+
+pkcs11-testing --module ./libp11proxy.so --slot "$SLOT_ID" --pin 1234 --test-rsapub | tee test-rsapub-p11proxy.txt || true
+
+echo "===== test-rsapub slot 0 (diff via p11proxy) ====="
+
+diff -I '^Modulus: [0-9A-F]\+$' test-rsapub-default.txt test-rsapub-p11proxy.txt || testdata/dump-proxy-log-fail.bash
+
 echo "===== init slot 1 ====="
 
 SLOT_ID=$(softhsm2-util --init-token --slot 1 --label softhsm --so-pin 1234 --pin 1234 | grep -oE '[^ ]+$')
