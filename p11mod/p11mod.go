@@ -147,21 +147,25 @@ func (ll *llBackend) GetMechanismList(slotID uint) ([]*pkcs11.Mechanism, error) 
 	}
 
 	// TODO
+	log.Println("p11mod GetMechanismList: not implemented")
 	return []*pkcs11.Mechanism{}, nil
 }
 
 func (ll *llBackend) GetMechanismInfo(slotID uint, m []*pkcs11.Mechanism) (pkcs11.MechanismInfo, error) {
 	// TODO
+	log.Println("p11mod GetMechanismInfo: not implemented")
 	return pkcs11.MechanismInfo{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) InitPIN(sh pkcs11.SessionHandle, pin string) error {
 	// TODO
+	log.Println("p11mod InitPIN: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SetPIN(sh pkcs11.SessionHandle, oldpin string, newpin string) error {
 	// TODO
+	log.Println("p11mod SetPIN: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
@@ -245,21 +249,25 @@ func (ll *llBackend) CloseSession(sh pkcs11.SessionHandle) error {
 
 func (ll *llBackend) CloseAllSessions(slotID uint) error {
 	// TODO
+	log.Println("p11mod CloseAllSessions: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) GetSessionInfo(sh pkcs11.SessionHandle) (pkcs11.SessionInfo, error) {
 	// TODO
+	log.Println("p11mod GetSessionInfo: not implemented")
 	return pkcs11.SessionInfo{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) GetOperationState(sh pkcs11.SessionHandle) ([]byte, error) {
 	// TODO
+	log.Println("p11mod GetOperationState: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SetOperationState(sh pkcs11.SessionHandle, state []byte, encryptKey, authKey pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod SetOperationState: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
@@ -274,26 +282,31 @@ func (ll *llBackend) Login(sh pkcs11.SessionHandle, userType uint, pin string) e
 
 func (ll *llBackend) Logout(sh pkcs11.SessionHandle) error {
 	// TODO
+	log.Println("p11mod Logout: not implemented")
 	return nil
 }
 
 func (ll *llBackend) CreateObject(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
 	// TODO
+	log.Println("p11mod CreateObject: not implemented")
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) CopyObject(sh pkcs11.SessionHandle, o pkcs11.ObjectHandle, temp []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
 	// TODO
+	log.Println("p11mod CopyObject: not implemented")
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DestroyObject(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod DestroyObject: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) GetObjectSize(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle) (uint, error) {
 	// TODO
+	log.Println("p11mod GetObjectSize: not implemented")
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
@@ -335,6 +348,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 
 func (ll *llBackend) SetAttributeValue(sh pkcs11.SessionHandle, o pkcs11.ObjectHandle, a []*pkcs11.Attribute) error {
 	// TODO
+	log.Println("p11mod SetAttributeValue: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
@@ -402,186 +416,223 @@ func (ll *llBackend) FindObjectsFinal(sh pkcs11.SessionHandle) error {
 
 func (ll *llBackend) EncryptInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, o pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod EncryptInit: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) Encrypt(sh pkcs11.SessionHandle, message []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod Encrypt: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) EncryptUpdate(sh pkcs11.SessionHandle, plain []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod EncryptUpdate: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) EncryptFinal(sh pkcs11.SessionHandle) ([]byte, error) {
 	// TODO
+	log.Println("p11mod EncryptFinal: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DecryptInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, o pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod DecryptInit: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) Decrypt(sh pkcs11.SessionHandle, cipher []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod Decrypt: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DecryptUpdate(sh pkcs11.SessionHandle, cipher []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod DecryptUpdate: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DecryptFinal(sh pkcs11.SessionHandle) ([]byte, error) {
 	// TODO
+	log.Println("p11mod DecryptFinal: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DigestInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism) error {
 	// TODO
+	log.Println("p11mod DigestInit: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) Digest(sh pkcs11.SessionHandle, message []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod Digest: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DigestUpdate(sh pkcs11.SessionHandle, message []byte) error {
 	// TODO
+	log.Println("p11mod DigestUpdate: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DigestKey(sh pkcs11.SessionHandle, key pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod DigestKey: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DigestFinal(sh pkcs11.SessionHandle) ([]byte, error) {
 	// TODO
+	log.Println("p11mod DigestFinal: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SignInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, o pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod SignInit: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod Sign: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SignUpdate(sh pkcs11.SessionHandle, message []byte) error {
 	// TODO
+	log.Println("p11mod SignUpdate: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SignFinal(sh pkcs11.SessionHandle) ([]byte, error) {
 	// TODO
+	log.Println("p11mod SignFinal: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SignRecoverInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, key pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod SignRecoverInit: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SignRecover(sh pkcs11.SessionHandle, data []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod SignRecover: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) VerifyInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, key pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod VerifyInit: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data []byte, signature []byte) error {
 	// TODO
+	log.Println("p11mod Verify: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) VerifyUpdate(sh pkcs11.SessionHandle, part []byte) error {
 	// TODO
+	log.Println("p11mod VerifyUpdate: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) VerifyFinal(sh pkcs11.SessionHandle, signature []byte) error {
 	// TODO
+	log.Println("p11mod VerifyFinal: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) VerifyRecoverInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, key pkcs11.ObjectHandle) error {
 	// TODO
+	log.Println("p11mod VerifyRecoverInit: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) VerifyRecover(sh pkcs11.SessionHandle, signature []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod VerifyRecover: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DigestEncryptUpdate(sh pkcs11.SessionHandle, part []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod DigestEncryptUpdate: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DecryptDigestUpdate(sh pkcs11.SessionHandle, cipher []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod DecryptDigestUpdate: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SignEncryptUpdate(sh pkcs11.SessionHandle, part []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod SignEncryptUpdate: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DecryptVerifyUpdate(sh pkcs11.SessionHandle, cipher []byte) ([]byte, error) {
 	// TODO
+	log.Println("p11mod DecryptVerifyUpdate: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) GenerateKey(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, temp []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
 	// TODO
+	log.Println("p11mod GenerateKey: not implemented")
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) GenerateKeyPair(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, public, private []*pkcs11.Attribute) (pkcs11.ObjectHandle, pkcs11.ObjectHandle, error) {
 	// TODO
+	log.Println("p11mod GenerateKeyPair: not implemented")
 	return 0, 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) WrapKey(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, wrappingkey, key pkcs11.ObjectHandle) ([]byte, error) {
 	// TODO
+	log.Println("p11mod WrapKey: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) UnwrapKey(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, unwrappingkey pkcs11.ObjectHandle, wrappedkey []byte, a []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
 	// TODO
+	log.Println("p11mod UnwrapKey: not implemented")
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) DeriveKey(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, basekey pkcs11.ObjectHandle, a []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
 	// TODO
+	log.Println("p11mod DeriveKey: not implemented")
 	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) SeedRandom(sh pkcs11.SessionHandle, seed []byte) error {
 	// TODO
+	log.Println("p11mod SeedRandom: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) GenerateRandom(sh pkcs11.SessionHandle, length int) ([]byte, error) {
 	// TODO
+	log.Println("p11mod GenerateRandom: not implemented")
 	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (ll *llBackend) WaitForSlotEvent(flags uint) chan pkcs11.SlotEvent {
 	sl := make(chan pkcs11.SlotEvent, 1)
 	// TODO
+	log.Println("p11mod WaitForSlotEvent: not implemented")
 	return sl
 }
