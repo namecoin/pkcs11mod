@@ -19,7 +19,7 @@ pkcs11-testing --module ./libpkcs11proxy.so --slot "$SLOT_ID" --pin 1234 --test-
 
 echo "===== test-all slot 0 (diff) ====="
 
-diff -I '^Modulus: [0-9A-F]\+$' test-all-default.txt test-all-pkcs11proxy.txt
+diff -I '^Modulus: [0-9A-F]\+$' test-all-default.txt test-all-pkcs11proxy.txt || testdata/dump-proxy-log-fail.bash
 
 echo "===== init slot 1 ====="
 
@@ -35,4 +35,4 @@ pkcs11-testing --module ./libpkcs11proxy.so --slot "$SLOT_ID" --pin 1234 --test-
 
 echo "===== test-stability slot 1 (diff) ====="
 
-diff test-stability-default.txt test-stability-pkcs11proxy.txt
+diff test-stability-default.txt test-stability-pkcs11proxy.txt || testdata/dump-proxy-log-fail.bash
