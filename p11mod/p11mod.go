@@ -287,9 +287,24 @@ func (ll *llBackend) Logout(sh pkcs11.SessionHandle) error {
 }
 
 func (ll *llBackend) CreateObject(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
-	// TODO
-	log.Println("p11mod CreateObject: not implemented")
-	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return 0, err
+	}
+
+	object, err := session.session.CreateObject(temp)
+	if err != nil {
+		return 0, err
+	}
+
+	session.objects = append(session.objects, object)
+
+	// 0 is never a valid object handle, as per PKCS#11 spec.  So the object
+	// handle of the final object is its index + 1, which is the same as the
+	// length of the objects slice.
+	resultHandle := len(session.objects)
+
+	return pkcs11.ObjectHandle(resultHandle), nil
 }
 
 func (ll *llBackend) CopyObject(sh pkcs11.SessionHandle, o pkcs11.ObjectHandle, temp []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
