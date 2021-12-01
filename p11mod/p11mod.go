@@ -555,9 +555,36 @@ func (ll *llBackend) SignInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, o 
 }
 
 func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, error) {
-	// TODO
-	log.Println("p11mod Sign: not implemented")
-	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return nil, err
+	}
+
+	if session.signMechanism == nil {
+		return nil, pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED)
+	}
+
+	// Inactivate the signature operation regardless of whether Sign errors.
+	defer func() {
+		session.signMechanism = nil
+		session.signKeyIndex = 0
+	}()
+
+	priv := p11.PrivateKey(session.objects[session.signKeyIndex])
+
+	signature, err := priv.Sign(*session.signMechanism, message)
+	if err != nil {
+		if err == pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED) || err == pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID) || err == pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE) || err == pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID) || err == pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE) || err == pkcs11.Error(pkcs11.CKR_PIN_EXPIRED) {
+			// priv.Sign() can relay these error values from SignInit, but
+			// PKCS#11 spec says Sign cannot return these.  So we have to
+			// return a different error.
+			return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
+		} else {
+			return nil, err
+		}
+	}
+
+	return signature, nil
 }
 
 func (ll *llBackend) SignUpdate(sh pkcs11.SessionHandle, message []byte) error {
