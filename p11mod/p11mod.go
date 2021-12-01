@@ -314,9 +314,22 @@ func (ll *llBackend) CopyObject(sh pkcs11.SessionHandle, o pkcs11.ObjectHandle, 
 }
 
 func (ll *llBackend) DestroyObject(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle) error {
-	// TODO
-	log.Println("p11mod DestroyObject: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	// Handles are 1-indexed, while our slice is 0-indexed.
+	objectIndex := int(oh-1)
+
+	if objectIndex < 0 || objectIndex >= len(session.objects) {
+		log.Printf("p11mod DestroyObject: object index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
+		return pkcs11.Error(pkcs11.CKR_OBJECT_HANDLE_INVALID)
+	}
+
+	object := session.objects[objectIndex]
+
+	return object.Destroy()
 }
 
 func (ll *llBackend) GetObjectSize(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle) (uint, error) {
