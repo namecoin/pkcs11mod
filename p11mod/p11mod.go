@@ -646,9 +646,36 @@ func (ll *llBackend) VerifyInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, 
 }
 
 func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data []byte, signature []byte) error {
-	// TODO
-	log.Println("p11mod Verify: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	if session.verifyMechanism == nil {
+		return pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED)
+	}
+
+	// Inactivate the verification operation regardless of whether Verify errors.
+	defer func() {
+		session.verifyMechanism = nil
+		session.verifyKeyIndex = 0
+	}()
+
+	pub := p11.PublicKey(session.objects[session.verifyKeyIndex])
+
+	err = pub.Verify(*session.verifyMechanism, data, signature)
+	if err != nil {
+		if err == pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED) || err == pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID) || err == pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE) || err == pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID) || err == pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE) || err == pkcs11.Error(pkcs11.CKR_PIN_EXPIRED) || err == pkcs11.Error(pkcs11.CKR_USER_NOT_LOGGED_IN) {
+			// pub.Verify() can relay these error values from VerifyInit, but
+			// PKCS#11 spec says Verify cannot return these.  So we have to
+			// return a different error.
+			return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (ll *llBackend) VerifyUpdate(sh pkcs11.SessionHandle, part []byte) error {
