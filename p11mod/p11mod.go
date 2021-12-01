@@ -32,6 +32,10 @@ type llSession struct {
 	session p11.Session
 	objects []p11.Object
 	objectsPending []p11.Object
+	signMechanism *pkcs11.Mechanism
+	signKeyIndex int
+	verifyMechanism *pkcs11.Mechanism
+	verifyKeyIndex int
 }
 
 type llBackend struct {
@@ -211,6 +215,10 @@ func (ll *llBackend) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle,
 		session: session,
 		objects: []p11.Object{},
 		objectsPending: []p11.Object{},
+		signMechanism: nil,
+		signKeyIndex: 0,
+		verifyMechanism: nil,
+		verifyKeyIndex: 0,
 	}
 
 	return sessionHandle, nil
@@ -521,15 +529,66 @@ func (ll *llBackend) DigestFinal(sh pkcs11.SessionHandle) ([]byte, error) {
 }
 
 func (ll *llBackend) SignInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, o pkcs11.ObjectHandle) error {
-	// TODO
-	log.Println("p11mod SignInit: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	// Handles are 1-indexed, while our slice is 0-indexed.
+	objectIndex := int(o-1)
+
+	if objectIndex < 0 || objectIndex >= len(session.objects) {
+		log.Printf("p11mod SignInit: key index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
+		return pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID)
+	}
+
+	if len(m) != 1 {
+		log.Println("p11mod SignInit: expected exactly one mechanism")
+		return pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	if m[0] == nil {
+		log.Println("p11mod SignInit: nil mechanism")
+		return pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	session.signMechanism = m[0]
+	session.signKeyIndex = objectIndex
+
+	return nil
 }
 
 func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, error) {
-	// TODO
-	log.Println("p11mod Sign: not implemented")
-	return []byte{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return nil, err
+	}
+
+	if session.signMechanism == nil {
+		return nil, pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED)
+	}
+
+	// Inactivate the signature operation regardless of whether Sign errors.
+	defer func() {
+		session.signMechanism = nil
+		session.signKeyIndex = 0
+	}()
+
+	priv := p11.PrivateKey(session.objects[session.signKeyIndex])
+
+	signature, err := priv.Sign(*session.signMechanism, message)
+	if err != nil {
+		if err == pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED) || err == pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID) || err == pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE) || err == pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID) || err == pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE) || err == pkcs11.Error(pkcs11.CKR_PIN_EXPIRED) {
+			// priv.Sign() can relay these error values from SignInit, but
+			// PKCS#11 spec says Sign cannot return these.  So we have to
+			// return a different error.
+			return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
+		} else {
+			return nil, err
+		}
+	}
+
+	return signature, nil
 }
 
 func (ll *llBackend) SignUpdate(sh pkcs11.SessionHandle, message []byte) error {
@@ -557,15 +616,66 @@ func (ll *llBackend) SignRecover(sh pkcs11.SessionHandle, data []byte) ([]byte, 
 }
 
 func (ll *llBackend) VerifyInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, key pkcs11.ObjectHandle) error {
-	// TODO
-	log.Println("p11mod VerifyInit: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	// Handles are 1-indexed, while our slice is 0-indexed.
+	objectIndex := int(key-1)
+
+	if objectIndex < 0 || objectIndex >= len(session.objects) {
+		log.Printf("p11mod VerifyInit: key index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
+		return pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID)
+	}
+
+	if len(m) != 1 {
+		log.Println("p11mod VerifyInit: expected exactly one mechanism")
+		return pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	if m[0] == nil {
+		log.Println("p11mod VerifyInit: nil mechanism")
+		return pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	session.verifyMechanism = m[0]
+	session.verifyKeyIndex = objectIndex
+
+	return nil
 }
 
 func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data []byte, signature []byte) error {
-	// TODO
-	log.Println("p11mod Verify: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	if session.verifyMechanism == nil {
+		return pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED)
+	}
+
+	// Inactivate the verification operation regardless of whether Verify errors.
+	defer func() {
+		session.verifyMechanism = nil
+		session.verifyKeyIndex = 0
+	}()
+
+	pub := p11.PublicKey(session.objects[session.verifyKeyIndex])
+
+	err = pub.Verify(*session.verifyMechanism, data, signature)
+	if err != nil {
+		if err == pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED) || err == pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID) || err == pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE) || err == pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID) || err == pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE) || err == pkcs11.Error(pkcs11.CKR_PIN_EXPIRED) || err == pkcs11.Error(pkcs11.CKR_USER_NOT_LOGGED_IN) {
+			// pub.Verify() can relay these error values from VerifyInit, but
+			// PKCS#11 spec says Verify cannot return these.  So we have to
+			// return a different error.
+			return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (ll *llBackend) VerifyUpdate(sh pkcs11.SessionHandle, part []byte) error {
