@@ -32,6 +32,8 @@ type llSession struct {
 	session p11.Session
 	objects []p11.Object
 	objectsPending []p11.Object
+	signMechanism *pkcs11.Mechanism
+	signKeyIndex int
 }
 
 type llBackend struct {
@@ -211,6 +213,8 @@ func (ll *llBackend) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle,
 		session: session,
 		objects: []p11.Object{},
 		objectsPending: []p11.Object{},
+		signMechanism: nil,
+		signKeyIndex: 0,
 	}
 
 	return sessionHandle, nil
@@ -521,9 +525,33 @@ func (ll *llBackend) DigestFinal(sh pkcs11.SessionHandle) ([]byte, error) {
 }
 
 func (ll *llBackend) SignInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, o pkcs11.ObjectHandle) error {
-	// TODO
-	log.Println("p11mod SignInit: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	// Handles are 1-indexed, while our slice is 0-indexed.
+	objectIndex := int(o-1)
+
+	if objectIndex < 0 || objectIndex >= len(session.objects) {
+		log.Printf("p11mod SignInit: key index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
+		return pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID)
+	}
+
+	if len(m) != 1 {
+		log.Println("p11mod SignInit: expected exactly one mechanism")
+		return pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	if m[0] == nil {
+		log.Println("p11mod SignInit: nil mechanism")
+		return pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	session.signMechanism = m[0]
+	session.signKeyIndex = objectIndex
+
+	return nil
 }
 
 func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, error) {
