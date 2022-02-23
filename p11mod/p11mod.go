@@ -1,4 +1,4 @@
-// Copyright 2021 Namecoin Developers LGPLv3+
+// Copyright 2021-2022 Namecoin Developers LGPLv3+
 
 package p11mod
 
@@ -733,9 +733,47 @@ func (ll *llBackend) GenerateKey(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism,
 }
 
 func (ll *llBackend) GenerateKeyPair(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, public, private []*pkcs11.Attribute) (pkcs11.ObjectHandle, pkcs11.ObjectHandle, error) {
-	// TODO
-	log.Println("p11mod GenerateKeyPair: not implemented")
-	return 0, 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	if len(m) != 1 {
+		log.Println("p11mod GenerateKeyPair: expected exactly one mechanism")
+		return 0, 0, pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	if m[0] == nil {
+		log.Println("p11mod GenerateKeyPair: nil mechanism")
+		return 0, 0, pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)
+	}
+
+	request := p11.GenerateKeyPairRequest{
+		Mechanism:            *m[0],
+		PublicKeyAttributes:  public,
+		PrivateKeyAttributes: private,
+	}
+
+	pair, err := session.session.GenerateKeyPair(request)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	session.objects = append(session.objects, p11.Object(pair.Public))
+
+	// 0 is never a valid object handle, as per PKCS#11 spec.  So the object
+	// handle of the final object is its index + 1, which is the same as the
+	// length of the objects slice.
+	publicHandle := len(session.objects)
+
+	session.objects = append(session.objects, p11.Object(pair.Private))
+
+	// 0 is never a valid object handle, as per PKCS#11 spec.  So the object
+	// handle of the final object is its index + 1, which is the same as the
+	// length of the objects slice.
+	privateHandle := len(session.objects)
+
+	return pkcs11.ObjectHandle(publicHandle), pkcs11.ObjectHandle(privateHandle), nil
 }
 
 func (ll *llBackend) WrapKey(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, wrappingkey, key pkcs11.ObjectHandle) ([]byte, error) {
