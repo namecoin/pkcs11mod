@@ -49,7 +49,7 @@ func (ll *llBackend) Initialize() error {
 	// Initialize() was already called by p11.OpenModule(), so there's
 	// nothing to do here other than check the error value.
 	if highBackendError != nil {
-		return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
+		return pkcs11.Error(pkcs11.CKR_GENERAL_ERROR)
 	}
 
 	return nil
