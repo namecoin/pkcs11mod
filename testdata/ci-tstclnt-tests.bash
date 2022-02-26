@@ -25,12 +25,34 @@ testdata/assert-proxy-log.bash missing
 
 # TODO: Env var pointing to missing target
 
+echo "===== Nonexistent p11-kit-trust CKBI via pkcs11proxy ====="
+
+export PKCS11PROXY_CKBI_TARGET=/usr/lib64/pkcs11/p11-kit-trust.missing.so
+cp libpkcs11proxy.so /usr/lib64/pkcs11/p11-kit-trust.so
+
+testdata/try-tstclnt-connect.bash www.namecoin.org fail "SEC_ERROR_UNKNOWN_ISSUER"
+testdata/assert-proxy-log.bash present
+
+testdata/try-tstclnt-connect.bash untrusted-root.badssl.com fail "SEC_ERROR_UNTRUSTED_ISSUER"
+testdata/assert-proxy-log.bash present
+
 echo "===== p11-kit-trust CKBI via pkcs11proxy ====="
 
 export PKCS11PROXY_CKBI_TARGET=/usr/lib64/pkcs11/p11-kit-trust.orig.so
 cp libpkcs11proxy.so /usr/lib64/pkcs11/p11-kit-trust.so
 
 testdata/try-tstclnt-connect.bash www.namecoin.org success ""
+testdata/assert-proxy-log.bash present
+
+testdata/try-tstclnt-connect.bash untrusted-root.badssl.com fail "SEC_ERROR_UNTRUSTED_ISSUER"
+testdata/assert-proxy-log.bash present
+
+echo "===== Nonexistent p11-kit-trust CKBI via p11proxy ====="
+
+export P11PROXY_CKBI_TARGET=/usr/lib64/pkcs11/p11-kit-trust.missing.so
+cp libp11proxy.so /usr/lib64/pkcs11/p11-kit-trust.so
+
+testdata/try-tstclnt-connect.bash www.namecoin.org fail "SEC_ERROR_UNKNOWN_ISSUER"
 testdata/assert-proxy-log.bash present
 
 testdata/try-tstclnt-connect.bash untrusted-root.badssl.com fail "SEC_ERROR_UNTRUSTED_ISSUER"
