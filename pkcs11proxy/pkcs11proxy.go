@@ -14,6 +14,9 @@ func init() {
 	}
 
 	backend := pkcs11.New(backendPath)
+	if backend == nil {
+		return
+	}
 
 	pkcs11mod.SetBackend(backend)
 }
