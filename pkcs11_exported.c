@@ -176,6 +176,11 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetInfo)(CK_INFO_PTR pInfo)
 }
 
 
+// Export in Windows DLL's (workaround for change introduced by
+// https://github.com/golang/go/issues/30674 ).
+#ifdef _WIN32
+	__declspec(dllexport)
+#endif
 CK_DEFINE_FUNCTION(CK_RV, C_GetFunctionList)(CK_FUNCTION_LIST_PTR_PTR ppFunctionList)
 {
 	if (NULL == ppFunctionList)
