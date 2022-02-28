@@ -6,6 +6,7 @@ p11proxy is a usage example for p11mod.  It simply passes through all PKCS#11 ca
 
 1. Build pkcs11mod (see parent directory).
 2. `CGO_ENABLED=1 go build -buildmode c-shared -o libp11proxy.so`
+    * If building for a Windows target, replace `libp11proxy.so` with `p11proxy.dll`
 
 ## Usage
 
