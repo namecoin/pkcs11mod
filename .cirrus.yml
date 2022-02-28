@@ -119,6 +119,30 @@ task:
     - "Compile Go latest linux amd64"
 
 task:
+  name: "exports $GOARCH"
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+    cpu: 1
+    memory: 1G
+  install_script:
+    - curl -o Dependencies.zip --location https://github.com/lucasg/Dependencies/releases/download/v1.11.1/Dependencies_x64_Release.zip
+    - tar -xf Dependencies.zip
+    - curl -o pkcs11mod.tar.gz --location https://api.cirrus-ci.com/v1/artifact/build/%CIRRUS_BUILD_ID%/Compile%%%%20Go%%%%20latest%%%%20windows%%%%20%GOARCH%/binaries/dist/pkcs11mod.tar.gz
+    - tar -xf pkcs11mod.tar.gz
+  test_script:
+    - SET PATH=%PATH%;%cd%
+    - powershell -ExecutionPolicy Unrestricted -File "testdata/ci-exports-tests.ps1"
+  matrix:
+    - env:
+        GOARCH: "amd64"
+      depends_on:
+        - "Compile Go latest windows amd64"
+    - env:
+        GOARCH: "386"
+      depends_on:
+        - "Compile Go latest windows 386"
+
+task:
   name: "firefox"
   container:
     image: fedora:latest
