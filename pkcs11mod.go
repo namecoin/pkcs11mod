@@ -33,6 +33,7 @@ import (
 )
 
 var trace bool
+var traceSensitive bool
 
 var logfile io.Closer
 var backend Backend
@@ -58,6 +59,10 @@ func init() {
 
 	if os.Getenv("PKCS11MOD_TRACE") == "1" {
 		trace = true
+	}
+
+	if os.Getenv("PKCS11MOD_TRACE_SENSITIVE") == "1" {
+		traceSensitive = true
 	}
 }
 
@@ -599,6 +604,10 @@ func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJEC
 //export Go_GetAttributeValue
 func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
 	if pTemplate == nil && ulCount > 0 {
+		if trace {
+			log.Println("pkcs11mod GetAttributeValue: CKR_ARGUMENTS_BAD")
+		}
+
 		return C.CKR_ARGUMENTS_BAD
 	}
 
@@ -608,10 +617,19 @@ func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_O
 
 	goResults, err := backend.GetAttributeValue(goSessionHandle, goObjectHandle, goTemplate)
 	if err != nil {
+		if trace {
+			log.Printf("pkcs11mod GetAttributeValue: %v", err)
+		}
+
 		return fromError(err)
 	}
 
 	err = fromTemplate(goResults, pTemplate)
+
+	if trace {
+		log.Printf("pkcs11mod GetAttributeValue: %v", err)
+	}
+
 	return fromError(err)
 }
 
