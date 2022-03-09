@@ -356,6 +356,10 @@ func (ll *llBackend) GetObjectSize(sh pkcs11.SessionHandle, oh pkcs11.ObjectHand
 func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle, a []*pkcs11.Attribute) ([]*pkcs11.Attribute, error) {
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
+		if trace {
+			log.Printf("p11mod GetAttributeValue: %v", err)
+		}
+
 		return []*pkcs11.Attribute{}, err
 	}
 
@@ -371,12 +375,23 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 
 	result := make([]*pkcs11.Attribute, len(a))
 	for i, t := range a {
+		if trace {
+			log.Printf("p11mod GetAttributeValue: Type %d", t.Type)
+		}
+
 		value, err := object.Attribute(t.Type)
 		if err != nil && err.Error() != "attribute not found" && err.Error() != "too many attributes found" {
+			if trace {
+				log.Printf("p11mod GetAttributeValue: %v", err)
+			}
 			return nil, err
 		}
 		if value == nil {
 			// CKR_ATTRIBUTE_TYPE_INVALID, attribute not found, or too many attributes found
+			if trace {
+				log.Println("p11mod GetAttributeValue: suppressing CKR_ATTRIBUTE_TYPE_INVALID")
+			}
+
 			value = []byte{}
 		}
 
@@ -384,6 +399,10 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 			Type: t.Type,
 			Value: value,
 		}
+	}
+
+	if trace {
+		log.Printf("p11mod GetAttributeValue: %d values returned", len(result))
 	}
 
 	return result, nil
