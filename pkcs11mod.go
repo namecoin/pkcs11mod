@@ -32,6 +32,8 @@ import (
 	"github.com/miekg/pkcs11"
 )
 
+var trace bool
+
 var logfile io.Closer
 var backend Backend
 
@@ -53,6 +55,10 @@ func init() {
 		logfile = f
 	}
 	log.Println("Namecoin PKCS#11 module loading")
+
+	if os.Getenv("PKCS11MOD_TRACE") == "1" {
+		trace = true
+	}
 }
 
 func SetBackend(b Backend) {
@@ -642,12 +648,24 @@ func Go_FindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HAND
 	goMax := int(ulMaxObjectCount)
 
 	if (phObject == nil && goMax > 0) || pulObjectCount == nil {
+		if trace {
+			log.Println("pkcs11mod FindObjects: CKR_ARGUMENTS_BAD")
+		}
+
 		return C.CKR_ARGUMENTS_BAD
 	}
 
 	objectHandles, _, err := backend.FindObjects(goSessionHandle, goMax)
 	if err != nil {
+		if trace {
+			log.Printf("pkcs11mod FindObjects: %v", err)
+		}
+
 		return fromError(err)
+	}
+
+	if trace {
+		log.Printf("pkcs11mod FindObjects: %d objects returned", len(objectHandles))
 	}
 
 	goCount := uint(len(objectHandles))

@@ -51,6 +51,10 @@ Option B: Using Go build commands with Go modules (works on any platform with Ba
 
 See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level p11mod library (see subdirectory) instead of using pkcs11mod directly (see next section).
 
+## Tracing
+
+Set the environment variable `PKCS11MOD_TRACE=1` to enable debug tracing.  The trace will be outputted to the log file.
+
 ## Should I use pkcs11mod or p11mod?
 
 p11mod is much easier to use and more idiomatic to Go.  However, p11mod implements less of the PKCS#11 specification than pkcs11mod.  If you only need functionality that p11mod has, you will probably find p11mod more pleasant to work with.  On the other hand, p11mod is much newer and less battle-tested, so you may find pkcs11mod more reliable.
