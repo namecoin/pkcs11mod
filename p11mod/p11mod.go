@@ -4,12 +4,15 @@ package p11mod
 
 import (
 	"log"
+	"os"
 	"sync"
 
 	"github.com/miekg/pkcs11"
 	"github.com/miekg/pkcs11/p11"
 	"github.com/namecoin/pkcs11mod"
 )
+
+var trace bool
 
 var highBackend Backend
 var highBackendError error
@@ -26,6 +29,10 @@ func init() {
 	}
 
 	pkcs11mod.SetBackend(b)
+
+	if os.Getenv("P11MOD_TRACE") == "1" {
+		trace = true
+	}
 }
 
 type llSession struct {
@@ -391,11 +398,19 @@ func (ll *llBackend) SetAttributeValue(sh pkcs11.SessionHandle, o pkcs11.ObjectH
 func (ll *llBackend) FindObjectsInit(sh pkcs11.SessionHandle, template []*pkcs11.Attribute) error {
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
+		if trace {
+			log.Printf("p11mod FindObjectsInit: %v", err)
+		}
+
 		return err
 	}
 
 	objects, err := session.session.FindObjects(template)
 	if err != nil {
+		if trace {
+			log.Printf("p11mod FindObjectsInit: %v", err)
+		}
+
 		if err == pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED) {
 			// session.FindObjects() can relay CKR_OPERATION_NOT_INITIALIZED from
 			// FindObjects or FindObjectsFinal, but PKCS#11 spec says
@@ -407,6 +422,10 @@ func (ll *llBackend) FindObjectsInit(sh pkcs11.SessionHandle, template []*pkcs11
 		} else {
 			return err
 		}
+	}
+
+	if trace {
+		log.Printf("p11mod FindObjectsInit: %d objects returned", len(objects))
 	}
 
 	session.objects = append(session.objects, objects...)
