@@ -53,7 +53,7 @@ See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also
 
 ## Tracing
 
-Set the environment variable `PKCS11MOD_TRACE=1` to enable debug tracing.  The trace will be outputted to the log file.
+Set the environment variable `PKCS11MOD_TRACE=1` to enable debug tracing.  To include sensitive data that might be a privacy leak, also set `PKCS11MOD_TRACE_SENSITIVE=1`.  The trace will be outputted to the log file.
 
 ## Should I use pkcs11mod or p11mod?
 

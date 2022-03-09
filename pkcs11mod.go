@@ -33,6 +33,7 @@ import (
 )
 
 var trace bool
+var traceSensitive bool
 
 var logfile io.Closer
 var backend Backend
@@ -58,6 +59,10 @@ func init() {
 
 	if os.Getenv("PKCS11MOD_TRACE") == "1" {
 		trace = true
+	}
+
+	if os.Getenv("PKCS11MOD_TRACE_SENSITIVE") == "1" {
+		traceSensitive = true
 	}
 }
 
