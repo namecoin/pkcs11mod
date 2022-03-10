@@ -380,7 +380,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 		}
 
 		value, err := object.Attribute(t.Type)
-		if err != nil && err.Error() != "attribute not found" && err.Error() != "too many attributes found" {
+		if err != nil && err != p11.ErrAttributeNotFound && err != p11.ErrTooManyAttributesFound {
 			if trace {
 				log.Printf("p11mod GetAttributeValue: %v", err)
 			}
