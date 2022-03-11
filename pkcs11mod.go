@@ -615,22 +615,50 @@ func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_O
 	goObjectHandle := pkcs11.ObjectHandle(objectHandle)
 	goTemplate := toTemplate(pTemplate, ulCount)
 
-	goResults, err := backend.GetAttributeValue(goSessionHandle, goObjectHandle, goTemplate)
-	if err != nil {
+	goResults, errFinal := backend.GetAttributeValue(goSessionHandle, goObjectHandle, goTemplate)
+	if fromError(errFinal) == pkcs11.CKR_ATTRIBUTE_SENSITIVE || fromError(errFinal) == pkcs11.CKR_ATTRIBUTE_TYPE_INVALID {
+		// If we get these error codes in a one-shot, we need to try the
+		// attributes one-by-one to retrieve partial results.
+
+		goResults = make([]*pkcs11.Attribute, len(goTemplate))
+
+		for i, t := range goTemplate {
+			goTemplateSingle := []*pkcs11.Attribute{t}
+
+			goResultsSingle, err := backend.GetAttributeValue(goSessionHandle, goObjectHandle, goTemplateSingle)
+			if fromError(err) == pkcs11.CKR_ATTRIBUTE_SENSITIVE || fromError(err) == pkcs11.CKR_ATTRIBUTE_TYPE_INVALID {
+				goResults[i] = &pkcs11.Attribute{
+					Type: t.Type,
+					Value: nil,
+				}
+			} else if err != nil {
+				if trace {
+					log.Printf("pkcs11mod GetAttributeValue: %v", err)
+				}
+
+				return fromError(err)
+			} else {
+				goResults[i] = goResultsSingle[0]
+			}
+		}
+	} else if errFinal != nil {
 		if trace {
-			log.Printf("pkcs11mod GetAttributeValue: %v", err)
+			log.Printf("pkcs11mod GetAttributeValue: %v", errFinal)
 		}
 
-		return fromError(err)
+		return fromError(errFinal)
 	}
 
-	err = fromTemplate(goResults, pTemplate)
+	errFromTemplate := fromTemplate(goResults, pTemplate)
+	if errFromTemplate != nil {
+		errFinal = errFromTemplate
+	}
 
 	if trace {
-		log.Printf("pkcs11mod GetAttributeValue: %v", err)
+		log.Printf("pkcs11mod GetAttributeValue: %v", errFinal)
 	}
 
-	return fromError(err)
+	return fromError(errFinal)
 }
 
 //export Go_SetAttributeValue

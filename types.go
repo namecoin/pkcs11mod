@@ -121,6 +121,11 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 		}
 
 		c := l1[i]
+		if x.Value == nil {
+			// CKR_ATTRIBUTE_TYPE_INVALID or CKR_ATTRIBUTE_SENSITIVE
+			c.ulValueLen = C.CK_UNAVAILABLE_INFORMATION
+			continue
+		}
 		cLen := C.CK_ULONG(uint(len(x.Value)))
 		if C.getAttributePval(c) == nil {
 			c.ulValueLen = cLen
