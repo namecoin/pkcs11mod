@@ -207,6 +207,42 @@ task:
     - "Compile Go latest linux amd64"
 
 task:
+  name: "firefox $CI_CHANNEL windows"
+  compute_engine_instance:
+    image_project: windows-cloud
+    image: family/windows-2022
+    platform: windows
+    cpu: 1
+    memory: 2G
+  choco_script:
+    - powershell -ExecutionPolicy Unrestricted -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\\"
+  install_script:
+    - SET "PATH=%PATH%;%ALLUSERSPROFILE%\\chocolatey\\bin\\"
+    - choco install %CI_PACKAGE% --yes --pre
+    - curl -o pkcs11mod.tar.gz --location https://api.cirrus-ci.com/v1/artifact/build/%CIRRUS_BUILD_ID%/Compile%%%%20Go%%%%20latest%%%%20windows%%%%20%GOARCH%/binaries/dist/pkcs11mod.tar.gz
+    - tar -xf pkcs11mod.tar.gz
+  test_script:
+    - SET PATH=%PATH%;%cd%
+    - powershell -ExecutionPolicy Unrestricted -File "testdata/ci-firefox-tests.ps1"
+  matrix:
+    - env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Nightly"
+        CI_PACKAGE: "firefox-nightly"
+        CI_MAIN_MODULE: "C:\\Program Files\\Firefox Nightly\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Firefox Nightly\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Firefox Nightly\\firefox.exe"
+    - env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "ESR"
+        CI_PACKAGE: "firefoxesr"
+        CI_MAIN_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+  depends_on:
+    - "Compile Go latest windows amd64"
+
+task:
   name: "gnutls-cli"
   container:
     image: fedora:latest
