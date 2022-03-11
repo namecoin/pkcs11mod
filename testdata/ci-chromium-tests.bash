@@ -3,7 +3,7 @@
 set -euo pipefail
 shopt -s nullglob globstar
 
-echo "===== Default p11-kit-trust CKBI ====="
+echo "===== Default System CKBI ====="
 
 testdata/try-chromium-connect.bash www.namecoin.org success ""
 testdata/assert-proxy-log.bash missing
@@ -11,9 +11,9 @@ testdata/assert-proxy-log.bash missing
 testdata/try-chromium-connect.bash untrusted-root.badssl.com fail ""
 testdata/assert-proxy-log.bash missing
 
-echo "===== Deleted p11-kit-trust CKBI ====="
+echo "===== Deleted System CKBI ====="
 
-mv /usr/lib64/pkcs11/p11-kit-trust.so /usr/lib64/pkcs11/p11-kit-trust.orig.so
+mv "$CI_MAIN_MODULE" "$CI_BAK_MODULE"
 
 testdata/try-chromium-connect.bash www.namecoin.org fail ""
 testdata/assert-proxy-log.bash missing
@@ -25,10 +25,10 @@ testdata/assert-proxy-log.bash missing
 
 # TODO: Env var pointing to missing target
 
-echo "===== p11-kit-trust CKBI via pkcs11proxy ====="
+echo "===== System CKBI via pkcs11proxy ====="
 
-export PKCS11PROXY_CKBI_TARGET=/usr/lib64/pkcs11/p11-kit-trust.orig.so
-cp libpkcs11proxy.so /usr/lib64/pkcs11/p11-kit-trust.so
+export PKCS11PROXY_CKBI_TARGET="$CI_BAK_MODULE"
+cp libpkcs11proxy.so "$CI_MAIN_MODULE"
 
 testdata/try-chromium-connect.bash www.namecoin.org success ""
 testdata/assert-proxy-log.bash present
@@ -36,10 +36,10 @@ testdata/assert-proxy-log.bash present
 testdata/try-chromium-connect.bash untrusted-root.badssl.com fail ""
 testdata/assert-proxy-log.bash present
 
-echo "===== p11-kit-trust CKBI via p11proxy ====="
+echo "===== System CKBI via p11proxy ====="
 
-export P11PROXY_CKBI_TARGET=/usr/lib64/pkcs11/p11-kit-trust.orig.so
-cp libp11proxy.so /usr/lib64/pkcs11/p11-kit-trust.so
+export P11PROXY_CKBI_TARGET="$CI_BAK_MODULE"
+cp libp11proxy.so "$CI_MAIN_MODULE"
 
 testdata/try-chromium-connect.bash www.namecoin.org success ""
 testdata/assert-proxy-log.bash present
