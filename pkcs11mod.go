@@ -39,14 +39,17 @@ var logfile io.Closer
 var backend Backend
 
 func init() {
-	f, err := os.OpenFile(os.Getenv("HOME")+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	dir, err := os.UserConfigDir()
 	if err != nil {
-		log.Printf("error opening file (will try fallback): %v", err)
-		f, err = os.OpenFile("./pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+		log.Printf("error reading config dir (will try fallback): %v", err)
+		dir = "."
 	}
+
+	f, err := os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		log.Printf("error opening file (will try fallback): %v", err)
-		f, err = os.OpenFile(os.Getenv("APPDATA")+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+		dir = "."
+		f, err = os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	}
 	if err != nil {
 		log.Printf("error opening file (will fallback to console logging): %v", err)

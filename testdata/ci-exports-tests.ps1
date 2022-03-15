@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 Write-Host "Checking pkcs11proxy..."
 
 if ( ( .\Dependencies.exe -exports .\pkcs11proxy.dll | Select-String -Pattern "C_GetFunctionList" -SimpleMatch -Quiet ) -ne $true ) {

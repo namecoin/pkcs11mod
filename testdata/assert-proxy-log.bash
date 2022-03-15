@@ -11,14 +11,15 @@ then
     exit 1
 fi
 
-if [[ -e "$HOME/pkcs11mod.log" ]]
+if [[ -e "$HOME/.config/pkcs11mod.log" ]] || [[ -e "./pkcs11mod.log" ]]
 then
     RESULT="present"
 else
     RESULT="missing"
 fi
 
-rm -f "$HOME/pkcs11mod.log"
+rm -f "$HOME/.config/pkcs11mod.log"
+rm -f "./pkcs11mod.log"
 
 if [[ "$RESULT" != "$DESIRED" ]]
 then
