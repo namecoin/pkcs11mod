@@ -13,10 +13,12 @@ SLOT_ID=$(softhsm2-util --init-token --slot 0 --label softhsm --so-pin 1234 --pi
 echo "===== test-all slot 0 (default) ====="
 
 pkcs11-testing --module "$PKCS11PROXY_CKBI_TARGET" --slot "$SLOT_ID" --pin 1234 --test-all | tee test-all-default.txt || true
+testdata/assert-proxy-log.bash missing
 
 echo "===== test-all slot 0 (via pkcs11proxy) ====="
 
 pkcs11-testing --module ./libpkcs11proxy.so --slot "$SLOT_ID" --pin 1234 --test-all | tee test-all-pkcs11proxy.txt || true
+testdata/assert-proxy-log.bash present
 
 echo "===== test-all slot 0 (diff via pkcs11proxy) ====="
 
@@ -25,10 +27,12 @@ diff -I '^Modulus: [0-9A-F]\+$' test-all-default.txt test-all-pkcs11proxy.txt ||
 echo "===== test-rsaimport slot 0 (default) ====="
 
 pkcs11-testing --module "$PKCS11PROXY_CKBI_TARGET" --slot "$SLOT_ID" --pin 1234 --test-rsaimport | tee test-rsaimport-default.txt || true
+testdata/assert-proxy-log.bash missing
 
 echo "===== test-rsaimport slot 0 (via p11proxy) ====="
 
 pkcs11-testing --module ./libp11proxy.so --slot "$SLOT_ID" --pin 1234 --test-rsaimport | tee test-rsaimport-p11proxy.txt || true
+testdata/assert-proxy-log.bash present
 
 echo "===== test-rsaimport slot 0 (diff via p11proxy) ====="
 
@@ -37,10 +41,12 @@ diff -I '^Modulus: [0-9A-F]\+$' test-rsaimport-default.txt test-rsaimport-p11pro
 echo "===== test-rsapub slot 0 (default) ====="
 
 pkcs11-testing --module "$PKCS11PROXY_CKBI_TARGET" --slot "$SLOT_ID" --pin 1234 --test-rsapub | tee test-rsapub-default.txt || true
+testdata/assert-proxy-log.bash missing
 
 echo "===== test-rsapub slot 0 (via p11proxy) ====="
 
 pkcs11-testing --module ./libp11proxy.so --slot "$SLOT_ID" --pin 1234 --test-rsapub | tee test-rsapub-p11proxy.txt || true
+testdata/assert-proxy-log.bash present
 
 echo "===== test-rsapub slot 0 (diff via p11proxy) ====="
 
@@ -53,10 +59,12 @@ SLOT_ID=$(softhsm2-util --init-token --slot 1 --label softhsm --so-pin 1234 --pi
 echo "===== test-stability slot 1 (default) ====="
 
 pkcs11-testing --module "$PKCS11PROXY_CKBI_TARGET" --slot "$SLOT_ID" --pin 1234 --test-stability | tee test-stability-default.txt
+testdata/assert-proxy-log.bash missing
 
 echo "===== test-stability slot 1 (via pkcs11proxy) ====="
 
 pkcs11-testing --module ./libpkcs11proxy.so --slot "$SLOT_ID" --pin 1234 --test-stability | tee test-stability-pkcs11proxy.txt
+testdata/assert-proxy-log.bash present
 
 echo "===== test-stability slot 1 (diff) ====="
 
