@@ -37,6 +37,7 @@ func init() {
 
 type llSession struct {
 	session p11.Session
+	slotID uint
 	objects []p11.Object
 	objectsPending []p11.Object
 	signMechanism *pkcs11.Mechanism
@@ -220,6 +221,7 @@ func (ll *llBackend) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle,
 
 	ll.sessions[sessionHandle] = &llSession{
 		session: session,
+		slotID: slotID,
 		objects: []p11.Object{},
 		objectsPending: []p11.Object{},
 		signMechanism: nil,
@@ -263,9 +265,27 @@ func (ll *llBackend) CloseSession(sh pkcs11.SessionHandle) error {
 }
 
 func (ll *llBackend) CloseAllSessions(slotID uint) error {
-	// TODO
-	log.Println("p11mod CloseAllSessions: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	slot, err := ll.getSlotByID(slotID)
+	if err != nil {
+		return err
+	}
+
+	err = slot.CloseAllSessions()
+	if err != nil {
+		return err
+	}
+
+	ll.sessionsMutex.Lock()
+	defer ll.sessionsMutex.Unlock()
+
+	// Delete all sessions with the specified slotID.
+	for sessionHandle, session := range ll.sessions {
+		if session.slotID == slotID {
+			delete(ll.sessions, sessionHandle)
+		}
+	}
+
+	return nil
 }
 
 func (ll *llBackend) GetSessionInfo(sh pkcs11.SessionHandle) (pkcs11.SessionInfo, error) {
