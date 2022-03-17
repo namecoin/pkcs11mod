@@ -11,6 +11,7 @@ import (
 // This hack prevents a segfault if the application tries to unload pkcs11mod.
 // See the following references:
 // https://github.com/golang/go/issues/11100#issuecomment-489066651
+// https://github.com/golang/go/issues/11100#issuecomment-932638093
 // https://blogs.msmvps.com/vandooren/2006/10/09/preventing-a-dll-from-being-unloaded-by-the-app-that-uses-it/
 // https://stackoverflow.com/a/14436845
 // https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandleexa?redirectedfrom=MSDN#parameters
