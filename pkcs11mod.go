@@ -67,6 +67,8 @@ func init() {
 	if os.Getenv("PKCS11MOD_TRACE_SENSITIVE") == "1" {
 		traceSensitive = true
 	}
+
+	preventUnload()
 }
 
 func SetBackend(b Backend) {
