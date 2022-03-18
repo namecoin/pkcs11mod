@@ -268,6 +268,14 @@ task:
         CI_MAIN_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\LibreWolf\\librewolf.exe"
+    - name: "waterfox $CI_CHANNEL windows"
+      env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Current"
+        CI_PACKAGE: "waterfox"
+        CI_MAIN_MODULE: "C:\\Program Files\\Waterfox\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Waterfox\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Waterfox\\waterfox.exe"
   depends_on:
     - "Compile Go latest windows amd64"
 
