@@ -234,6 +234,13 @@ task:
         CI_MAIN_EXE:  "C:\\Program Files\\Firefox Nightly\\firefox.exe"
     - env:
         GOARCH: "amd64"
+        CI_CHANNEL: "Developer Edition"
+        CI_PACKAGE: "firefox-dev"
+        CI_MAIN_MODULE: "C:\\Program Files\\Firefox Developer Edition\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Firefox Developer Edition\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Firefox Developer Edition\\firefox.exe"
+    - env:
+        GOARCH: "amd64"
         CI_CHANNEL: "Beta"
         CI_PACKAGE: "firefox-beta"
         CI_MAIN_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.dll"
