@@ -260,6 +260,14 @@ task:
         CI_MAIN_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+    - name: "librewolf $CI_CHANNEL windows"
+      env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Rapid Release"
+        CI_PACKAGE: "librewolf"
+        CI_MAIN_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\LibreWolf\\librewolf.exe"
   depends_on:
     - "Compile Go latest windows amd64"
 
