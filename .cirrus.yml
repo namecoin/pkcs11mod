@@ -260,6 +260,13 @@ task:
         CI_MAIN_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+    - name: "icecat windows"
+      env:
+        GOARCH: "amd64"
+        CI_PACKAGE: "icecat"
+        CI_MAIN_MODULE: "C:\\Program Files\\IceCat\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\IceCat\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\IceCat\\icecat.exe"
     - name: "librewolf $CI_CHANNEL windows"
       env:
         GOARCH: "amd64"
