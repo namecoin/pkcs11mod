@@ -13,7 +13,7 @@ if ( ("$desired" -ne "success" ) -and ( "$desired" -ne "fail" ) ) {
 }
 
 # Nuke whatever cached state might exist...
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$Env:APPDATA/Mozilla"
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$Env:APPDATA/$Env:CI_APPDATA"
 
 & "$Env:CI_MAIN_EXE" --screenshot "https://$server_host"
 Start-Sleep -seconds 10
