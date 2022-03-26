@@ -283,6 +283,9 @@ task:
         CI_MAIN_EXE:  "C:\\Program Files\\LibreWolf\\librewolf.exe"
         CI_APPDATA: "librewolf"
     - name: "waterfox $CI_CHANNEL windows"
+      # "choco install waterfox" fails as of Waterfox v22034.0.8, so don't fail
+      # the whole build.  TODO: remove this line once the package is fixed.
+      allow_failures: true
       env:
         GOARCH: "amd64"
         CI_CHANNEL: "Current"
