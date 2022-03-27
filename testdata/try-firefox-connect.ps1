@@ -13,11 +13,11 @@ if ( ("$desired" -ne "success" ) -and ( "$desired" -ne "fail" ) ) {
 }
 
 # Nuke whatever cached state might exist...
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$Env:APPDATA/Mozilla"
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$Env:APPDATA/$Env:CI_APPDATA"
 
 & "$Env:CI_MAIN_EXE" --screenshot "https://$server_host"
 Start-Sleep -seconds 10
-Stop-Process -Name "firefox" -ErrorAction SilentlyContinue
+Stop-Process -Name ( [System.IO.Path]::GetFileNameWithoutExtension("$Env:CI_MAIN_EXE") ) -ErrorAction SilentlyContinue
 Start-Sleep -seconds 5
 
 if ( Test-Path -Path "screenshot.png" ) {

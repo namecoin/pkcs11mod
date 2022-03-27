@@ -232,6 +232,31 @@ task:
         CI_MAIN_MODULE: "C:\\Program Files\\Firefox Nightly\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\Firefox Nightly\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\Firefox Nightly\\firefox.exe"
+        CI_APPDATA: "Mozilla"
+    - env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Developer Edition"
+        CI_PACKAGE: "firefox-dev"
+        CI_MAIN_MODULE: "C:\\Program Files\\Firefox Developer Edition\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Firefox Developer Edition\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Firefox Developer Edition\\firefox.exe"
+        CI_APPDATA: "Mozilla"
+    - env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Beta"
+        CI_PACKAGE: "firefox-beta"
+        CI_MAIN_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+        CI_APPDATA: "Mozilla"
+    - env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Rapid Release"
+        CI_PACKAGE: "firefox"
+        CI_MAIN_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+        CI_APPDATA: "Mozilla"
     - env:
         GOARCH: "amd64"
         CI_CHANNEL: "ESR"
@@ -239,6 +264,36 @@ task:
         CI_MAIN_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+        CI_APPDATA: "Mozilla"
+    - name: "icecat windows"
+      env:
+        GOARCH: "amd64"
+        CI_PACKAGE: "icecat"
+        CI_MAIN_MODULE: "C:\\Program Files\\IceCat\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\IceCat\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\IceCat\\icecat.exe"
+        CI_APPDATA: "Mozilla"
+    - name: "librewolf $CI_CHANNEL windows"
+      env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Rapid Release"
+        CI_PACKAGE: "librewolf"
+        CI_MAIN_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\LibreWolf\\librewolf.exe"
+        CI_APPDATA: "librewolf"
+    - name: "waterfox $CI_CHANNEL windows"
+      # "choco install waterfox" fails as of Waterfox v22034.0.8, so don't fail
+      # the whole build.  TODO: remove this line once the package is fixed.
+      allow_failures: true
+      env:
+        GOARCH: "amd64"
+        CI_CHANNEL: "Current"
+        CI_PACKAGE: "waterfox"
+        CI_MAIN_MODULE: "C:\\Program Files\\Waterfox\\nssckbi.dll"
+        CI_BAK_MODULE: "C:\\Program Files\\Waterfox\\nssckbi.orig.dll"
+        CI_MAIN_EXE:  "C:\\Program Files\\Waterfox\\waterfox.exe"
+        CI_APPDATA: "Waterfox"
   depends_on:
     - "Compile Go latest windows amd64"
 
