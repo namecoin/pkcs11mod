@@ -12,22 +12,32 @@ if ( ("$desired" -ne "success" ) -and ( "$desired" -ne "fail" ) ) {
     exit 1
 }
 
-# Nuke whatever cached state might exist...
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$Env:APPDATA/$Env:CI_APPDATA"
+# Try multiple times, since network failures might happen.  If at least 1
+# connection succeeds, the result is success.
 
-& "$Env:CI_MAIN_EXE" --screenshot "https://$server_host"
-Start-Sleep -seconds 10
-Stop-Process -Name ( [System.IO.Path]::GetFileNameWithoutExtension("$Env:CI_MAIN_EXE") ) -ErrorAction SilentlyContinue
-Start-Sleep -seconds 5
+$result = "fail"
 
-if ( Test-Path -Path "screenshot.png" ) {
-    $result = "success"
+foreach ($i in 1..3) {
+    # Nuke whatever cached state might exist...
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$Env:APPDATA/$Env:CI_APPDATA"
+
+    & "$Env:CI_MAIN_EXE" --screenshot "https://$server_host"
+    Start-Sleep -seconds 10
+    Stop-Process -Name ( [System.IO.Path]::GetFileNameWithoutExtension("$Env:CI_MAIN_EXE") ) -ErrorAction SilentlyContinue
+    Start-Sleep -seconds 5
+
+    if ( Test-Path -Path "screenshot.png" ) {
+        $result = "success"
+    }
+
+    Remove-Item -Force -ErrorAction SilentlyContinue "screenshot.png"
+
+    if ( "$result" -eq "success" ) {
+        break
+    }
+
+    Start-Sleep -seconds 5
 }
-else {
-    $result = "fail"
-}
-
-Remove-Item -Force -ErrorAction SilentlyContinue "screenshot.png"
 
 if ( "$result" -ne "$desired" ) {
     Write-Host "TLS test failed"
