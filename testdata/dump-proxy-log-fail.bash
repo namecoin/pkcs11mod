@@ -7,6 +7,7 @@ echo ""
 echo "!!!!! Test failed, dumping proxy log... !!!!!"
 echo ""
 
-cat "$HOME/pkcs11mod.log"
+cat "$HOME/.config/pkcs11mod.log" || true
+cat "./pkcs11mod.log" || true
 
 exit 1

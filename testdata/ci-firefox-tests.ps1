@@ -4,6 +4,7 @@ Write-Host "===== Default System CKBI ====="
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "www.namecoin.org" -desired "success"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "missing"
@@ -13,6 +14,7 @@ If (!$?) {
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "untrusted-root.badssl.com" -desired "fail"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "missing"
@@ -26,6 +28,7 @@ Move-Item -Path "$Env:CI_MAIN_MODULE" -Destination "$Env:CI_BAK_MODULE"
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "www.namecoin.org" -desired "fail"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "missing"
@@ -35,6 +38,7 @@ If (!$?) {
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "untrusted-root.badssl.com" -desired "fail"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "missing"
@@ -53,6 +57,7 @@ Copy-Item pkcs11proxy.dll -Destination "$Env:CI_MAIN_MODULE"
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "www.namecoin.org" -desired "success"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "present"
@@ -62,6 +67,7 @@ If (!$?) {
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "untrusted-root.badssl.com" -desired "fail"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "present"
@@ -76,6 +82,7 @@ Copy-Item p11proxy.dll -Destination "$Env:CI_MAIN_MODULE"
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "www.namecoin.org" -desired "success"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "present"
@@ -85,6 +92,7 @@ If (!$?) {
 
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/try-firefox-connect.ps1" -server_host "untrusted-root.badssl.com" -desired "fail"
 If (!$?) {
+  & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/dump-proxy-log-fail.ps1"
   exit 222
 }
 & "powershell" "-ExecutionPolicy" "Unrestricted" "-File" "testdata/assert-proxy-log.ps1" -desired "present"
