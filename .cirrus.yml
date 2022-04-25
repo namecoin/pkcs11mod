@@ -207,7 +207,7 @@ task:
     - "Compile Go latest linux amd64"
 
 task:
-  name: "firefox $CI_CHANNEL windows"
+  name: "$CI_PACKAGE_NAME $CI_CHANNEL $CI_DISABLE_E10S_NAME windows"
   compute_engine_instance:
     image_project: windows-cloud
     image: family/windows-2022
@@ -224,6 +224,8 @@ task:
   test_script:
     - SET PATH=%PATH%;%cd%
     - powershell -ExecutionPolicy Unrestricted -File "testdata/ci-firefox-tests.ps1"
+  env:
+    CI_PACKAGE_NAME: "Firefox"
   matrix:
     - env:
         GOARCH: "amd64"
@@ -265,35 +267,43 @@ task:
         CI_BAK_MODULE: "C:\\Program Files\\Mozilla Firefox\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
         CI_APPDATA: "Mozilla"
-    - name: "icecat windows"
-      env:
+    - env:
         GOARCH: "amd64"
+        CI_CHANNEL: "ESR"
+        CI_PACKAGE_NAME: "IceCat"
         CI_PACKAGE: "icecat"
         CI_MAIN_MODULE: "C:\\Program Files\\IceCat\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\IceCat\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\IceCat\\icecat.exe"
         CI_APPDATA: "Mozilla"
-    - name: "librewolf $CI_CHANNEL windows"
-      env:
+    - env:
         GOARCH: "amd64"
         CI_CHANNEL: "Rapid Release"
+        CI_PACKAGE_NAME: "LibreWolf"
         CI_PACKAGE: "librewolf"
         CI_MAIN_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\LibreWolf\\librewolf.exe"
         CI_APPDATA: "librewolf"
-    - name: "waterfox $CI_CHANNEL windows"
+    - allow_failures: true
       # "choco install waterfox" fails as of Waterfox v22034.0.8, so don't fail
-      # the whole build.  TODO: remove this line once the package is fixed.
-      allow_failures: true
+      # the whole build.  TODO: remove allow_failures once the package is fixed.
       env:
         GOARCH: "amd64"
         CI_CHANNEL: "Current"
+        CI_PACKAGE_NAME: "Waterfox"
         CI_PACKAGE: "waterfox"
         CI_MAIN_MODULE: "C:\\Program Files\\Waterfox\\nssckbi.dll"
         CI_BAK_MODULE: "C:\\Program Files\\Waterfox\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\Waterfox\\waterfox.exe"
         CI_APPDATA: "Waterfox"
+  matrix:
+    - env:
+        CI_DISABLE_E10S: "1"
+        CI_DISABLE_E10S_NAME: "No-E10S"
+    - env:
+        CI_DISABLE_E10S: "0"
+        CI_DISABLE_E10S_NAME: ""
   depends_on:
     - "Compile Go latest windows amd64"
 

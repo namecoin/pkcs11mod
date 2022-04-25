@@ -12,6 +12,12 @@ if ( ("$desired" -ne "success" ) -and ( "$desired" -ne "fail" ) ) {
     exit 1
 }
 
+if ( "$Env:CI_DISABLE_E10S" -eq "1" ) {
+    $e10s_version = ( Get-Item "$Env:CI_MAIN_EXE" ).VersionInfo.ProductVersion
+    $Env:MOZ_FORCE_DISABLE_E10S = $e10s_version
+    Write-Host "Disabled Electrolysis for version $e10s_version"
+}
+
 # Try multiple times, since network failures might happen.  If at least 1
 # connection succeeds, the result is success.
 
