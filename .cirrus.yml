@@ -118,7 +118,7 @@ task:
     GO_VERSION: latest
 
 task:
-  name: "chromium $CI_DISTRO"
+  name: "Chromium $CI_DISTRO"
   matrix:
     - container:
         image: fedora:latest
@@ -151,7 +151,7 @@ task:
     - "Compile Go latest linux amd64"
 
 task:
-  name: "exports $GOARCH"
+  name: "Exports $GOARCH"
   windows_container:
     image: cirrusci/windowsservercore:2019
     cpu: 1
@@ -175,7 +175,7 @@ task:
         - "Compile Go latest windows 386"
 
 task:
-  name: "firefox $CI_DISTRO"
+  name: "Firefox $CI_DISTRO"
   matrix:
     - container:
         image: fedora:latest
@@ -323,7 +323,7 @@ task:
     - "Compile Go latest linux amd64"
 
 task:
-  name: "opendnssec"
+  name: "OpenDNSSEC"
   container:
     image: fedora:latest
     cpu: 1
