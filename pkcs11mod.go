@@ -67,8 +67,6 @@ func init() {
 	if os.Getenv("PKCS11MOD_TRACE_SENSITIVE") == "1" {
 		traceSensitive = true
 	}
-
-	preventUnload()
 }
 
 func SetBackend(b Backend) {
@@ -93,6 +91,8 @@ func Go_Initialize() C.CK_RV {
 
 //export Go_Finalize
 func Go_Finalize() C.CK_RV {
+	preventUnload()
+
 	err := backend.Finalize()
 	return fromError(err)
 }
