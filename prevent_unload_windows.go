@@ -4,6 +4,8 @@ package pkcs11mod
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"reflect"
 	"unsafe"
 
@@ -19,11 +21,41 @@ import (
 // https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandleexa?redirectedfrom=MSDN#parameters
 // https://github.com/pipelined/vst2/blob/bc659a1443b585c376cc25a6d13614488c9fa4ee/plugin_export_windows.go#L11-L34
 func preventUnload() {
+	// Module pinning seems incompatible with Mozilla E10S (Firefox logs
+	// "Failed to launch tab subprocess"), so only enable module pinning based
+	// on EXE name whitelist.
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Printf("pkcs11mod: Error detecting executable name: %s", err)
+		return
+	}
+
+	exe := filepath.Base(exePath)
+
+	shouldPinDLL := false
+
+	switch exe {
+	case "certutil.exe":
+		shouldPinDLL = true
+	case "firefox.exe":
+		shouldPinDLL = false
+	case "icecat.exe":
+		shouldPinDLL = false
+	case "librewolf.exe":
+		shouldPinDLL = false
+	default:
+		log.Println("pkcs11mod: Unknown exe name '%s'.  This is probably fine, but if you see this application crash, consider reporting a bug to pkcs11mod; provide the exe name from this log message.", exe)
+	}
+
+	if !shouldPinDLL {
+		return
+	}
+
 	// See https://pkg.go.dev/unsafe#Pointer (reflect.Value.Pointer)
 	moduleAddressWin := (*uint16)(unsafe.Pointer(reflect.ValueOf(preventUnload).Pointer()))
 
 	var module windows.Handle
-	err := windows.GetModuleHandleEx(windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin, &module)
+	err = windows.GetModuleHandleEx(windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin, &module)
 	if err != nil {
 		log.Printf("pkcs11mod: Error pinning module: %s", err)
 		return
