@@ -21,6 +21,10 @@ import (
 // https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandleexa?redirectedfrom=MSDN#parameters
 // https://github.com/pipelined/vst2/blob/bc659a1443b585c376cc25a6d13614488c9fa4ee/plugin_export_windows.go#L11-L34
 func preventUnload() {
+	if trace {
+		log.Println("pkcs11mod: Maybe pinning module")
+	}
+
 	// Module pinning seems incompatible with Mozilla E10S (Firefox logs
 	// "Failed to launch tab subprocess"), so only enable module pinning based
 	// on EXE name whitelist.
@@ -48,6 +52,10 @@ func preventUnload() {
 	}
 
 	if !shouldPinDLL {
+		if trace {
+			log.Println("pkcs11mod: Not pinning module")
+		}
+
 		return
 	}
 
