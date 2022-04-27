@@ -85,12 +85,20 @@ func Go_Initialize() C.CK_RV {
 		return C.CKR_GENERAL_ERROR
 	}
 
+	if trace {
+		log.Println("pkcs11mod Initialize")
+	}
+
 	err := backend.Initialize()
 	return fromError(err)
 }
 
 //export Go_Finalize
 func Go_Finalize() C.CK_RV {
+	if trace {
+		log.Println("pkcs11mod Finalize")
+	}
+
 	preventUnload()
 
 	err := backend.Finalize()
