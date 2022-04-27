@@ -1,4 +1,5 @@
 // Copyright 2022 Namecoin Developers LGPLv3+
+// Copyright 2021 Andreas @ryrun MIT
 
 package pkcs11mod
 
@@ -7,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"syscall"
 	"unsafe"
 
 	//"golang.org/x/sys/windows"
@@ -59,16 +61,24 @@ func preventUnload() {
 		return
 	}
 
-	// See https://pkg.go.dev/unsafe#Pointer (reflect.Value.Pointer)
-	moduleAddressWin := (*uint16)(unsafe.Pointer(reflect.ValueOf(preventUnload).Pointer()))
-
-	//var module windows.Handle
-	//err = windows.GetModuleHandleEx(windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin, &module)
-	log.Printf("pkcs11mod: GetModuleHandleEx flags: %d, addr: %v", 0, moduleAddressWin)
-	err = nil
-	if err != nil {
-		log.Printf("pkcs11mod: Error pinning module: %s", err)
-		return
+	// Copied nearly verbatim from pipelined/vst2
+	const (
+		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS = 4
+		GET_MODULE_HANDLE_EX_FLAG_PIN          = 1
+	)
+	var (
+		kernel32, _          = syscall.LoadLibrary("kernel32.dll")
+		getModuleHandleEx, _ = syscall.GetProcAddress(kernel32, "GetModuleHandleExW")
+		handle               uintptr
+	)
+	defer func(handle syscall.Handle) {
+		err := syscall.FreeLibrary(handle)
+		if err != nil {
+			log.Println("pkcs11mod: Can't unload kernel32 lib")
+		}
+	}(kernel32)
+	if _, _, callErr := syscall.Syscall(uintptr(getModuleHandleEx), 3, GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_PIN, reflect.ValueOf(preventUnload).Pointer(), uintptr(unsafe.Pointer(&handle))); callErr != 0 {
+		log.Println("pkcs11mod: Can't pin module")
 	}
 
 	if trace {
