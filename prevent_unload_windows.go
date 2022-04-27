@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	"golang.org/x/sys/windows"
+	//"golang.org/x/sys/windows"
 )
 
 // This hack prevents a segfault if the application tries to unload pkcs11mod.
@@ -64,7 +64,7 @@ func preventUnload() {
 
 	//var module windows.Handle
 	//err = windows.GetModuleHandleEx(windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin, &module)
-	log.Printf("pkcs11mod: GetModuleHandleEx flags: %d, addr: %v", windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin)
+	log.Printf("pkcs11mod: GetModuleHandleEx flags: %d, addr: %v", 0, moduleAddressWin)
 	err = nil
 	if err != nil {
 		log.Printf("pkcs11mod: Error pinning module: %s", err)
