@@ -118,6 +118,60 @@ task:
     GO_VERSION: latest
 
 task:
+  name: "Compile Go $GO_VERSION $GOOS $GOARCH$MODULES_NAME"
+  alias: Compile
+  macos_instance:
+    image: big-sur-xcode-12.3
+  brew_script:
+    - brew update
+  bash_script:
+    # macOS default bash is missing globstar support.
+    - brew install bash
+  go_script:
+    - brew install go
+  path_script:
+    - source testdata/move_to_gopath.bash
+  env:
+    GOOS: "darwin"
+    GOARCH: "amd64"
+  matrix:
+    - env:
+        GO111MODULE: "off"
+        MODULES_NAME: " Modules Off"
+      fetch_script:
+        - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+        - go get -tags "$GOX_TAGS" -d -v -t github.com/$CIRRUS_REPO_FULL_NAME/...
+        - go generate github.com/$CIRRUS_REPO_FULL_NAME/...
+        - go get -tags "$GOX_TAGS" -d -v -t github.com/$CIRRUS_REPO_FULL_NAME/...
+    - env:
+        MODULES_NAME: ""
+      fetch_script:
+        - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+        - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
+        - go mod tidy
+        - go generate ./...
+        - go mod tidy
+  build_script:
+    - SO_PREFIX=lib
+    - SO_EXT=dylib
+    - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+    - mkdir -p dist
+    - cd pkcs11proxy
+    - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/${SO_PREFIX}pkcs11proxy.$SO_EXT
+    - cd ../p11proxy
+    - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/${SO_PREFIX}p11proxy.$SO_EXT
+  dist_script:
+    - SO_PREFIX=lib
+    - SO_EXT=dylib
+    - mv $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"/dist/*.$SO_EXT ./
+    - mkdir -p ./dist
+    - tar -caf ./dist/pkcs11mod.tar.gz ./*.$SO_EXT
+  binaries_artifacts:
+    path: "dist/*"
+  env:
+    GO_VERSION: latest
+
+task:
   name: "certutil $CI_DISTRO"
   matrix:
     - container:
