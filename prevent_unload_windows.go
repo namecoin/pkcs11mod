@@ -5,8 +5,11 @@ package pkcs11mod
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"reflect"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -45,5 +48,41 @@ func preventUnload() {
 
 	if trace {
 		log.Println("pkcs11mod: Pinned module")
+	}
+}
+
+// This hack prevents a hang if the application tries to wait for all
+// background threads to finish before exiting the process.  Affected
+// applications include Unity and NSS certutil.
+// See the following references:
+// https://github.com/golang/go/issues/11100#issuecomment-389539527
+// https://github.com/golang/go/issues/11100#issuecomment-487840893
+func exitSoon() {
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Printf("pkcs11mod: Error detecting executable name: %s", err)
+		return
+	}
+
+	exe := filepath.Base(exePath)
+
+	shouldForceExitSoon := false
+
+	switch exe {
+	case "certutil.exe":
+		shouldForceExitSoon = true
+	default:
+		log.Println("pkcs11mod: Unknown exe name '%s'.  This is probably fine, but if you see this application hang on exit immediately after this message was logged, consider reporting a bug to pkcs11mod; provide the exe name from this log message.", exe)
+	}
+
+	if shouldForceExitSoon {
+		if trace {
+			log.Println("pkcs11mod: Exiting process soon")
+		}
+
+		go func() {
+			time.Sleep(5 * time.Second)
+			os.Exit(0)
+		}()
 	}
 }

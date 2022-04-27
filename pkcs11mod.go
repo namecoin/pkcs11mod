@@ -94,6 +94,9 @@ func Go_Initialize() C.CK_RV {
 //export Go_Finalize
 func Go_Finalize() C.CK_RV {
 	err := backend.Finalize()
+
+	exitSoon()
+
 	return fromError(err)
 }
 

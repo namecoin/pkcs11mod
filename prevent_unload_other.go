@@ -6,3 +6,6 @@ package pkcs11mod
 
 func preventUnload() {
 }
+
+func exitSoon() {
+}
