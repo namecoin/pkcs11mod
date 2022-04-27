@@ -150,6 +150,34 @@ task:
     - "Compile Go latest linux amd64"
 
 task:
+  name: "certutil $CI_CHANNEL windows"
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+    cpu: 1
+    memory: 1G
+  install_script:
+    - SET PATH=%PATH%;%cd%
+    - powershell -ExecutionPolicy Unrestricted -File "testdata/download-certutil.ps1" -channel %CI_CHANNEL%
+    - curl -o pkcs11mod.tar.gz --location https://api.cirrus-ci.com/v1/artifact/build/%CIRRUS_BUILD_ID%/Compile%%%%20Go%%%%20latest%%%%20windows%%%%20%GOARCH%/binaries/dist/pkcs11mod.tar.gz
+    - tar -xf pkcs11mod.tar.gz
+  test_script:
+    - SET PATH=%PATH%;%cd%
+    - powershell -ExecutionPolicy Unrestricted -File "testdata/ci-certutil-tests.ps1"
+  env:
+    GOARCH: "amd64"
+    CI_MAIN_MODULE: ./nssckbi.dll
+    CI_BAK_MODULE: ./nssckbi.orig.dll
+  depends_on:
+    - "Compile Go latest windows amd64"
+  matrix:
+    - env:
+        CI_CHANNEL: "Nightly"
+    - env:
+        CI_CHANNEL: "Alpha"
+    - env:
+        CI_CHANNEL: "Stable"
+
+task:
   name: "Chromium $CI_DISTRO"
   matrix:
     - container:
