@@ -57,18 +57,33 @@ func (ll *llBackend) Initialize() error {
 	// Initialize() was already called by p11.OpenModule(), so there's
 	// nothing to do here other than check the error value.
 	if highBackendError != nil {
+		if trace {
+			log.Printf("p11mod Initialize: %s", highBackendError)
+		}
 		return pkcs11.Error(pkcs11.CKR_GENERAL_ERROR)
 	}
 
+	if trace {
+		log.Printf("p11mod Initialize: success")
+	}
 	return nil
 }
 
 func (ll *llBackend) Finalize() error {
 	// p11 does not support Finalize().  Usually this is harmless though.
+
+	if trace {
+		log.Printf("p11mod Finalize: not supported by p11 API")
+	}
+
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
 }
 
 func (ll *llBackend) GetInfo() (pkcs11.Info, error) {
+	if trace {
+		log.Printf("p11mod GetInfo")
+	}
+
 	return highBackend.Info()
 }
 
@@ -98,6 +113,10 @@ func (ll *llBackend) GetSlotList(tokenPresent bool) ([]uint, error) {
 	ids := make([]uint, len(slots))
 	for i, slot := range slots {
 		ids[i] = slot.ID()
+	}
+
+	if trace {
+		log.Printf("p11mod GetSlotList: returned %d slots", len(ids))
 	}
 
 	return ids, nil
@@ -139,6 +158,10 @@ func (ll *llBackend) GetSlotInfo(slotID uint) (pkcs11.SlotInfo, error) {
 		return pkcs11.SlotInfo{}, err
 	}
 
+	if trace {
+		log.Printf("p11mod GetSlotInfo")
+	}
+
 	return slot.Info()
 }
 
@@ -146,6 +169,10 @@ func (ll *llBackend) GetTokenInfo(slotID uint) (pkcs11.TokenInfo, error) {
 	slot, err := ll.getSlotByID(slotID)
 	if err != nil {
 		return pkcs11.TokenInfo{}, err
+	}
+
+	if trace {
+		log.Printf("p11mod GetTokenInfo")
 	}
 
 	return slot.TokenInfo()
@@ -230,6 +257,10 @@ func (ll *llBackend) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle,
 		verifyKeyIndex: 0,
 	}
 
+	if trace {
+		log.Printf("p11mod OpenSession: returned handle %d", int(sessionHandle))
+	}
+
 	return sessionHandle, nil
 }
 
@@ -261,6 +292,10 @@ func (ll *llBackend) CloseSession(sh pkcs11.SessionHandle) error {
 
 	delete(ll.sessions, sh)
 
+	if trace {
+		log.Printf("p11mod CloseSession: closed handle %d", int(sh))
+	}
+
 	return nil
 }
 
@@ -283,6 +318,10 @@ func (ll *llBackend) CloseAllSessions(slotID uint) error {
 		if session.slotID == slotID {
 			delete(ll.sessions, sessionHandle)
 		}
+	}
+
+	if trace {
+		log.Printf("p11mod CloseAllSessions: closed all handles for slot %d", int(slotID))
 	}
 
 	return nil
@@ -310,6 +349,10 @@ func (ll *llBackend) Login(sh pkcs11.SessionHandle, userType uint, pin string) e
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
 		return err
+	}
+
+	if trace {
+		log.Printf("p11mod Login: user type %d", int(userType))
 	}
 
 	return session.session.LoginAs(userType, pin)
