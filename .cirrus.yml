@@ -118,6 +118,38 @@ task:
     GO_VERSION: latest
 
 task:
+  name: "certutil $CI_DISTRO"
+  matrix:
+    - container:
+        image: fedora:latest
+        cpu: 1
+        memory: 1G
+      package_install_script:
+        - dnf install -y nss-tools
+      env:
+        CI_DISTRO: fedora
+        CI_MAIN_MODULE: /usr/lib64/pkcs11/p11-kit-trust.so
+        CI_BAK_MODULE: /usr/lib64/pkcs11/p11-kit-trust.orig.so
+    - container:
+        image: debian:latest
+        cpu: 1
+        memory: 1G
+      package_install_script:
+        - apt-get update
+        - apt-get install -y curl libnss3-tools
+      env:
+        CI_DISTRO: debian
+        CI_MAIN_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.so
+        CI_BAK_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.orig.so
+  install_script:
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
+  test_script:
+    - testdata/ci-certutil-tests.bash
+  depends_on:
+    - "Compile Go latest linux amd64"
+
+task:
   name: "Chromium $CI_DISTRO"
   matrix:
     - container:
