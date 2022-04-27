@@ -76,7 +76,7 @@ func (ll *llBackend) Finalize() error {
 		log.Printf("p11mod Finalize: not supported by p11 API")
 	}
 
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
+	return nil
 }
 
 func (ll *llBackend) GetInfo() (pkcs11.Info, error) {

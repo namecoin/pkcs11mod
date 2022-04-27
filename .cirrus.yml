@@ -118,6 +118,66 @@ task:
     GO_VERSION: latest
 
 task:
+  name: "certutil $CI_DISTRO"
+  matrix:
+    - container:
+        image: fedora:latest
+        cpu: 1
+        memory: 1G
+      package_install_script:
+        - dnf install -y nss-tools
+      env:
+        CI_DISTRO: fedora
+        CI_MAIN_MODULE: /usr/lib64/pkcs11/p11-kit-trust.so
+        CI_BAK_MODULE: /usr/lib64/pkcs11/p11-kit-trust.orig.so
+    - container:
+        image: debian:latest
+        cpu: 1
+        memory: 1G
+      package_install_script:
+        - apt-get update
+        - apt-get install -y curl libnss3-tools
+      env:
+        CI_DISTRO: debian
+        CI_MAIN_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.so
+        CI_BAK_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.orig.so
+  install_script:
+    - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
+    - tar -xaf ./pkcs11mod.tar.gz
+  test_script:
+    - testdata/ci-certutil-tests.bash
+  depends_on:
+    - "Compile Go latest linux amd64"
+
+task:
+  name: "certutil $CI_CHANNEL windows"
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+    cpu: 1
+    memory: 1G
+  install_script:
+    - SET PATH=%PATH%;%cd%
+    - powershell -ExecutionPolicy Unrestricted -File "testdata/download-certutil.ps1" -channel %CI_CHANNEL%
+    - curl -o pkcs11mod.tar.gz --location https://api.cirrus-ci.com/v1/artifact/build/%CIRRUS_BUILD_ID%/Compile%%%%20Go%%%%20latest%%%%20windows%%%%20%GOARCH%/binaries/dist/pkcs11mod.tar.gz
+    - tar -xf pkcs11mod.tar.gz
+  test_script:
+    - SET PATH=%PATH%;%cd%
+    - powershell -ExecutionPolicy Unrestricted -File "testdata/ci-certutil-tests.ps1"
+  env:
+    GOARCH: "amd64"
+    CI_MAIN_MODULE: ./nssckbi.dll
+    CI_BAK_MODULE: ./nssckbi.orig.dll
+  depends_on:
+    - "Compile Go latest windows amd64"
+  matrix:
+    - env:
+        CI_CHANNEL: "Nightly"
+    - env:
+        CI_CHANNEL: "Alpha"
+    - env:
+        CI_CHANNEL: "Stable"
+
+task:
   name: "Chromium $CI_DISTRO"
   matrix:
     - container:
