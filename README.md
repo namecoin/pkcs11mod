@@ -67,7 +67,7 @@ While we do plan to use pkcs11mod in production in the future, it is not yet use
 
 ## Credits / License
 
-Original code Copyright Namecoin Developers 2018-2021.  Licensed under LGPLv3+.
+Original code Copyright Namecoin Developers 2018-2022.  All code by Bernard Wagner is licensed under LGPLv3+; everything else is licensed under LGPLv2+.  By submitting a PR, you consent to licensing it under LGPLv2+.
 
 Based on:
 
@@ -75,3 +75,5 @@ Based on:
     * BSD 3-Clause License
 * https://github.com/Pkcs11Interop/pkcs11-mock
     * Apache 2.0 License
+* https://github.com/pipelined/vst2
+    * MIT License
