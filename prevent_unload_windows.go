@@ -62,8 +62,10 @@ func preventUnload() {
 	// See https://pkg.go.dev/unsafe#Pointer (reflect.Value.Pointer)
 	moduleAddressWin := (*uint16)(unsafe.Pointer(reflect.ValueOf(preventUnload).Pointer()))
 
-	var module windows.Handle
-	err = windows.GetModuleHandleEx(windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin, &module)
+	//var module windows.Handle
+	//err = windows.GetModuleHandleEx(windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin, &module)
+	log.Printf("pkcs11mod: GetModuleHandleEx flags: %d, addr: %v", windows.GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|windows.GET_MODULE_HANDLE_EX_FLAG_PIN, moduleAddressWin)
+	err = nil
 	if err != nil {
 		log.Printf("pkcs11mod: Error pinning module: %s", err)
 		return
