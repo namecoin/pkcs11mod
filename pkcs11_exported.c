@@ -1,3 +1,20 @@
+// pkcs11mod
+// Copyright (C) 2018-2022  Namecoin Developers
+// 
+// pkcs11mod is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// pkcs11mod is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with pkcs11mod; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 // Based on https://github.com/Pkcs11Interop/pkcs11-mock/blob/d9adaaf39e0f41283cfa373597ed4b457ae28c39/src/pkcs11-mock.c
 
 #include <string.h>
