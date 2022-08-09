@@ -132,7 +132,7 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 	bufferTooSmall := false
 	for i, x := range template {
 		if trace {
-			log.Printf("pkcs11mod fromTemplate: %s", attrTrace(x))
+			log.Printf("pkcs11mod fromTemplate: %s", AttrTrace(x))
 		}
 
 		c := l1[i]
@@ -371,7 +371,7 @@ var strCKA = map[uint]string{
 	pkcs11.CKA_CERT_MD5_HASH:"CKA_CERT_MD5_HASH",
 }
 
-func attrTrace(a *pkcs11.Attribute) string {
+func AttrTrace(a *pkcs11.Attribute) string {
 	t, ok := strCKA[a.Type]
 	if !ok {
 		t = fmt.Sprintf("%d", a.Type)
