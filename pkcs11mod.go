@@ -708,12 +708,26 @@ func Go_SetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT
 
 //export Go_FindObjectsInit
 func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
+	if trace {
+		log.Println("pkcs11mod FindObjectsInit")
+	}
+
 	if pTemplate == nil && ulCount > 0 {
+		if trace {
+			log.Println("pkcs11mod FindObjectsInit: CKR_ARGUMENTS_BAD")
+		}
+
 		return C.CKR_ARGUMENTS_BAD
 	}
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goTemplate := toTemplate(pTemplate, ulCount)
+
+	if trace {
+		for _, attr := range goTemplate {
+			log.Printf("pkcs11mod FindObjectsInit: template %s", AttrTrace(attr))
+		}
+	}
 
 	err := backend.FindObjectsInit(goSessionHandle, goTemplate)
 	return fromError(err)
