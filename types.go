@@ -142,9 +142,10 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 			continue
 		}
 		cLen := C.CK_ULONG(uint(len(x.Value)))
-		if C.getAttributePval(c) == nil {
+		switch {
+		case C.getAttributePval(c) == nil:
 			c.ulValueLen = cLen
-		} else if c.ulValueLen >= cLen {
+		case c.ulValueLen >= cLen:
 			buf := unsafe.Pointer(C.getAttributePval(c))
 
 			// Adapted from solution 3 of https://stackoverflow.com/a/35675259
@@ -152,7 +153,7 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 			copy(goBuf[:], x.Value)
 
 			c.ulValueLen = cLen
-		} else {
+		default:
 			c.ulValueLen = C.CK_UNAVAILABLE_INFORMATION
 			bufferTooSmall = true
 		}
