@@ -508,15 +508,16 @@ func (ll *llBackend) FindObjectsInit(sh pkcs11.SessionHandle, template []*pkcs11
 			log.Printf("p11mod FindObjectsInit: %v", err)
 		}
 
-		if err == pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED) {
+		switch {
+		case err == pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED):
 			// session.FindObjects() can relay CKR_OPERATION_NOT_INITIALIZED from
 			// FindObjects or FindObjectsFinal, but PKCS#11 spec says
 			// FindObjectsInit cannot return CKR_OPERATION_NOT_INITIALIZED.  So we
 			// have to return a different error.
 			return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
-		} else if err.Error() == "no objects found" {
+		case err.Error() == "no objects found":
 			objects = []p11.Object{}
-		} else {
+		default:
 			return err
 		}
 	}
