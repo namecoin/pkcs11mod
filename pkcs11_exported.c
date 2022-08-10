@@ -21,8 +21,8 @@
 
 #include "spec/pkcs11go.h"
 
-CK_RV Go_Initialize();
-CK_RV Go_Finalize();
+CK_RV Go_Initialize(void);
+CK_RV Go_Finalize(void);
 CK_RV Go_GetInfo(ckInfoPtr);
 CK_RV Go_GetSlotList(CK_BBOOL, CK_SLOT_ID_PTR, CK_ULONG_PTR);
 CK_RV Go_GetSlotInfo(CK_SLOT_ID, CK_SLOT_INFO_PTR);
