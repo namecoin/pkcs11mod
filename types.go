@@ -115,7 +115,7 @@ func toTemplate(clist C.CK_ATTRIBUTE_PTR, size C.CK_ULONG) []*pkcs11.Attribute {
 		if int(c.ulValueLen) != -1 {
 			buf := unsafe.Pointer(C.getAttributePval(c))
 			x.Value = C.GoBytes(buf, C.int(c.ulValueLen))
-			//C.free(buf) // Removed compared to miekg implementation since it's not desired here
+			// C.free(buf) // Removed compared to miekg implementation since it's not desired here
 		}
 		l2[i] = x
 	}
