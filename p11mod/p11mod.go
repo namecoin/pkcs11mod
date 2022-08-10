@@ -465,7 +465,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 			return nil, err
 		}
 		if value == nil {
-			// CKR_ATTRIBUTE_TYPE_INVALID, attribute not found, or too many attributes found
+			// CKR_ATTRIBUTE_TYPE_INVALID, ErrAttributeNotFound, or ErrTooManyAttributesFound
 			if trace {
 				log.Println("p11mod GetAttributeValue: suppressing CKR_ATTRIBUTE_TYPE_INVALID")
 			}
@@ -515,7 +515,7 @@ func (ll *llBackend) FindObjectsInit(sh pkcs11.SessionHandle, template []*pkcs11
 			// FindObjectsInit cannot return CKR_OPERATION_NOT_INITIALIZED.  So we
 			// have to return a different error.
 			return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
-		case err.Error() == "no objects found":
+		case err == p11.ErrNoObjectsFound:
 			objects = []p11.Object{}
 		default:
 			return err
