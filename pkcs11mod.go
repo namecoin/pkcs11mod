@@ -57,22 +57,27 @@ func init() {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		log.Printf("error reading config dir (will try fallback): %v", err)
+
 		dir = "."
 	}
 
 	f, err := os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		log.Printf("error opening file (will try fallback): %v", err)
+
 		dir = "."
 		f, err = os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	}
+
 	if err != nil {
 		log.Printf("error opening file (will fallback to console logging): %v", err)
 	}
+
 	if err == nil {
 		log.SetOutput(f)
 		logfile = f
 	}
+
 	log.Println("Namecoin PKCS#11 module loading")
 
 	if os.Getenv("PKCS11MOD_TRACE") == "1" {
@@ -107,6 +112,7 @@ func Go_Initialize() C.CK_RV {
 	}
 
 	err := backend.Initialize()
+
 	return fromError(err)
 }
 
@@ -145,6 +151,7 @@ func Go_GetInfo(p C.ckInfoPtr) C.CK_RV {
 	if len(info.ManufacturerID) > 32 {
 		info.ManufacturerID = info.ManufacturerID[:32]
 	}
+
 	if len(info.LibraryDescription) > 32 {
 		info.LibraryDescription = info.LibraryDescription[:32]
 	}
@@ -238,6 +245,7 @@ func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
 	for x := 0; x < 64; x++ {
 		pInfo.slotDescription[x] = C.CK_UTF8CHAR(' ')
 	}
+
 	for x := 0; x < 32; x++ {
 		pInfo.manufacturerID[x] = C.CK_UTF8CHAR(' ')
 	}
@@ -320,12 +328,15 @@ func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
 		pInfo.label[x] = C.CK_UTF8CHAR(' ')
 		pInfo.manufacturerID[x] = C.CK_UTF8CHAR(' ')
 	}
+
 	for x := 0; x < 16; x++ {
 		pInfo.model[x] = C.CK_UTF8CHAR(' ')
 	}
+
 	for x := 0; x < 16; x++ {
 		pInfo.serialNumber[x] = C.CK_CHAR(' ')
 	}
+
 	for x := 0; x < 16; x++ {
 		pInfo.utcTime[x] = C.CK_CHAR('0')
 	}
@@ -411,6 +422,7 @@ func Go_GetMechanismInfo(slotID C.CK_SLOT_ID, mechType C.CK_MECHANISM_TYPE, pInf
 	pInfo.ulMinKeySize = C.CK_ULONG(mi.MinKeySize)
 	pInfo.ulMaxKeySize = C.CK_ULONG(mi.MaxKeySize)
 	pInfo.flags = C.CK_FLAGS(mi.Flags)
+
 	return fromError(nil)
 }
 
@@ -424,6 +436,7 @@ func Go_InitPIN(sessionHandle C.CK_SESSION_HANDLE, pPin C.CK_UTF8CHAR_PTR, ulPin
 	goPin := string((*[1 << 30]byte)(unsafe.Pointer(pPin))[:ulPinLen:ulPinLen])
 	
 	err := backend.InitPIN(goSessionHandle, goPin)
+
 	return fromError(err)
 }
 
@@ -494,6 +507,7 @@ func Go_GetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.C
 	if pOperationState == nil || pulOperationStateLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
+
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goOperationState := (*[1 << 30]byte)(unsafe.Pointer(pOperationState))[:*pulOperationStateLen:*pulOperationStateLen]
 
@@ -650,13 +664,13 @@ func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_O
 	if fromError(errFinal) == pkcs11.CKR_ATTRIBUTE_SENSITIVE || fromError(errFinal) == pkcs11.CKR_ATTRIBUTE_TYPE_INVALID {
 		// If we get these error codes in a one-shot, we need to try the
 		// attributes one-by-one to retrieve partial results.
-
 		goResults = make([]*pkcs11.Attribute, len(goTemplate))
 
 		for i, t := range goTemplate {
 			goTemplateSingle := []*pkcs11.Attribute{t}
 
 			goResultsSingle, err := backend.GetAttributeValue(goSessionHandle, goObjectHandle, goTemplateSingle)
+
 			switch {
 			case fromError(err) == pkcs11.CKR_ATTRIBUTE_SENSITIVE || fromError(err) == pkcs11.CKR_ATTRIBUTE_TYPE_INVALID:
 				goResults[i] = &pkcs11.Attribute{
@@ -797,8 +811,10 @@ func Go_Encrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLe
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goData := C.GoBytes(unsafe.Pointer(pData), C.int(ulDataLen))
 
-	var encryptedData []byte
-	var err error
+	var (
+		encryptedData []byte
+		err error
+	)
 
 	sessionsMutex.RLock()
 	session, ok := sessions[goSessionHandle]
@@ -911,8 +927,10 @@ func Go_Decrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR,
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goEncryptedData := C.GoBytes(unsafe.Pointer(pEncryptedData), C.int(ulEncryptedDataLen))
 
-	var data []byte
-	var err error
+	var (
+		data []byte
+		err error
+	)
 
 	sessionsMutex.RLock()
 	session, ok := sessions[goSessionHandle]
