@@ -172,6 +172,46 @@ task:
     GO_VERSION: latest
 
 task:
+  name: "csbuild"
+  container:
+    image: fedora:latest
+    cpu: 1
+    memory: 1G
+  install_script:
+    - dnf install -y golang gcc csbuild
+  help_script:
+    - csbuild --help
+  path_script:
+    - source testdata/move_to_gopath.bash
+  fetch_script:
+    - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+    - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
+    - go mod tidy
+    - csbuild --build-cmd 'go generate ./...' | tee csbuild.txt
+    - if ! grep -P -q -i -z 'CURRENT DEFECTS\n===============\n$' csbuild.txt
+    - then
+    - exit 1
+    - fi
+    - go mod tidy
+  build_script:
+    - SO_PREFIX=lib
+    - SO_EXT=so
+    - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
+    - mkdir -p dist
+    - cd pkcs11proxy
+    - CGO_ENABLED=1 csbuild --build-cmd "go build -buildmode c-shared -o ../dist/${SO_PREFIX}pkcs11proxy.$SO_EXT" | tee csbuild.txt
+    - if ! grep -P -q -i -z 'CURRENT DEFECTS\n===============\n$' csbuild.txt
+    - then
+    - exit 1
+    - fi
+    - cd ../p11proxy
+    - CGO_ENABLED=1 csbuild --build-cmd "go build -buildmode c-shared -o ../dist/${SO_PREFIX}p11proxy.$SO_EXT" | tee csbuild.txt
+    - if ! grep -P -q -i -z 'CURRENT DEFECTS\n===============\n$' csbuild.txt
+    - then
+    - exit 1
+    - fi
+
+task:
   name: "certutil $CI_DISTRO"
   matrix:
     - container:
