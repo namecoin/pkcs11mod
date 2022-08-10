@@ -454,7 +454,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 	result := make([]*pkcs11.Attribute, len(a))
 	for i, t := range a {
 		if trace {
-			log.Printf("p11mod GetAttributeValue: Type %d", t.Type)
+			log.Printf("p11mod GetAttributeValue: querying %s", pkcs11mod.AttrTrace(t))
 		}
 
 		value, err := object.Attribute(t.Type)
