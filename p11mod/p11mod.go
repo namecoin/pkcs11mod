@@ -156,7 +156,10 @@ func (ll *llBackend) getSlotByID(slotID uint) (p11.Slot, error) {
 	ll.slotsMutex.Lock()
 	defer ll.slotsMutex.Unlock()
 
-	ll.updateSlots()
+	err := ll.updateSlots()
+	if err != nil {
+		return p11.Slot{}, err
+	}
 
 	for _, slot := range ll.slots {
 		if slot.ID() == slotID {
