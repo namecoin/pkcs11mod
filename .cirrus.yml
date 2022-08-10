@@ -172,6 +172,33 @@ task:
     GO_VERSION: latest
 
 task:
+  alias: Go Lint
+  container:
+    image: golangci/golangci-lint:latest
+  fetch_script:
+    - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
+    - go mod tidy
+    - go generate ./...
+    - go mod tidy
+  lint_script: golangci-lint run --enable-all --disable exhaustivestruct,exhaustruct,gochecknoglobals,gochecknoinits $GOLANGCI_ARGS -v --out-format json > lint-report.json
+  matrix:
+    - name: Go Lint New
+      env:
+        GOLANGCI_ARGS: "--new-from-rev=HEAD~"
+    - name: Go Lint Mandatory
+      env:
+        GOLANGCI_ARGS: "--disable=cyclop,dupl,errcheck,errname,errorlint,exhaustive,funlen,gci,gocritic,godox,goerr113,gofmt,gofumpt,goimports,golint,gomnd,gosimple,govet,ifshort,lll,makezero,nestif,nlreturn,nosnakecase,paralleltest,revive,stylecheck,thelper,unconvert,varnamelen,wrapcheck,wsl"
+    - name: Go Lint
+      env:
+        GOLANGCI_ARGS: ""
+      allow_failures: true
+  always:
+    golangci_artifacts:
+      path: lint-report.json
+      type: text/json
+      format: golangci
+
+task:
   name: "csbuild"
   container:
     image: fedora:latest

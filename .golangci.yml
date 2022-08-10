@@ -1,0 +1,8 @@
+linters-settings:
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/namecoin)
+  goimports:
+    local-prefixes: "github.com/namecoin"
