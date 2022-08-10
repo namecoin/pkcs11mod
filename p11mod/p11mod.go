@@ -197,14 +197,18 @@ func (ll *llBackend) GetTokenInfo(slotID uint) (pkcs11.TokenInfo, error) {
 }
 
 func (ll *llBackend) GetMechanismList(slotID uint) ([]*pkcs11.Mechanism, error) {
-	//slot, err := ll.getSlotByID(slotID)
-	_, err := ll.getSlotByID(slotID)
+	slot, err := ll.getSlotByID(slotID)
+	if err != nil {
+		return []*pkcs11.Mechanism{}, err
+	}
+
+	_, err = slot.Mechanisms()
 	if err != nil {
 		return []*pkcs11.Mechanism{}, err
 	}
 
 	// TODO
-	log.Println("p11mod GetMechanismList: not implemented")
+	log.Println("p11mod GetMechanismList: not implemented, see https://github.com/miekg/pkcs11/issues/158")
 	return []*pkcs11.Mechanism{}, nil
 }
 
