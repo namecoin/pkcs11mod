@@ -21,8 +21,8 @@
 
 #include "spec/pkcs11go.h"
 
-CK_RV Go_Initialize();
-CK_RV Go_Finalize();
+CK_RV Go_Initialize(void);
+CK_RV Go_Finalize(void);
 CK_RV Go_GetInfo(ckInfoPtr);
 CK_RV Go_GetSlotList(CK_BBOOL, CK_SLOT_ID_PTR, CK_ULONG_PTR);
 CK_RV Go_GetSlotInfo(CK_SLOT_ID, CK_SLOT_INFO_PTR);
@@ -159,6 +159,12 @@ CK_FUNCTION_LIST pkcs11_functions =
 	&C_CancelFunction,
 	&C_WaitForSlotEvent
 };
+
+// We have to match the PKCS#11 API exactly here, but many of the parameters
+// aren't passed to Go (either because they're unsupported features, or they're
+// reserved.)  Don't trigger compiler warrnings about this.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 CK_DEFINE_FUNCTION(CK_RV, C_Initialize)(CK_VOID_PTR pInitArgs)
 {
@@ -592,3 +598,5 @@ CK_DEFINE_FUNCTION(CK_RV, C_WaitForSlotEvent)(CK_FLAGS flags, CK_SLOT_ID_PTR pSl
 {
 	return Go_WaitForSlotEvent(flags, pSlot, pReserved);
 }
+
+#pragma GCC diagnostic pop
