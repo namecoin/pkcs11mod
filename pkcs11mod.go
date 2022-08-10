@@ -657,18 +657,19 @@ func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_O
 			goTemplateSingle := []*pkcs11.Attribute{t}
 
 			goResultsSingle, err := backend.GetAttributeValue(goSessionHandle, goObjectHandle, goTemplateSingle)
-			if fromError(err) == pkcs11.CKR_ATTRIBUTE_SENSITIVE || fromError(err) == pkcs11.CKR_ATTRIBUTE_TYPE_INVALID {
+			switch {
+			case fromError(err) == pkcs11.CKR_ATTRIBUTE_SENSITIVE || fromError(err) == pkcs11.CKR_ATTRIBUTE_TYPE_INVALID:
 				goResults[i] = &pkcs11.Attribute{
 					Type: t.Type,
 					Value: nil,
 				}
-			} else if err != nil {
+			case err != nil:
 				if trace {
 					log.Printf("pkcs11mod GetAttributeValue: %v", err)
 				}
 
 				return fromError(err)
-			} else {
+			default:
 				goResults[i] = goResultsSingle[0]
 			}
 		}
