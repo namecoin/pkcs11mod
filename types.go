@@ -125,7 +125,7 @@ func toTemplate(clist C.CK_ATTRIBUTE_PTR, size C.CK_ULONG) []*pkcs11.Attribute {
 // fromTemplate converts from a []*pkcs11.Attribute to a C style array that
 // already contains a template as is passed to C_GetAttributeValue.
 func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error {
-	l1 := make([]C.CK_ATTRIBUTE_PTR, int(len(template)))
+	l1 := make([]C.CK_ATTRIBUTE_PTR, len(template))
 	for i := 0; i < len(l1); i++ {
 		l1[i] = C.IndexAttributePtr(clist, C.CK_ULONG(i))
 	}
