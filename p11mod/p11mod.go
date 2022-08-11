@@ -30,11 +30,11 @@ import (
 var trace bool
 
 var highBackend Backend
-var highBackendError error
+var errHighBackend error
 
 func SetBackend(b Backend, err error) {
 	highBackend = b
-	highBackendError = err
+	errHighBackend = err
 }
 
 func init() {
@@ -71,9 +71,9 @@ type llBackend struct {
 func (ll *llBackend) Initialize() error {
 	// Initialize() was already called by p11.OpenModule(), so there's
 	// nothing to do here other than check the error value.
-	if highBackendError != nil {
+	if errHighBackend != nil {
 		if trace {
-			log.Printf("p11mod Initialize: %s", highBackendError)
+			log.Printf("p11mod Initialize: %s", errHighBackend)
 		}
 		return pkcs11.Error(pkcs11.CKR_GENERAL_ERROR)
 	}
