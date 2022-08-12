@@ -1,16 +1,16 @@
 // pkcs11mod
 // Copyright (C) 2018-2022  Namecoin Developers
-// 
+//
 // pkcs11mod is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // pkcs11mod is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with pkcs11mod; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -409,7 +409,7 @@ func goGetMechanismInfo(slotID C.CK_SLOT_ID, mechType C.CK_MECHANISM_TYPE, pInfo
 	goMechType := uint(mechType)
 
 	m := []*pkcs11.Mechanism{
-		&pkcs11.Mechanism{
+		{
 			Mechanism: goMechType,
 		},
 	}
@@ -434,7 +434,7 @@ func goInitPIN(sessionHandle C.CK_SESSION_HANDLE, pPin C.CK_UTF8CHAR_PTR, ulPinL
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goPin := string((*[1 << 30]byte)(unsafe.Pointer(pPin))[:ulPinLen:ulPinLen])
-	
+
 	err := backend.InitPIN(goSessionHandle, goPin)
 
 	return fromError(err)
@@ -449,7 +449,7 @@ func goSetPIN(sessionHandle C.CK_SESSION_HANDLE, pOldPin C.CK_UTF8CHAR_PTR, ulOl
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goOldPin := string(C.GoBytes(unsafe.Pointer(pOldPin), C.int(ulOldLen)))
 	goNewPin := string(C.GoBytes(unsafe.Pointer(pNewPin), C.int(ulNewLen)))
-	
+
 	err := backend.SetPIN(goSessionHandle, goOldPin, goNewPin)
 	return fromError(err)
 }
@@ -535,7 +535,7 @@ func goSetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK
 	goEncryptionKey := pkcs11.ObjectHandle(hEncryptionKey)
 	goAuthenticationKey := pkcs11.ObjectHandle(hAuthenticationKey)
 	goOperationState := C.GoBytes(unsafe.Pointer(pOperationState), C.int(ulOperationStateLen))
-	
+
 	err := backend.SetOperationState(goSessionHandle, goOperationState, goEncryptionKey, goAuthenticationKey)
 	return fromError(err)
 }
@@ -547,7 +547,7 @@ func goGetSessionInfo(sessionHandle C.CK_SESSION_HANDLE, pInfo C.CK_SESSION_INFO
 	}
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
-	
+
 	info, err := backend.GetSessionInfo(goSessionHandle)
 	if err != nil {
 		return fromError(err)
@@ -590,12 +590,12 @@ func goCreateObject(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goTemplate := toTemplate(pTemplate, ulCount)
-	
+
 	goHandle, err := backend.CreateObject(goSessionHandle, goTemplate)
 	if err != nil {
 		return fromError(err)
 	}
-	
+
 	*phObject = C.CK_OBJECT_HANDLE(goHandle)
 	return fromError(nil)
 }
@@ -623,7 +623,7 @@ func goCopyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE,
 func goDestroyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hObject)
-	
+
 	err := backend.DestroyObject(goSessionHandle, goObjectHandle)
 	return fromError(err)
 }
@@ -674,7 +674,7 @@ func goGetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OB
 			switch {
 			case fromError(err) == pkcs11.CKR_ATTRIBUTE_SENSITIVE || fromError(err) == pkcs11.CKR_ATTRIBUTE_TYPE_INVALID:
 				goResults[i] = &pkcs11.Attribute{
-					Type: t.Type,
+					Type:  t.Type,
 					Value: nil,
 				}
 			case err != nil:
@@ -716,7 +716,7 @@ func goSetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hObject)
 	goTemplate := toTemplate(pTemplate, ulCount)
-	
+
 	err := backend.SetAttributeValue(goSessionHandle, goObjectHandle, goTemplate)
 	return fromError(err)
 }
@@ -797,7 +797,7 @@ func goEncryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
-	
+
 	err := backend.EncryptInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
 	return fromError(err)
 }
@@ -813,7 +813,7 @@ func goEncrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen
 
 	var (
 		encryptedData []byte
-		err error
+		err           error
 	)
 
 	sessionsMutex.RLock()
@@ -929,7 +929,7 @@ func goDecrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR, 
 
 	var (
 		data []byte
-		err error
+		err  error
 	)
 
 	sessionsMutex.RLock()
@@ -1138,7 +1138,7 @@ func goSignInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
-	
+
 	err := backend.SignInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
 	return fromError(err)
 }
@@ -1240,7 +1240,7 @@ func goSignRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHAN
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
-	
+
 	err := backend.SignRecoverInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
 	return fromError(err)
 }
@@ -1278,7 +1278,7 @@ func goVerifyInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_P
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
-	
+
 	err := backend.VerifyInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
 	return fromError(err)
 }
@@ -1332,7 +1332,7 @@ func goVerifyRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECH
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
-	
+
 	err := backend.VerifyRecoverInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
 	return fromError(err)
 }

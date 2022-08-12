@@ -1,16 +1,16 @@
 // pkcs11mod
 // Copyright (C) 2021-2022  Namecoin Developers
-// 
+//
 // pkcs11mod is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // pkcs11mod is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with pkcs11mod; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -24,6 +24,7 @@ import (
 
 	"github.com/miekg/pkcs11"
 	"github.com/miekg/pkcs11/p11"
+
 	"github.com/namecoin/pkcs11mod"
 )
 
@@ -39,7 +40,7 @@ func SetBackend(b Backend, err error) {
 
 func init() {
 	b := &llBackend{
-		slots: []p11.Slot{},
+		slots:    []p11.Slot{},
 		sessions: map[pkcs11.SessionHandle]*llSession{},
 	}
 
@@ -51,20 +52,20 @@ func init() {
 }
 
 type llSession struct {
-	session p11.Session
-	slotID uint
-	objects []p11.Object
-	objectsPending []p11.Object
-	signMechanism *pkcs11.Mechanism
-	signKeyIndex int
+	session         p11.Session
+	slotID          uint
+	objects         []p11.Object
+	objectsPending  []p11.Object
+	signMechanism   *pkcs11.Mechanism
+	signKeyIndex    int
 	verifyMechanism *pkcs11.Mechanism
-	verifyKeyIndex int
+	verifyKeyIndex  int
 }
 
 type llBackend struct {
-	slots []p11.Slot
-	slotsMutex sync.RWMutex
-	sessions map[pkcs11.SessionHandle]*llSession
+	slots         []p11.Slot
+	slotsMutex    sync.RWMutex
+	sessions      map[pkcs11.SessionHandle]*llSession
 	sessionsMutex sync.RWMutex
 }
 
@@ -253,7 +254,7 @@ func (ll *llBackend) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle,
 
 	var session p11.Session
 
-	if flags & pkcs11.CKF_RW_SESSION != 0 {
+	if flags&pkcs11.CKF_RW_SESSION != 0 {
 		session, err = slot.OpenWriteSession()
 	} else {
 		session, err = slot.OpenSession()
@@ -269,14 +270,14 @@ func (ll *llBackend) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle,
 	sessionHandle := ll.nextAvailableSessionHandle()
 
 	ll.sessions[sessionHandle] = &llSession{
-		session: session,
-		slotID: slotID,
-		objects: []p11.Object{},
-		objectsPending: []p11.Object{},
-		signMechanism: nil,
-		signKeyIndex: 0,
+		session:         session,
+		slotID:          slotID,
+		objects:         []p11.Object{},
+		objectsPending:  []p11.Object{},
+		signMechanism:   nil,
+		signKeyIndex:    0,
 		verifyMechanism: nil,
-		verifyKeyIndex: 0,
+		verifyKeyIndex:  0,
 	}
 
 	if trace {
@@ -420,7 +421,7 @@ func (ll *llBackend) DestroyObject(sh pkcs11.SessionHandle, oh pkcs11.ObjectHand
 	}
 
 	// Handles are 1-indexed, while our slice is 0-indexed.
-	objectIndex := int(oh-1)
+	objectIndex := int(oh - 1)
 
 	if objectIndex < 0 || objectIndex >= len(session.objects) {
 		log.Printf("p11mod DestroyObject: object index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
@@ -449,7 +450,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 	}
 
 	// Handles are 1-indexed, while our slice is 0-indexed.
-	objectIndex := int(oh-1)
+	objectIndex := int(oh - 1)
 
 	if objectIndex < 0 || objectIndex >= len(session.objects) {
 		log.Printf("p11mod GetAttributeValue: object index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
@@ -481,7 +482,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 		}
 
 		result[i] = &pkcs11.Attribute{
-			Type: t.Type,
+			Type:  t.Type,
 			Value: value,
 		}
 	}
@@ -659,7 +660,7 @@ func (ll *llBackend) SignInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, o 
 	}
 
 	// Handles are 1-indexed, while our slice is 0-indexed.
-	objectIndex := int(o-1)
+	objectIndex := int(o - 1)
 
 	if objectIndex < 0 || objectIndex >= len(session.objects) {
 		log.Printf("p11mod SignInit: key index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
@@ -746,7 +747,7 @@ func (ll *llBackend) VerifyInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, 
 	}
 
 	// Handles are 1-indexed, while our slice is 0-indexed.
-	objectIndex := int(key-1)
+	objectIndex := int(key - 1)
 
 	if objectIndex < 0 || objectIndex >= len(session.objects) {
 		log.Printf("p11mod VerifyInit: key index invalid: requested %d, object count %d\n", objectIndex, len(session.objects))
