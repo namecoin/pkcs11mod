@@ -38,9 +38,11 @@ package pkcs11mod
 import "C"
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"unsafe"
 
@@ -146,22 +148,11 @@ func Go_GetInfo(p C.ckInfoPtr) C.CK_RV {
 	p.libraryVersion.major = C.CK_BYTE(info.LibraryVersion.Major)
 	p.libraryVersion.minor = C.CK_BYTE(info.LibraryVersion.Minor)
 
-	// CK_INFO strings have a max length of 32, as per Sec. 3.1 of the
+	// CK_INFO strings have a max length of 32, must be padded with the space
+	// character, and must not be null-terminated, as per Sec. 3.1 of the
 	// PKCS#11 spec.
-	if len(info.ManufacturerID) > 32 {
-		info.ManufacturerID = info.ManufacturerID[:32]
-	}
-
-	if len(info.LibraryDescription) > 32 {
-		info.LibraryDescription = info.LibraryDescription[:32]
-	}
-
-	// CK_INFO strings must be padded with the space character and not
-	// null-terminated, as per Sec. 3.1 of the PKCS#11 spec.
-	for x := 0; x < 32; x++ {
-		p.manufacturerID[x] = C.CK_UTF8CHAR(' ')
-		p.libraryDescription[x] = C.CK_UTF8CHAR(' ')
-	}
+	info.ManufacturerID = fmt.Sprintf("%-32.32s", info.ManufacturerID)
+	info.LibraryDescription = fmt.Sprintf("%-32.32s", info.LibraryDescription)
 
 	// Copy the ManufacturerID
 	for i, ch := range info.ManufacturerID {
@@ -228,27 +219,11 @@ func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
 	pInfo.firmwareVersion.major = C.CK_BYTE(slotInfo.FirmwareVersion.Major)
 	pInfo.firmwareVersion.minor = C.CK_BYTE(slotInfo.FirmwareVersion.Minor)
 
-	// CK_SLOT_INFO slotDescription has a max length of 64, as per Sec. 3.2
-	// of the PKCS#11 spec.
-	if len(slotInfo.SlotDescription) > 64 {
-		slotInfo.SlotDescription = slotInfo.SlotDescription[:64]
-	}
-
-	// CK_SLOT_INFO manufacturerID has a max length of 32, as per Sec. 3.2
-	// of the PKCS#11 spec.
-	if len(slotInfo.ManufacturerID) > 32 {
-		slotInfo.ManufacturerID = slotInfo.ManufacturerID[:32]
-	}
-
-	// CK_SLOT_INFO strings must be padded with the space character and not
-	// null-terminated, as per Sec. 3.2 of the PKCS#11 spec.
-	for x := 0; x < 64; x++ {
-		pInfo.slotDescription[x] = C.CK_UTF8CHAR(' ')
-	}
-
-	for x := 0; x < 32; x++ {
-		pInfo.manufacturerID[x] = C.CK_UTF8CHAR(' ')
-	}
+	// CK_SLOT_INFO strings have a max length, must be padded with the space
+	// character, and must not be null-terminated, as per Sec. 3.2 of the
+	// PKCS#11 spec.
+	slotInfo.SlotDescription = fmt.Sprintf("%-64.64s", slotInfo.SlotDescription)
+	slotInfo.ManufacturerID = fmt.Sprintf("%-32.32s", slotInfo.ManufacturerID)
 
 	// Copy the SlotDescription
 	for i, ch := range slotInfo.SlotDescription {
@@ -291,55 +266,14 @@ func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
 	pInfo.firmwareVersion.major = C.CK_BYTE(tokenInfo.FirmwareVersion.Major)
 	pInfo.firmwareVersion.minor = C.CK_BYTE(tokenInfo.FirmwareVersion.Minor)
 
-	// CK_TOKEN_INFO label has a max length of 32, as per Sec. 3.2 of the
-	// PKCS#11 spec.
-	if len(tokenInfo.Label) > 32 {
-		tokenInfo.Label = tokenInfo.Label[:32]
-	}
-
-	// CK_TOKEN_INFO manufacturerID has a max length of 32, as per Sec. 3.2
-	// of the PKCS#11 spec.
-	if len(tokenInfo.ManufacturerID) > 32 {
-		tokenInfo.ManufacturerID = tokenInfo.ManufacturerID[:32]
-	}
-
-	// CK_TOKEN_INFO model has a max length of 16, as per Sec. 3.2 of the
-	// PKCS#11 spec.
-	if len(tokenInfo.Model) > 16 {
-		tokenInfo.Model = tokenInfo.Model[:16]
-	}
-
-	// CK_TOKEN_INFO serialNumber has a max length of 16, as per Sec. 3.2
-	// of the PKCS#11 spec.
-	if len(tokenInfo.SerialNumber) > 16 {
-		tokenInfo.SerialNumber = tokenInfo.SerialNumber[:16]
-	}
-
-	// CK_TOKEN_INFO utcTime has a max length of 16, as per Sec. 3.2 of the
-	// PKCS#11 spec.
-	if len(tokenInfo.UTCTime) > 16 {
-		tokenInfo.UTCTime = tokenInfo.UTCTime[:16]
-	}
-
-	// CK_TOKEN_INFO strings must be padded with the space character
-	// (except for utcTime which is padded with '0') and not null-
-	// terminated, as per Sec. 3.2 of the PKCS#11 spec.
-	for x := 0; x < 32; x++ {
-		pInfo.label[x] = C.CK_UTF8CHAR(' ')
-		pInfo.manufacturerID[x] = C.CK_UTF8CHAR(' ')
-	}
-
-	for x := 0; x < 16; x++ {
-		pInfo.model[x] = C.CK_UTF8CHAR(' ')
-	}
-
-	for x := 0; x < 16; x++ {
-		pInfo.serialNumber[x] = C.CK_CHAR(' ')
-	}
-
-	for x := 0; x < 16; x++ {
-		pInfo.utcTime[x] = C.CK_CHAR('0')
-	}
+	// CK_TOKEN_INFO strings have a max length, must be padded with the space
+	// character (except for utcTime which is padded with '0'), and must not be
+	// null-terminated, as per Sec. 3.2 of the PKCS#11 spec.
+	tokenInfo.Label = fmt.Sprintf("%-32.32s", tokenInfo.Label)
+	tokenInfo.ManufacturerID = fmt.Sprintf("%-32.32s", tokenInfo.ManufacturerID)
+	tokenInfo.Model = fmt.Sprintf("%-16.16s", tokenInfo.Model)
+	tokenInfo.SerialNumber = fmt.Sprintf("%-16.16s", tokenInfo.SerialNumber)
+	tokenInfo.UTCTime = strings.ReplaceAll(fmt.Sprintf("%-16.16s", tokenInfo.UTCTime), " ", "0")
 
 	// Copy the Label
 	for i, ch := range tokenInfo.Label {
