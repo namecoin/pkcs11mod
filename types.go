@@ -213,7 +213,6 @@ func toMechanism(pMechanism C.CK_MECHANISM_PTR) *pkcs11.Mechanism {
 	default:
 		return pkcs11.NewMechanism(uint(pMechanism.mechanism), nil)
 	}
-	return nil
 }
 
 var strCKA = map[uint]string{
