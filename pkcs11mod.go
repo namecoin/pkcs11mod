@@ -95,13 +95,13 @@ func SetBackend(b Backend) {
 	backend = b
 }
 
-//export GoLog
-func GoLog(s unsafe.Pointer) {
+//export goLog
+func goLog(s unsafe.Pointer) {
 	log.Println(C.GoString((*C.char)(s)))
 }
 
-//export Go_Initialize
-func Go_Initialize() C.CK_RV {
+//export goInitialize
+func goInitialize() C.CK_RV {
 	if backend == nil {
 		log.Println("pkcs11mod: Can't initialize nil backend")
 		return C.CKR_GENERAL_ERROR
@@ -116,8 +116,8 @@ func Go_Initialize() C.CK_RV {
 	return fromError(err)
 }
 
-//export Go_Finalize
-func Go_Finalize() C.CK_RV {
+//export goFinalize
+func goFinalize() C.CK_RV {
 	if trace {
 		log.Println("pkcs11mod Finalize")
 	}
@@ -129,8 +129,8 @@ func Go_Finalize() C.CK_RV {
 	return fromError(err)
 }
 
-//export Go_GetInfo
-func Go_GetInfo(p C.ckInfoPtr) C.CK_RV {
+//export goGetInfo
+func goGetInfo(p C.ckInfoPtr) C.CK_RV {
 	if p == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -175,8 +175,8 @@ func Go_GetInfo(p C.ckInfoPtr) C.CK_RV {
 	return fromError(nil)
 }
 
-//export Go_GetSlotList
-func Go_GetSlotList(tokenPresent C.CK_BBOOL, pSlotList C.CK_SLOT_ID_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
+//export goGetSlotList
+func goGetSlotList(tokenPresent C.CK_BBOOL, pSlotList C.CK_SLOT_ID_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
 	if pulCount == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -209,8 +209,8 @@ func Go_GetSlotList(tokenPresent C.CK_BBOOL, pSlotList C.CK_SLOT_ID_PTR, pulCoun
 	return fromError(nil)
 }
 
-//export Go_GetSlotInfo
-func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
+//export goGetSlotInfo
+func goGetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
 	if pInfo == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -262,8 +262,8 @@ func Go_GetSlotInfo(slotID C.CK_SLOT_ID, pInfo C.CK_SLOT_INFO_PTR) C.CK_RV {
 	return fromError(nil)
 }
 
-//export Go_GetTokenInfo
-func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
+//export goGetTokenInfo
+func goGetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
 	if pInfo == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -365,8 +365,8 @@ func Go_GetTokenInfo(slotID C.CK_SLOT_ID, pInfo C.CK_TOKEN_INFO_PTR) C.CK_RV {
 	return fromError(err)
 }
 
-//export Go_GetMechanismList
-func Go_GetMechanismList(slotID C.CK_SLOT_ID, pMechanismList C.CK_MECHANISM_TYPE_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
+//export goGetMechanismList
+func goGetMechanismList(slotID C.CK_SLOT_ID, pMechanismList C.CK_MECHANISM_TYPE_PTR, pulCount C.CK_ULONG_PTR) C.CK_RV {
 	if pulCount == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -399,8 +399,8 @@ func Go_GetMechanismList(slotID C.CK_SLOT_ID, pMechanismList C.CK_MECHANISM_TYPE
 	return fromError(nil)
 }
 
-//export Go_GetMechanismInfo
-func Go_GetMechanismInfo(slotID C.CK_SLOT_ID, mechType C.CK_MECHANISM_TYPE, pInfo C.CK_MECHANISM_INFO_PTR) C.CK_RV {
+//export goGetMechanismInfo
+func goGetMechanismInfo(slotID C.CK_SLOT_ID, mechType C.CK_MECHANISM_TYPE, pInfo C.CK_MECHANISM_INFO_PTR) C.CK_RV {
 	if pInfo == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -426,8 +426,8 @@ func Go_GetMechanismInfo(slotID C.CK_SLOT_ID, mechType C.CK_MECHANISM_TYPE, pInf
 	return fromError(nil)
 }
 
-//export Go_InitPIN
-func Go_InitPIN(sessionHandle C.CK_SESSION_HANDLE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
+//export goInitPIN
+func goInitPIN(sessionHandle C.CK_SESSION_HANDLE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
 	if pPin == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -440,8 +440,8 @@ func Go_InitPIN(sessionHandle C.CK_SESSION_HANDLE, pPin C.CK_UTF8CHAR_PTR, ulPin
 	return fromError(err)
 }
 
-//export Go_SetPIN
-func Go_SetPIN(sessionHandle C.CK_SESSION_HANDLE, pOldPin C.CK_UTF8CHAR_PTR, ulOldLen C.CK_ULONG, pNewPin C.CK_UTF8CHAR_PTR, ulNewLen C.CK_ULONG) C.CK_RV {
+//export goSetPIN
+func goSetPIN(sessionHandle C.CK_SESSION_HANDLE, pOldPin C.CK_UTF8CHAR_PTR, ulOldLen C.CK_ULONG, pNewPin C.CK_UTF8CHAR_PTR, ulNewLen C.CK_ULONG) C.CK_RV {
 	if pOldPin == nil || pNewPin == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -464,8 +464,8 @@ type sessionInfo struct {
 var sessions = map[pkcs11.SessionHandle]*sessionInfo{}
 var sessionsMutex sync.RWMutex
 
-//export Go_OpenSession
-func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
+//export goOpenSession
+func goOpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
 	if phSession == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -486,24 +486,24 @@ func Go_OpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSIO
 	return fromError(nil)
 }
 
-//export Go_CloseSession
-func Go_CloseSession(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
+//export goCloseSession
+func goCloseSession(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 
 	err := backend.CloseSession(goSessionHandle)
 	return fromError(err)
 }
 
-//export Go_CloseAllSessions
-func Go_CloseAllSessions(slotID C.CK_SLOT_ID) C.CK_RV {
+//export goCloseAllSessions
+func goCloseAllSessions(slotID C.CK_SLOT_ID) C.CK_RV {
 	goSlotID := uint(slotID)
 
 	err := backend.CloseAllSessions(goSlotID)
 	return fromError(err)
 }
 
-//export Go_GetOperationState
-func Go_GetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK_BYTE_PTR, pulOperationStateLen C.CK_ULONG_PTR) C.CK_RV {
+//export goGetOperationState
+func goGetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK_BYTE_PTR, pulOperationStateLen C.CK_ULONG_PTR) C.CK_RV {
 	if pOperationState == nil || pulOperationStateLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -525,8 +525,8 @@ func Go_GetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.C
 	return fromError(nil)
 }
 
-//export Go_SetOperationState
-func Go_SetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK_BYTE_PTR, ulOperationStateLen C.CK_LONG, hEncryptionKey C.CK_OBJECT_HANDLE, hAuthenticationKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goSetOperationState
+func goSetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK_BYTE_PTR, ulOperationStateLen C.CK_LONG, hEncryptionKey C.CK_OBJECT_HANDLE, hAuthenticationKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pOperationState == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -540,8 +540,8 @@ func Go_SetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.C
 	return fromError(err)
 }
 
-//export Go_GetSessionInfo
-func Go_GetSessionInfo(sessionHandle C.CK_SESSION_HANDLE, pInfo C.CK_SESSION_INFO_PTR) C.CK_RV {
+//export goGetSessionInfo
+func goGetSessionInfo(sessionHandle C.CK_SESSION_HANDLE, pInfo C.CK_SESSION_INFO_PTR) C.CK_RV {
 	if pInfo == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -560,8 +560,8 @@ func Go_GetSessionInfo(sessionHandle C.CK_SESSION_HANDLE, pInfo C.CK_SESSION_INF
 	return fromError(nil)
 }
 
-//export Go_Login
-func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
+//export goLogin
+func goLogin(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C.CK_UTF8CHAR_PTR, ulPinLen C.CK_ULONG) C.CK_RV {
 	if pPin == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -574,16 +574,16 @@ func Go_Login(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C
 	return fromError(err)
 }
 
-//export Go_Logout
-func Go_Logout(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
+//export goLogout
+func goLogout(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 
 	err := backend.Logout(goSessionHandle)
 	return fromError(err)
 }
 
-//export Go_CreateObject
-func Go_CreateObject(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG, phObject C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
+//export goCreateObject
+func goCreateObject(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG, phObject C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
 	if pTemplate == nil && ulCount > 0 || phObject == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -600,8 +600,8 @@ func Go_CreateObject(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE
 	return fromError(nil)
 }
 
-//export Go_CopyObject
-func Go_CopyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG, phNewObject C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
+//export goCopyObject
+func goCopyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG, phNewObject C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
 	if pTemplate == nil && ulCount > 0 || phNewObject == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -619,8 +619,8 @@ func Go_CopyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE
 	return fromError(nil)
 }
 
-//export Go_DestroyObject
-func Go_DestroyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goDestroyObject
+func goDestroyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goObjectHandle := pkcs11.ObjectHandle(hObject)
 	
@@ -628,8 +628,8 @@ func Go_DestroyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HAN
 	return fromError(err)
 }
 
-//export Go_GetObjectSize
-func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pulSize C.CK_ULONG_PTR) C.CK_RV {
+//export goGetObjectSize
+func goGetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pulSize C.CK_ULONG_PTR) C.CK_RV {
 	if pulSize == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -646,8 +646,8 @@ func Go_GetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJEC
 	return fromError(nil)
 }
 
-//export Go_GetAttributeValue
-func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
+//export goGetAttributeValue
+func goGetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
 	if pTemplate == nil && ulCount > 0 {
 		if trace {
 			log.Println("pkcs11mod GetAttributeValue: CKR_ARGUMENTS_BAD")
@@ -707,8 +707,8 @@ func Go_GetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_O
 	return fromError(errFinal)
 }
 
-//export Go_SetAttributeValue
-func Go_SetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
+//export goSetAttributeValue
+func goSetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
 	if pTemplate == nil && ulCount > 0 {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -721,8 +721,8 @@ func Go_SetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT
 	return fromError(err)
 }
 
-//export Go_FindObjectsInit
-func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
+//export goFindObjectsInit
+func goFindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG) C.CK_RV {
 	if trace {
 		log.Println("pkcs11mod FindObjectsInit")
 	}
@@ -748,8 +748,8 @@ func Go_FindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIB
 	return fromError(err)
 }
 
-//export Go_FindObjects
-func Go_FindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HANDLE_PTR, ulMaxObjectCount C.CK_ULONG, pulObjectCount C.CK_ULONG_PTR) C.CK_RV {
+//export goFindObjects
+func goFindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HANDLE_PTR, ulMaxObjectCount C.CK_ULONG, pulObjectCount C.CK_ULONG_PTR) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goMax := int(ulMaxObjectCount)
 
@@ -780,16 +780,16 @@ func Go_FindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HAND
 	return fromError(nil)
 }
 
-//export Go_FindObjectsFinal
-func Go_FindObjectsFinal(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
+//export goFindObjectsFinal
+func goFindObjectsFinal(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 
 	err := backend.FindObjectsFinal(goSessionHandle)
 	return fromError(err)
 }
 
-//export Go_EncryptInit
-func Go_EncryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goEncryptInit
+func goEncryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pMechanism == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -802,8 +802,8 @@ func Go_EncryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM
 	return fromError(err)
 }
 
-//export Go_Encrypt
-func Go_Encrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pEncryptedData C.CK_BYTE_PTR, pulEncryptedDataLen C.CK_ULONG_PTR) C.CK_RV {
+//export goEncrypt
+func goEncrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pEncryptedData C.CK_BYTE_PTR, pulEncryptedDataLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pulEncryptedDataLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -857,8 +857,8 @@ func Go_Encrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLe
 	return fromError(nil)
 }
 
-//export Go_EncryptUpdate
-func Go_EncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG, pEncryptedPart C.CK_BYTE_PTR, pulEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goEncryptUpdate
+func goEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG, pEncryptedPart C.CK_BYTE_PTR, pulEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pPart == nil || pEncryptedPart == nil || pulEncryptedPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -881,8 +881,8 @@ func Go_EncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ul
 	return fromError(nil)
 }
 
-//export Go_EncryptFinal
-func Go_EncryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastEncryptedPart C.CK_BYTE_PTR, pulLastEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goEncryptFinal
+func goEncryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastEncryptedPart C.CK_BYTE_PTR, pulLastEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pLastEncryptedPart == nil || pulLastEncryptedPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -904,8 +904,8 @@ func Go_EncryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastEncryptedPart C.CK_
 	return fromError(nil)
 }
 
-//export Go_DecryptInit
-func Go_DecryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goDecryptInit
+func goDecryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pMechanism == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -918,8 +918,8 @@ func Go_DecryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM
 	return fromError(err)
 }
 
-//export Go_Decrypt
-func Go_Decrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR, ulEncryptedDataLen C.CK_ULONG, pData C.CK_BYTE_PTR, pulDataLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDecrypt
+func goDecrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR, ulEncryptedDataLen C.CK_ULONG, pData C.CK_BYTE_PTR, pulDataLen C.CK_ULONG_PTR) C.CK_RV {
 	if pEncryptedData == nil || pulDataLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -973,8 +973,8 @@ func Go_Decrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR,
 	return fromError(nil)
 }
 
-//export Go_DecryptUpdate
-func Go_DecryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYTE_PTR, ulEncryptedPartLen C.CK_ULONG, pPart C.CK_BYTE_PTR, pulPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDecryptUpdate
+func goDecryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYTE_PTR, ulEncryptedPartLen C.CK_ULONG, pPart C.CK_BYTE_PTR, pulPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pEncryptedPart == nil || pPart == nil || pulPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -997,8 +997,8 @@ func Go_DecryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYT
 	return fromError(nil)
 }
 
-//export Go_DecryptFinal
-func Go_DecryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastPart C.CK_BYTE_PTR, pulLastPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDecryptFinal
+func goDecryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastPart C.CK_BYTE_PTR, pulLastPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pLastPart == nil || pulLastPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1020,8 +1020,8 @@ func Go_DecryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastPart C.CK_BYTE_PTR,
 	return fromError(err)
 }
 
-//export Go_DigestInit
-func Go_DigestInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR) C.CK_RV {
+//export goDigestInit
+func goDigestInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR) C.CK_RV {
 	if pMechanism == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1032,8 +1032,8 @@ func Go_DigestInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	return fromError(err)
 }
 
-//export Go_Digest
-func Go_Digest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pDigest C.CK_BYTE_PTR, pulDigestLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDigest
+func goDigest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pDigest C.CK_BYTE_PTR, pulDigestLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pulDigestLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1084,8 +1084,8 @@ func Go_Digest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen
 	return fromError(nil)
 }
 
-//export Go_DigestUpdate
-func Go_DigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG) C.CK_RV {
+//export goDigestUpdate
+func goDigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG) C.CK_RV {
 	if pPart == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1097,8 +1097,8 @@ func Go_DigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulP
 	return fromError(err)
 }
 
-//export Go_DigestKey
-func Go_DigestKey(sessionHandle C.CK_SESSION_HANDLE, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goDigestKey
+func goDigestKey(sessionHandle C.CK_SESSION_HANDLE, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goKeyHandle := pkcs11.ObjectHandle(hKey)
 
@@ -1106,8 +1106,8 @@ func Go_DigestKey(sessionHandle C.CK_SESSION_HANDLE, hKey C.CK_OBJECT_HANDLE) C.
 	return fromError(err)
 }
 
-//export Go_DigestFinal
-func Go_DigestFinal(sessionHandle C.CK_SESSION_HANDLE, pDigest C.CK_BYTE_PTR, pulDigestLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDigestFinal
+func goDigestFinal(sessionHandle C.CK_SESSION_HANDLE, pDigest C.CK_BYTE_PTR, pulDigestLen C.CK_ULONG_PTR) C.CK_RV {
 	if pDigest == nil || pulDigestLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1129,8 +1129,8 @@ func Go_DigestFinal(sessionHandle C.CK_SESSION_HANDLE, pDigest C.CK_BYTE_PTR, pu
 	return fromError(nil)
 }
 
-//export Go_SignInit
-func Go_SignInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goSignInit
+func goSignInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pMechanism == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1143,8 +1143,8 @@ func Go_SignInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PT
 	return fromError(err)
 }
 
-//export Go_Sign
-func Go_Sign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pSignature C.CK_BYTE_PTR, pulSignatureLen C.CK_ULONG_PTR) C.CK_RV {
+//export goSign
+func goSign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pSignature C.CK_BYTE_PTR, pulSignatureLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pulSignatureLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1195,8 +1195,8 @@ func Go_Sign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C
 	return fromError(nil)
 }
 
-//export Go_SignUpdate
-func Go_SignUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG) C.CK_RV {
+//export goSignUpdate
+func goSignUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG) C.CK_RV {
 	if pPart == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1208,8 +1208,8 @@ func Go_SignUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPar
 	return fromError(err)
 }
 
-//export Go_SignFinal
-func Go_SignFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, pulSignatureLen C.CK_ULONG_PTR) C.CK_RV {
+//export goSignFinal
+func goSignFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, pulSignatureLen C.CK_ULONG_PTR) C.CK_RV {
 	if pSignature == nil || pulSignatureLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1231,8 +1231,8 @@ func Go_SignFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, p
 	return fromError(nil)
 }
 
-//export Go_SignRecoverInit
-func Go_SignRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goSignRecoverInit
+func goSignRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pMechanism == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1245,8 +1245,8 @@ func Go_SignRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHA
 	return fromError(err)
 }
 
-//export Go_SignRecover
-func Go_SignRecover(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pSignature C.CK_BYTE_PTR, pulSignatureLen C.CK_ULONG_PTR) C.CK_RV {
+//export goSignRecover
+func goSignRecover(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pSignature C.CK_BYTE_PTR, pulSignatureLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pSignature == nil || pulSignatureLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1269,8 +1269,8 @@ func Go_SignRecover(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDa
 	return fromError(nil)
 }
 
-//export Go_VerifyInit
-func Go_VerifyInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goVerifyInit
+func goVerifyInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pMechanism == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1283,8 +1283,8 @@ func Go_VerifyInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	return fromError(err)
 }
 
-//export Go_Verify
-func Go_Verify(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pSignature C.CK_BYTE_PTR, ulSignatureLen C.CK_ULONG) C.CK_RV {
+//export goVerify
+func goVerify(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.CK_ULONG, pSignature C.CK_BYTE_PTR, ulSignatureLen C.CK_ULONG) C.CK_RV {
 	if pData == nil || pSignature == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1297,8 +1297,8 @@ func Go_Verify(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen
 	return fromError(err)
 }
 
-//export Go_VerifyUpdate
-func Go_VerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG) C.CK_RV {
+//export goVerifyUpdate
+func goVerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG) C.CK_RV {
 	if pPart == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1310,8 +1310,8 @@ func Go_VerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulP
 	return fromError(err)
 }
 
-//export Go_VerifyFinal
-func Go_VerifyFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, ulSignatureLen C.CK_ULONG) C.CK_RV {
+//export goVerifyFinal
+func goVerifyFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, ulSignatureLen C.CK_ULONG) C.CK_RV {
 	if pSignature == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1323,8 +1323,8 @@ func Go_VerifyFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR,
 	return fromError(err)
 }
 
-//export Go_VerifyRecoverInit
-func Go_VerifyRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
+//export goVerifyRecoverInit
+func goVerifyRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pMechanism == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1337,8 +1337,8 @@ func Go_VerifyRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MEC
 	return fromError(err)
 }
 
-//export Go_VerifyRecover
-func Go_VerifyRecover(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, ulSignatureLen C.CK_ULONG, pData C.CK_BYTE_PTR, pulDataLen C.CK_ULONG_PTR) C.CK_RV {
+//export goVerifyRecover
+func goVerifyRecover(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, ulSignatureLen C.CK_ULONG, pData C.CK_BYTE_PTR, pulDataLen C.CK_ULONG_PTR) C.CK_RV {
 	if pData == nil || pSignature == nil || pulDataLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1361,8 +1361,8 @@ func Go_VerifyRecover(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PT
 	return fromError(nil)
 }
 
-//export Go_DigestEncryptUpdate
-func Go_DigestEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG, pEncryptedPart C.CK_BYTE_PTR, pulEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDigestEncryptUpdate
+func goDigestEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG, pEncryptedPart C.CK_BYTE_PTR, pulEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pPart == nil || pEncryptedPart == nil || pulEncryptedPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1385,8 +1385,8 @@ func Go_DigestEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_P
 	return fromError(nil)
 }
 
-//export Go_DecryptDigestUpdate
-func Go_DecryptDigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYTE_PTR, ulEncryptedPartLen C.CK_ULONG, pPart C.CK_BYTE_PTR, pulPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDecryptDigestUpdate
+func goDecryptDigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYTE_PTR, ulEncryptedPartLen C.CK_ULONG, pPart C.CK_BYTE_PTR, pulPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pPart == nil || pEncryptedPart == nil || pulPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1409,8 +1409,8 @@ func Go_DecryptDigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.
 	return fromError(nil)
 }
 
-//export Go_SignEncryptUpdate
-func Go_SignEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG, pEncryptedPart C.CK_BYTE_PTR, pulEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goSignEncryptUpdate
+func goSignEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPartLen C.CK_ULONG, pEncryptedPart C.CK_BYTE_PTR, pulEncryptedPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pPart == nil || pEncryptedPart == nil || pulEncryptedPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1433,8 +1433,8 @@ func Go_SignEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR
 	return fromError(nil)
 }
 
-//export Go_DecryptVerifyUpdate
-func Go_DecryptVerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYTE_PTR, ulEncryptedPartLen C.CK_ULONG, pPart C.CK_BYTE_PTR, pulPartLen C.CK_ULONG_PTR) C.CK_RV {
+//export goDecryptVerifyUpdate
+func goDecryptVerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYTE_PTR, ulEncryptedPartLen C.CK_ULONG, pPart C.CK_BYTE_PTR, pulPartLen C.CK_ULONG_PTR) C.CK_RV {
 	if pPart == nil || pEncryptedPart == nil || pulPartLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1457,8 +1457,8 @@ func Go_DecryptVerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.
 	return fromError(nil)
 }
 
-//export Go_GenerateKey
-func Go_GenerateKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG, phKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
+//export goGenerateKey
+func goGenerateKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, pTemplate C.CK_ATTRIBUTE_PTR, ulCount C.CK_ULONG, phKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
 	if pMechanism == nil || pTemplate == nil && ulCount > 0 || phKey == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1476,8 +1476,8 @@ func Go_GenerateKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM
 	return fromError(nil)
 }
 
-//export Go_GenerateKeyPair
-func Go_GenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, pPublicKeyTemplate C.CK_ATTRIBUTE_PTR, ulPublicKeyAttributeCount C.CK_ULONG, pPrivateKeyTemplate C.CK_ATTRIBUTE_PTR, ulPrivateKeyAttributeCount C.CK_ULONG, phPublicKey C.CK_OBJECT_HANDLE_PTR, phPrivateKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
+//export goGenerateKeyPair
+func goGenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, pPublicKeyTemplate C.CK_ATTRIBUTE_PTR, ulPublicKeyAttributeCount C.CK_ULONG, pPrivateKeyTemplate C.CK_ATTRIBUTE_PTR, ulPrivateKeyAttributeCount C.CK_ULONG, phPublicKey C.CK_OBJECT_HANDLE_PTR, phPrivateKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
 	if pMechanism == nil || pPublicKeyTemplate == nil || pPrivateKeyTemplate == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1497,8 +1497,8 @@ func Go_GenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHA
 	return fromError(nil)
 }
 
-//export Go_WrapKey
-func Go_WrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hWrappingKey C.CK_OBJECT_HANDLE, hKey C.CK_OBJECT_HANDLE, pWrappedKey C.CK_BYTE_PTR, pulWrappedKeyLen C.CK_ULONG_PTR) C.CK_RV {
+//export goWrapKey
+func goWrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hWrappingKey C.CK_OBJECT_HANDLE, hKey C.CK_OBJECT_HANDLE, pWrappedKey C.CK_BYTE_PTR, pulWrappedKeyLen C.CK_ULONG_PTR) C.CK_RV {
 	if pMechanism == nil || pWrappedKey == nil || pulWrappedKeyLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1523,8 +1523,8 @@ func Go_WrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR
 	return fromError(nil)
 }
 
-//export Go_UnwrapKey
-func Go_UnwrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hUnwrappingKey C.CK_OBJECT_HANDLE, pWrappedKey C.CK_BYTE_PTR, ulWrappedKeyLen C.CK_ULONG, pTemplate C.CK_ATTRIBUTE_PTR, ulAttributeCount C.CK_ULONG, phKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
+//export goUnwrapKey
+func goUnwrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hUnwrappingKey C.CK_OBJECT_HANDLE, pWrappedKey C.CK_BYTE_PTR, ulWrappedKeyLen C.CK_ULONG, pTemplate C.CK_ATTRIBUTE_PTR, ulAttributeCount C.CK_ULONG, phKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
 	if pMechanism == nil || pWrappedKey == nil || phKey == nil || pTemplate == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1544,8 +1544,8 @@ func Go_UnwrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_P
 	return fromError(nil)
 }
 
-//export Go_DeriveKey
-func Go_DeriveKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hBaseKey C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulAttributeCount C.CK_ULONG, phKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
+//export goDeriveKey
+func goDeriveKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hBaseKey C.CK_OBJECT_HANDLE, pTemplate C.CK_ATTRIBUTE_PTR, ulAttributeCount C.CK_ULONG, phKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
 	if pMechanism == nil || phKey == nil || pTemplate == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1564,8 +1564,8 @@ func Go_DeriveKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_P
 	return fromError(nil)
 }
 
-//export Go_SeedRandom
-func Go_SeedRandom(sessionHandle C.CK_SESSION_HANDLE, pSeed C.CK_BYTE_PTR, ulSeedLen C.CK_ULONG) C.CK_RV {
+//export goSeedRandom
+func goSeedRandom(sessionHandle C.CK_SESSION_HANDLE, pSeed C.CK_BYTE_PTR, ulSeedLen C.CK_ULONG) C.CK_RV {
 	if pSeed == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1577,8 +1577,8 @@ func Go_SeedRandom(sessionHandle C.CK_SESSION_HANDLE, pSeed C.CK_BYTE_PTR, ulSee
 	return fromError(err)
 }
 
-//export Go_GenerateRandom
-func Go_GenerateRandom(sessionHandle C.CK_SESSION_HANDLE, pRandomData C.CK_BYTE_PTR, ulRandomLen C.CK_ULONG) C.CK_RV {
+//export goGenerateRandom
+func goGenerateRandom(sessionHandle C.CK_SESSION_HANDLE, pRandomData C.CK_BYTE_PTR, ulRandomLen C.CK_ULONG) C.CK_RV {
 	if pRandomData == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1596,8 +1596,8 @@ func Go_GenerateRandom(sessionHandle C.CK_SESSION_HANDLE, pRandomData C.CK_BYTE_
 	return fromError(nil)
 }
 
-//export Go_WaitForSlotEvent
-func Go_WaitForSlotEvent(flags C.CK_FLAGS, pSlot C.CK_SLOT_ID_PTR, pReserved C.CK_VOID_PTR) C.CK_RV {
+//export goWaitForSlotEvent
+func goWaitForSlotEvent(flags C.CK_FLAGS, pSlot C.CK_SLOT_ID_PTR, pReserved C.CK_VOID_PTR) C.CK_RV {
 	if pSlot == nil || pReserved != nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
