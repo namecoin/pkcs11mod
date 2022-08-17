@@ -1174,6 +1174,7 @@ func goSign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.
 		*pulSignatureLen = C.CK_ULONG(size)
 		return fromError(nil)
 	}
+
 	goSignature := (*[1 << 30]byte)(unsafe.Pointer(pSignature))[:*pulSignatureLen:*pulSignatureLen]
 
 	signature = session.signData
@@ -1601,6 +1602,7 @@ func goWaitForSlotEvent(flags C.CK_FLAGS, pSlot C.CK_SLOT_ID_PTR, pReserved C.CK
 	if pSlot == nil || pReserved != nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
+
 	goFlags := uint(flags)
 
 	slotEvent := <-backend.WaitForSlotEvent(goFlags)
