@@ -187,7 +187,7 @@ task:
         GOLANGCI_ARGS: "--new-from-rev=HEAD~"
     - name: Go Lint Mandatory
       env:
-        GOLANGCI_ARGS: "--disable=cyclop,dupl,errorlint,funlen,gci,godox,goerr113,gofumpt,golint,gomnd,gosimple,ifshort,lll,nlreturn,nosnakecase,revive,varnamelen,wrapcheck,wsl"
+        GOLANGCI_ARGS: "--disable=cyclop,dupl,errorlint,gci,godox,goerr113,gofumpt,gomnd,gosimple,ifshort,lll,nlreturn,nosnakecase,revive,varnamelen,wrapcheck,wsl"
     - name: Go Lint
       env:
         GOLANGCI_ARGS: ""

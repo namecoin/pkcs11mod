@@ -706,9 +706,9 @@ func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, erro
 			// PKCS#11 spec says Sign cannot return these.  So we have to
 			// return a different error.
 			return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
-		} else {
-			return nil, err
 		}
+
+		return nil, err
 	}
 
 	return signature, nil
@@ -793,9 +793,9 @@ func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data []byte, signature []by
 			// PKCS#11 spec says Verify cannot return these.  So we have to
 			// return a different error.
 			return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
-		} else {
-			return err
 		}
+
+		return err
 	}
 
 	return nil

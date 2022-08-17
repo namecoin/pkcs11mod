@@ -226,7 +226,7 @@ func AttrTrace(a *pkcs11.Attribute) string {
 
 	if traceSensitive {
 		return fmt.Sprintf("%s: %v", t, a.Value)
-	} else {
-		return fmt.Sprintf("%s", t)
 	}
+
+	return fmt.Sprintf("%s", t)
 }
