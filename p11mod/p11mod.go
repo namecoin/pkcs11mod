@@ -87,7 +87,6 @@ func (ll *llBackend) Initialize() error {
 
 func (ll *llBackend) Finalize() error {
 	// p11 does not support Finalize().  Usually this is harmless though.
-
 	if trace {
 		log.Printf("p11mod Finalize: not supported by p11 API")
 	}
@@ -140,7 +139,6 @@ func (ll *llBackend) GetSlotList(tokenPresent bool) ([]uint, error) {
 
 func (ll *llBackend) getSlotByID(slotID uint) (p11.Slot, error) {
 	// Fast path: if the ID is already known, we can use a read-only lock.
-
 	ll.slotsMutex.RLock()
 
 	for _, slot := range ll.slots {
@@ -153,7 +151,6 @@ func (ll *llBackend) getSlotByID(slotID uint) (p11.Slot, error) {
 	ll.slotsMutex.RUnlock()
 
 	// Slow path: the ID isn't known, so we need a write lock.
-
 	ll.slotsMutex.Lock()
 	defer ll.slotsMutex.Unlock()
 
@@ -460,6 +457,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 	object := session.objects[objectIndex]
 
 	result := make([]*pkcs11.Attribute, len(a))
+
 	for i, t := range a {
 		if trace {
 			log.Printf("p11mod GetAttributeValue: querying %s", pkcs11mod.AttrTrace(t))

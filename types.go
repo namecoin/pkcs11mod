@@ -109,6 +109,7 @@ func toTemplate(clist C.CK_ATTRIBUTE_PTR, size C.CK_ULONG) []*pkcs11.Attribute {
 	}
 	// defer C.free(unsafe.Pointer(clist)) // Removed compared to miekg implementation since it's not desired here
 	l2 := make([]*pkcs11.Attribute, int(size))
+
 	for i, c := range l1 {
 		x := new(pkcs11.Attribute)
 		x.Type = uint(c._type)
@@ -130,6 +131,7 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 		l1[i] = C.IndexAttributePtr(clist, C.CK_ULONG(i))
 	}
 	bufferTooSmall := false
+
 	for i, x := range template {
 		if trace {
 			log.Printf("pkcs11mod fromTemplate: %s", AttrTrace(x))
@@ -142,6 +144,7 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 			continue
 		}
 		cLen := C.CK_ULONG(uint(len(x.Value)))
+
 		switch {
 		case C.getAttributePval(c) == nil:
 			c.ulValueLen = cLen
