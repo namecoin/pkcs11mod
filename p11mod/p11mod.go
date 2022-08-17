@@ -556,7 +556,7 @@ func (ll *llBackend) FindObjects(sh pkcs11.SessionHandle, max int) ([]pkcs11.Obj
 	}
 
 	results := make([]pkcs11.ObjectHandle, numResults)
-	for i, _ := range results {
+	for i := range results {
 		results[i] = pkcs11.ObjectHandle(resultHandle)
 		resultHandle++
 	}
