@@ -224,7 +224,7 @@ func (ll *llBackend) InitPIN(sh pkcs11.SessionHandle, pin string) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
-func (ll *llBackend) SetPIN(sh pkcs11.SessionHandle, oldpin string, newpin string) error {
+func (ll *llBackend) SetPIN(sh pkcs11.SessionHandle, oldpin, newpin string) error {
 	// TODO
 	log.Println("p11mod SetPIN: not implemented")
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
@@ -245,7 +245,7 @@ func (ll *llBackend) nextAvailableSessionHandle() pkcs11.SessionHandle {
 	return sessionHandle
 }
 
-func (ll *llBackend) OpenSession(slotID uint, flags uint) (pkcs11.SessionHandle, error) {
+func (ll *llBackend) OpenSession(slotID, flags uint) (pkcs11.SessionHandle, error) {
 	slot, err := ll.getSlotByID(slotID)
 	if err != nil {
 		return 0, err
@@ -770,7 +770,7 @@ func (ll *llBackend) VerifyInit(sh pkcs11.SessionHandle, m []*pkcs11.Mechanism, 
 	return nil
 }
 
-func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data []byte, signature []byte) error {
+func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data, signature []byte) error {
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
 		return err
