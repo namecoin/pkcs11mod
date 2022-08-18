@@ -49,11 +49,13 @@ import (
 	"github.com/miekg/pkcs11"
 )
 
-var trace bool
-var traceSensitive bool
+var (
+	trace          bool
+	traceSensitive bool
 
-var logfile io.Closer
-var backend Backend
+	logfile io.Closer
+	backend Backend
+)
 
 func init() {
 	dir, err := os.UserConfigDir()
@@ -395,8 +397,10 @@ type sessionInfo struct {
 	signData    []byte
 }
 
-var sessions = map[pkcs11.SessionHandle]*sessionInfo{}
-var sessionsMutex sync.RWMutex
+var (
+	sessions      = map[pkcs11.SessionHandle]*sessionInfo{}
+	sessionsMutex sync.RWMutex
+)
 
 //export goOpenSession
 func goOpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
