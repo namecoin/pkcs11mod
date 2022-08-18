@@ -28,10 +28,12 @@ import (
 	"github.com/namecoin/pkcs11mod"
 )
 
-var trace bool
+var (
+	trace bool
 
-var highBackend Backend
-var errHighBackend error
+	highBackend    Backend
+	errHighBackend error
+)
 
 func SetBackend(b Backend, err error) {
 	highBackend = b
