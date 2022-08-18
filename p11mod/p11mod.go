@@ -18,6 +18,7 @@
 package p11mod
 
 import (
+	"errors"
 	"log"
 	"os"
 	"sync"
@@ -469,7 +470,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 		}
 
 		value, err := object.Attribute(t.Type)
-		if err != nil && err != p11.ErrAttributeNotFound && err != p11.ErrTooManyAttributesFound {
+		if err != nil && !errors.Is(err, p11.ErrAttributeNotFound) && !errors.Is(err, p11.ErrTooManyAttributesFound) {
 			if trace {
 				log.Printf("p11mod GetAttributeValue: %v", err)
 			}
@@ -522,13 +523,13 @@ func (ll *llBackend) FindObjectsInit(sh pkcs11.SessionHandle, template []*pkcs11
 		}
 
 		switch {
-		case err == pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED):
+		case errors.Is(err, pkcs11.Error(pkcs11.CKR_OPERATION_NOT_INITIALIZED)):
 			// session.FindObjects() can relay CKR_OPERATION_NOT_INITIALIZED from
 			// FindObjects or FindObjectsFinal, but PKCS#11 spec says
 			// FindObjectsInit cannot return CKR_OPERATION_NOT_INITIALIZED.  So we
 			// have to return a different error.
 			return pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
-		case err == p11.ErrNoObjectsFound:
+		case errors.Is(err, p11.ErrNoObjectsFound):
 			objects = []p11.Object{}
 		default:
 			return err
@@ -708,7 +709,7 @@ func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, erro
 
 	signature, err := priv.Sign(*session.signMechanism, message)
 	if err != nil {
-		if err == pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED) || err == pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID) || err == pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE) || err == pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID) || err == pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE) || err == pkcs11.Error(pkcs11.CKR_PIN_EXPIRED) {
+		if errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_PIN_EXPIRED)) {
 			// priv.Sign() can relay these error values from SignInit, but
 			// PKCS#11 spec says Sign cannot return these.  So we have to
 			// return a different error.
@@ -795,7 +796,7 @@ func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data, signature []byte) err
 
 	err = pub.Verify(*session.verifyMechanism, data, signature)
 	if err != nil {
-		if err == pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED) || err == pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID) || err == pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE) || err == pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID) || err == pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID) || err == pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE) || err == pkcs11.Error(pkcs11.CKR_PIN_EXPIRED) || err == pkcs11.Error(pkcs11.CKR_USER_NOT_LOGGED_IN) {
+		if errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_FUNCTION_NOT_PERMITTED)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_HANDLE_INVALID)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_SIZE_RANGE)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_KEY_TYPE_INCONSISTENT)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_MECHANISM_INVALID)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_MECHANISM_PARAM_INVALID)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_OPERATION_ACTIVE)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_PIN_EXPIRED)) || errors.Is(err, pkcs11.Error(pkcs11.CKR_USER_NOT_LOGGED_IN)) {
 			// pub.Verify() can relay these error values from VerifyInit, but
 			// PKCS#11 spec says Verify cannot return these.  So we have to
 			// return a different error.
