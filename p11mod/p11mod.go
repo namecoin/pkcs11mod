@@ -78,12 +78,14 @@ func (ll *llBackend) Initialize() error {
 		if trace {
 			log.Printf("p11mod Initialize: %s", errHighBackend)
 		}
+
 		return pkcs11.Error(pkcs11.CKR_GENERAL_ERROR)
 	}
 
 	if trace {
 		log.Printf("p11mod Initialize: success")
 	}
+
 	return nil
 }
 
@@ -209,6 +211,7 @@ func (ll *llBackend) GetMechanismList(slotID uint) ([]*pkcs11.Mechanism, error) 
 
 	// TODO
 	log.Println("p11mod GetMechanismList: not implemented, see https://github.com/miekg/pkcs11/issues/158")
+
 	return []*pkcs11.Mechanism{}, nil
 }
 
@@ -470,6 +473,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 			if trace {
 				log.Printf("p11mod GetAttributeValue: %v", err)
 			}
+
 			return nil, err
 		}
 
@@ -934,7 +938,9 @@ func (ll *llBackend) GenerateRandom(sh pkcs11.SessionHandle, length int) ([]byte
 
 func (ll *llBackend) WaitForSlotEvent(flags uint) chan pkcs11.SlotEvent {
 	sl := make(chan pkcs11.SlotEvent, 1)
+
 	// TODO
 	log.Println("p11mod WaitForSlotEvent: not implemented")
+
 	return sl
 }
