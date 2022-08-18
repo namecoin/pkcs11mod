@@ -108,6 +108,7 @@ func goLog(s unsafe.Pointer) {
 func goInitialize() C.CK_RV {
 	if backend == nil {
 		log.Println("pkcs11mod: Can't initialize nil backend")
+
 		return C.CKR_GENERAL_ERROR
 	}
 
