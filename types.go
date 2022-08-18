@@ -147,6 +147,7 @@ func fromTemplate(template []*pkcs11.Attribute, clist C.CK_ATTRIBUTE_PTR) error 
 		if x.Value == nil {
 			// CKR_ATTRIBUTE_TYPE_INVALID or CKR_ATTRIBUTE_SENSITIVE
 			c.ulValueLen = C.CK_UNAVAILABLE_INFORMATION
+
 			continue
 		}
 
