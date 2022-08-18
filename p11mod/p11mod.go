@@ -123,8 +123,7 @@ func (ll *llBackend) GetSlotList(tokenPresent bool) ([]uint, error) {
 	ll.slotsMutex.Lock()
 	defer ll.slotsMutex.Unlock()
 
-	err := ll.updateSlots()
-	if err != nil {
+	if err := ll.updateSlots(); err != nil {
 		return nil, err
 	}
 
@@ -159,8 +158,7 @@ func (ll *llBackend) getSlotByID(slotID uint) (p11.Slot, error) {
 	ll.slotsMutex.Lock()
 	defer ll.slotsMutex.Unlock()
 
-	err := ll.updateSlots()
-	if err != nil {
+	if err := ll.updateSlots(); err != nil {
 		return p11.Slot{}, err
 	}
 
