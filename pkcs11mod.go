@@ -398,6 +398,18 @@ type sessionInfo struct {
 var sessions = map[pkcs11.SessionHandle]*sessionInfo{}
 var sessionsMutex sync.RWMutex
 
+func getSession(sessionHandle pkcs11.SessionHandle) (*sessionInfo, error) {
+	sessionsMutex.RLock()
+	session, ok := sessions[sessionHandle]
+	sessionsMutex.RUnlock()
+
+	if !ok {
+		return nil, pkcs11.Error(pkcs11.CKR_SESSION_HANDLE_INVALID)
+	}
+
+	return session, nil
+}
+
 //export goOpenSession
 func goOpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION_HANDLE_PTR) C.CK_RV {
 	if phSession == nil {
@@ -750,11 +762,9 @@ func goEncrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen
 		err           error
 	)
 
-	sessionsMutex.RLock()
-	session, ok := sessions[goSessionHandle]
-	sessionsMutex.RUnlock()
-	if !ok {
-		return C.CKR_SESSION_HANDLE_INVALID
+	session, err := getSession(goSessionHandle)
+	if err != nil {
+		return fromError(err)
 	}
 
 	if pEncryptedData == nil {
@@ -866,11 +876,9 @@ func goDecrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR, 
 		err  error
 	)
 
-	sessionsMutex.RLock()
-	session, ok := sessions[goSessionHandle]
-	sessionsMutex.RUnlock()
-	if !ok {
-		return C.CKR_SESSION_HANDLE_INVALID
+	session, err := getSession(goSessionHandle)
+	if err != nil {
+		return fromError(err)
 	}
 
 	if pData == nil {
@@ -975,14 +983,14 @@ func goDigest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goData := C.GoBytes(unsafe.Pointer(pData), C.int(ulDataLen))
 
-	var digest []byte
-	var err error
+	var (
+		digest []byte
+		err    error
+	)
 
-	sessionsMutex.RLock()
-	session, ok := sessions[goSessionHandle]
-	sessionsMutex.RUnlock()
-	if !ok {
-		return C.CKR_SESSION_HANDLE_INVALID
+	session, err := getSession(goSessionHandle)
+	if err != nil {
+		return fromError(err)
 	}
 
 	if pDigest == nil {
@@ -997,6 +1005,7 @@ func goDigest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen 
 		*pulDigestLen = C.CK_ULONG(size)
 		return fromError(nil)
 	}
+
 	goDigest := (*[1 << 30]byte)(unsafe.Pointer(pDigest))[:*pulDigestLen:*pulDigestLen]
 
 	digest = session.digestData
@@ -1086,14 +1095,14 @@ func goSign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goData := C.GoBytes(unsafe.Pointer(pData), C.int(ulDataLen))
 
-	var signature []byte
-	var err error
+	var (
+		signature []byte
+		err       error
+	)
 
-	sessionsMutex.RLock()
-	session, ok := sessions[goSessionHandle]
-	sessionsMutex.RUnlock()
-	if !ok {
-		return C.CKR_SESSION_HANDLE_INVALID
+	session, err := getSession(goSessionHandle)
+	if err != nil {
+		return fromError(err)
 	}
 
 	if pSignature == nil {
