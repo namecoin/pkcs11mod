@@ -452,6 +452,7 @@ func goCloseAllSessions(slotID C.CK_SLOT_ID) C.CK_RV {
 	goSlotID := uint(slotID)
 
 	err := backend.CloseAllSessions(goSlotID)
+
 	return fromError(err)
 }
 
@@ -475,6 +476,7 @@ func goGetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK
 
 	copy(goOperationState, result)
 	*pulOperationStateLen = C.CK_ULONG(len(result))
+
 	return fromError(nil)
 }
 
@@ -490,6 +492,7 @@ func goSetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK
 	goOperationState := C.GoBytes(unsafe.Pointer(pOperationState), C.int(ulOperationStateLen))
 
 	err := backend.SetOperationState(goSessionHandle, goOperationState, goEncryptionKey, goAuthenticationKey)
+
 	return fromError(err)
 }
 
@@ -510,6 +513,7 @@ func goGetSessionInfo(sessionHandle C.CK_SESSION_HANDLE, pInfo C.CK_SESSION_INFO
 	pInfo.state = C.CK_STATE(info.State)
 	pInfo.flags = C.CK_FLAGS(info.Flags)
 	pInfo.ulDeviceError = C.CK_ULONG(info.DeviceError)
+
 	return fromError(nil)
 }
 
@@ -524,6 +528,7 @@ func goLogin(sessionHandle C.CK_SESSION_HANDLE, userType C.CK_USER_TYPE, pPin C.
 	goPin := string(C.GoBytes(unsafe.Pointer(pPin), C.int(ulPinLen)))
 
 	err := backend.Login(goSessionHandle, goUserType, goPin)
+
 	return fromError(err)
 }
 
@@ -532,6 +537,7 @@ func goLogout(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 
 	err := backend.Logout(goSessionHandle)
+
 	return fromError(err)
 }
 
@@ -550,6 +556,7 @@ func goCreateObject(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBUTE_
 	}
 
 	*phObject = C.CK_OBJECT_HANDLE(goHandle)
+
 	return fromError(nil)
 }
 
@@ -569,6 +576,7 @@ func goCopyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HANDLE,
 	}
 
 	*phNewObject = C.CK_OBJECT_HANDLE(goHandle)
+
 	return fromError(nil)
 }
 
@@ -578,6 +586,7 @@ func goDestroyObject(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_HAND
 	goObjectHandle := pkcs11.ObjectHandle(hObject)
 
 	err := backend.DestroyObject(goSessionHandle, goObjectHandle)
+
 	return fromError(err)
 }
 
@@ -596,6 +605,7 @@ func goGetObjectSize(sessionHandle C.CK_SESSION_HANDLE, objectHandle C.CK_OBJECT
 	}
 
 	*pulSize = C.CK_ULONG(goSize)
+
 	return fromError(nil)
 }
 
@@ -671,6 +681,7 @@ func goSetAttributeValue(sessionHandle C.CK_SESSION_HANDLE, hObject C.CK_OBJECT_
 	goTemplate := toTemplate(pTemplate, ulCount)
 
 	err := backend.SetAttributeValue(goSessionHandle, goObjectHandle, goTemplate)
+
 	return fromError(err)
 }
 
@@ -698,6 +709,7 @@ func goFindObjectsInit(sessionHandle C.CK_SESSION_HANDLE, pTemplate C.CK_ATTRIBU
 	}
 
 	err := backend.FindObjectsInit(goSessionHandle, goTemplate)
+
 	return fromError(err)
 }
 
@@ -730,6 +742,7 @@ func goFindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HANDL
 	goCount := uint(len(objectHandles))
 	*pulObjectCount = C.CK_ULONG(goCount)
 	fromObjectHandleList(objectHandles, C.CK_ULONG_PTR(phObject), goCount)
+
 	return fromError(nil)
 }
 
@@ -738,6 +751,7 @@ func goFindObjectsFinal(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 
 	err := backend.FindObjectsFinal(goSessionHandle)
+
 	return fromError(err)
 }
 
@@ -752,6 +766,7 @@ func goEncryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	goMechanism := toMechanism(pMechanism)
 
 	err := backend.EncryptInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+
 	return fromError(err)
 }
 
@@ -784,6 +799,7 @@ func goEncrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen
 
 		size := len(encryptedData)
 		*pulEncryptedDataLen = C.CK_ULONG(size)
+
 		return fromError(nil)
 	}
 
@@ -805,6 +821,7 @@ func goEncrypt(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen
 
 	copy(goEncryptedData, encryptedData)
 	*pulEncryptedDataLen = C.CK_ULONG(len(encryptedData))
+
 	return fromError(nil)
 }
 
@@ -829,6 +846,7 @@ func goEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulP
 
 	copy(goEncryptedPart, encryptedPart)
 	*pulEncryptedPartLen = C.CK_ULONG(len(encryptedPart))
+
 	return fromError(nil)
 }
 
@@ -852,6 +870,7 @@ func goEncryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastEncryptedPart C.CK_B
 
 	copy(goLastEncryptedPart, lastEncryptedPart)
 	*pulLastEncryptedPartLen = C.CK_ULONG(len(lastEncryptedPart))
+
 	return fromError(nil)
 }
 
@@ -866,6 +885,7 @@ func goDecryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	goMechanism := toMechanism(pMechanism)
 
 	err := backend.DecryptInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+
 	return fromError(err)
 }
 
@@ -898,6 +918,7 @@ func goDecrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR, 
 
 		size := len(data)
 		*pulDataLen = C.CK_ULONG(size)
+
 		return fromError(nil)
 	}
 
@@ -919,6 +940,7 @@ func goDecrypt(sessionHandle C.CK_SESSION_HANDLE, pEncryptedData C.CK_BYTE_PTR, 
 
 	copy(goData, data)
 	*pulDataLen = C.CK_ULONG(len(data))
+
 	return fromError(nil)
 }
 
@@ -943,6 +965,7 @@ func goDecryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.CK_BYTE
 
 	copy(goPart, decryptedPart)
 	*pulPartLen = C.CK_ULONG(len(decryptedPart))
+
 	return fromError(nil)
 }
 
@@ -966,6 +989,7 @@ func goDecryptFinal(sessionHandle C.CK_SESSION_HANDLE, pLastPart C.CK_BYTE_PTR, 
 
 	copy(goLastPart, lastDataPart)
 	*pulLastPartLen = C.CK_ULONG(len(lastDataPart))
+
 	return fromError(err)
 }
 
@@ -978,6 +1002,7 @@ func goDigestInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_P
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goMechanism := toMechanism(pMechanism)
 	err := backend.DigestInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism})
+
 	return fromError(err)
 }
 
@@ -1010,6 +1035,7 @@ func goDigest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen 
 
 		size := len(digest)
 		*pulDigestLen = C.CK_ULONG(size)
+
 		return fromError(nil)
 	}
 
@@ -1031,6 +1057,7 @@ func goDigest(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen 
 
 	copy(goDigest, digest)
 	*pulDigestLen = C.CK_ULONG(len(digest))
+
 	return fromError(nil)
 }
 
@@ -1044,6 +1071,7 @@ func goDigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPa
 	goPart := C.GoBytes(unsafe.Pointer(pPart), C.int(ulPartLen))
 
 	err := backend.DigestUpdate(goSessionHandle, goPart)
+
 	return fromError(err)
 }
 
@@ -1053,6 +1081,7 @@ func goDigestKey(sessionHandle C.CK_SESSION_HANDLE, hKey C.CK_OBJECT_HANDLE) C.C
 	goKeyHandle := pkcs11.ObjectHandle(hKey)
 
 	err := backend.DigestKey(goSessionHandle, goKeyHandle)
+
 	return fromError(err)
 }
 
@@ -1076,6 +1105,7 @@ func goDigestFinal(sessionHandle C.CK_SESSION_HANDLE, pDigest C.CK_BYTE_PTR, pul
 
 	copy(goDigest, digest)
 	*pulDigestLen = C.CK_ULONG(len(digest))
+
 	return fromError(nil)
 }
 
@@ -1090,6 +1120,7 @@ func goSignInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR
 	goMechanism := toMechanism(pMechanism)
 
 	err := backend.SignInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+
 	return fromError(err)
 }
 
@@ -1122,6 +1153,7 @@ func goSign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.
 
 		size := len(signature)
 		*pulSignatureLen = C.CK_ULONG(size)
+
 		return fromError(nil)
 	}
 
@@ -1143,6 +1175,7 @@ func goSign(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen C.
 
 	copy(goSignature, signature)
 	*pulSignatureLen = C.CK_ULONG(len(signature))
+
 	return fromError(nil)
 }
 
@@ -1156,6 +1189,7 @@ func goSignUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPart
 	goPart := C.GoBytes(unsafe.Pointer(pPart), C.int(ulPartLen))
 
 	err := backend.SignUpdate(goSessionHandle, goPart)
+
 	return fromError(err)
 }
 
@@ -1179,6 +1213,7 @@ func goSignFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, pu
 
 	copy(goSignature, signature)
 	*pulSignatureLen = C.CK_ULONG(len(signature))
+
 	return fromError(nil)
 }
 
@@ -1193,6 +1228,7 @@ func goSignRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHAN
 	goMechanism := toMechanism(pMechanism)
 
 	err := backend.SignRecoverInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+
 	return fromError(err)
 }
 
@@ -1217,6 +1253,7 @@ func goSignRecover(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDat
 
 	copy(goSignature, signature)
 	*pulSignatureLen = C.CK_ULONG(len(signature))
+
 	return fromError(nil)
 }
 
@@ -1231,6 +1268,7 @@ func goVerifyInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_P
 	goMechanism := toMechanism(pMechanism)
 
 	err := backend.VerifyInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+
 	return fromError(err)
 }
 
@@ -1245,6 +1283,7 @@ func goVerify(sessionHandle C.CK_SESSION_HANDLE, pData C.CK_BYTE_PTR, ulDataLen 
 	goSignature := C.GoBytes(unsafe.Pointer(pSignature), C.int(ulSignatureLen))
 
 	err := backend.Verify(goSessionHandle, goData, goSignature)
+
 	return fromError(err)
 }
 
@@ -1258,6 +1297,7 @@ func goVerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR, ulPa
 	goPart := C.GoBytes(unsafe.Pointer(pPart), C.int(ulPartLen))
 
 	err := backend.VerifyUpdate(goSessionHandle, goPart)
+
 	return fromError(err)
 }
 
@@ -1271,6 +1311,7 @@ func goVerifyFinal(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR, 
 	goSignature := C.GoBytes(unsafe.Pointer(pSignature), C.int(ulSignatureLen))
 
 	err := backend.VerifyFinal(goSessionHandle, goSignature)
+
 	return fromError(err)
 }
 
@@ -1285,6 +1326,7 @@ func goVerifyRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECH
 	goMechanism := toMechanism(pMechanism)
 
 	err := backend.VerifyRecoverInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+
 	return fromError(err)
 }
 
@@ -1309,6 +1351,7 @@ func goVerifyRecover(sessionHandle C.CK_SESSION_HANDLE, pSignature C.CK_BYTE_PTR
 
 	copy(goData, data)
 	*pulDataLen = C.CK_ULONG(len(data))
+
 	return fromError(nil)
 }
 
@@ -1333,6 +1376,7 @@ func goDigestEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PT
 
 	copy(goEncryptedPart, encryptedPart)
 	*pulEncryptedPartLen = C.CK_ULONG(len(encryptedPart))
+
 	return fromError(nil)
 }
 
@@ -1357,6 +1401,7 @@ func goDecryptDigestUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.C
 
 	copy(goPart, part)
 	*pulPartLen = C.CK_ULONG(len(part))
+
 	return fromError(nil)
 }
 
@@ -1381,6 +1426,7 @@ func goSignEncryptUpdate(sessionHandle C.CK_SESSION_HANDLE, pPart C.CK_BYTE_PTR,
 
 	copy(goEncryptedPart, encryptedPart)
 	*pulEncryptedPartLen = C.CK_ULONG(len(encryptedPart))
+
 	return fromError(nil)
 }
 
@@ -1405,6 +1451,7 @@ func goDecryptVerifyUpdate(sessionHandle C.CK_SESSION_HANDLE, pEncryptedPart C.C
 
 	copy(goPart, part)
 	*pulPartLen = C.CK_ULONG(len(part))
+
 	return fromError(nil)
 }
 
@@ -1424,6 +1471,7 @@ func goGenerateKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	}
 
 	*phKey = C.CK_OBJECT_HANDLE(keyHandle)
+
 	return fromError(nil)
 }
 
@@ -1445,6 +1493,7 @@ func goGenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHAN
 
 	*phPublicKey = C.CK_OBJECT_HANDLE(pubKeyHandle)
 	*phPrivateKey = C.CK_OBJECT_HANDLE(privKeyHandle)
+
 	return fromError(nil)
 }
 
@@ -1471,6 +1520,7 @@ func goWrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR,
 
 	copy(goWrappedKey, wrappedKey)
 	*pulWrappedKeyLen = C.CK_ULONG(len(wrappedKey))
+
 	return fromError(nil)
 }
 
@@ -1492,6 +1542,7 @@ func goUnwrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PT
 	}
 
 	*phKey = C.CK_OBJECT_HANDLE(keyHandle)
+
 	return fromError(nil)
 }
 
@@ -1512,6 +1563,7 @@ func goDeriveKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PT
 	}
 
 	*phKey = C.CK_OBJECT_HANDLE(keyHandle)
+
 	return fromError(nil)
 }
 
@@ -1525,6 +1577,7 @@ func goSeedRandom(sessionHandle C.CK_SESSION_HANDLE, pSeed C.CK_BYTE_PTR, ulSeed
 	goSeed := C.GoBytes(unsafe.Pointer(pSeed), C.int(ulSeedLen))
 
 	err := backend.SeedRandom(goSessionHandle, goSeed)
+
 	return fromError(err)
 }
 
@@ -1544,6 +1597,7 @@ func goGenerateRandom(sessionHandle C.CK_SESSION_HANDLE, pRandomData C.CK_BYTE_P
 	}
 
 	copy(goRandomData, randomData)
+
 	return fromError(nil)
 }
 
@@ -1558,5 +1612,6 @@ func goWaitForSlotEvent(flags C.CK_FLAGS, pSlot C.CK_SLOT_ID_PTR, pReserved C.CK
 	slotEvent := <-backend.WaitForSlotEvent(goFlags)
 
 	*pSlot = C.CK_SLOT_ID(slotEvent.SlotID)
+
 	return fromError(nil)
 }
