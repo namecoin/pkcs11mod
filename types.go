@@ -239,5 +239,5 @@ func AttrTrace(a *pkcs11.Attribute) string {
 		return fmt.Sprintf("%s: %v", t, a.Value)
 	}
 
-	return fmt.Sprintf("%s", t)
+	return t
 }
