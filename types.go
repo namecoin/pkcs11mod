@@ -50,6 +50,7 @@ static inline CK_VOID_PTR getOAEPSourceData(CK_RSA_PKCS_OAEP_PARAMS_PTR params)
 import "C"
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"unsafe"
@@ -90,8 +91,8 @@ func fromError(e error) C.CK_RV {
 		return C.CKR_OK
 	}
 
-	pe, ok := e.(pkcs11.Error)
-	if !ok {
+	var pe pkcs11.Error
+	if !errors.As(e, &pe) {
 		// This error doesn't map to a PKCS#11 error code.  Return a generic
 		// "function failed" error instead.
 		pe = pkcs11.Error(pkcs11.CKR_FUNCTION_FAILED)
