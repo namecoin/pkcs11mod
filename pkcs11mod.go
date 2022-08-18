@@ -49,11 +49,13 @@ import (
 	"github.com/miekg/pkcs11"
 )
 
-var trace bool
-var traceSensitive bool
+var (
+	trace          bool
+	traceSensitive bool
 
-var logfile io.Closer
-var backend Backend
+	logfile io.Closer
+	backend Backend
+)
 
 func init() {
 	dir, err := os.UserConfigDir()
@@ -63,12 +65,12 @@ func init() {
 		dir = "."
 	}
 
-	f, err := os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	f, err := os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
 	if err != nil {
 		log.Printf("error opening file (will try fallback): %v", err)
 
 		dir = "."
-		f, err = os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+		f, err = os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
 	}
 
 	if err != nil {
@@ -395,8 +397,10 @@ type sessionInfo struct {
 	signData    []byte
 }
 
-var sessions = map[pkcs11.SessionHandle]*sessionInfo{}
-var sessionsMutex sync.RWMutex
+var (
+	sessions      = map[pkcs11.SessionHandle]*sessionInfo{}
+	sessionsMutex sync.RWMutex
+)
 
 func getSession(sessionHandle pkcs11.SessionHandle) (*sessionInfo, error) {
 	sessionsMutex.RLock()
@@ -472,7 +476,7 @@ func goGetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK
 }
 
 //export goSetOperationState
-func goSetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK_BYTE_PTR, ulOperationStateLen C.CK_LONG, hEncryptionKey C.CK_OBJECT_HANDLE, hAuthenticationKey C.CK_OBJECT_HANDLE) C.CK_RV {
+func goSetOperationState(sessionHandle C.CK_SESSION_HANDLE, pOperationState C.CK_BYTE_PTR, ulOperationStateLen C.CK_LONG, hEncryptionKey, hAuthenticationKey C.CK_OBJECT_HANDLE) C.CK_RV {
 	if pOperationState == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1421,7 +1425,7 @@ func goGenerateKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 }
 
 //export goGenerateKeyPair
-func goGenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, pPublicKeyTemplate C.CK_ATTRIBUTE_PTR, ulPublicKeyAttributeCount C.CK_ULONG, pPrivateKeyTemplate C.CK_ATTRIBUTE_PTR, ulPrivateKeyAttributeCount C.CK_ULONG, phPublicKey C.CK_OBJECT_HANDLE_PTR, phPrivateKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
+func goGenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, pPublicKeyTemplate C.CK_ATTRIBUTE_PTR, ulPublicKeyAttributeCount C.CK_ULONG, pPrivateKeyTemplate C.CK_ATTRIBUTE_PTR, ulPrivateKeyAttributeCount C.CK_ULONG, phPublicKey, phPrivateKey C.CK_OBJECT_HANDLE_PTR) C.CK_RV {
 	if pMechanism == nil || pPublicKeyTemplate == nil || pPrivateKeyTemplate == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
@@ -1442,7 +1446,7 @@ func goGenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHAN
 }
 
 //export goWrapKey
-func goWrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hWrappingKey C.CK_OBJECT_HANDLE, hKey C.CK_OBJECT_HANDLE, pWrappedKey C.CK_BYTE_PTR, pulWrappedKeyLen C.CK_ULONG_PTR) C.CK_RV {
+func goWrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR, hWrappingKey, hKey C.CK_OBJECT_HANDLE, pWrappedKey C.CK_BYTE_PTR, pulWrappedKeyLen C.CK_ULONG_PTR) C.CK_RV {
 	if pMechanism == nil || pWrappedKey == nil || pulWrappedKeyLen == nil {
 		return C.CKR_ARGUMENTS_BAD
 	}
