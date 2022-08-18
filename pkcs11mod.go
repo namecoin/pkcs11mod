@@ -385,6 +385,7 @@ func goSetPIN(sessionHandle C.CK_SESSION_HANDLE, pOldPin C.CK_UTF8CHAR_PTR, ulOl
 	goNewPin := string(C.GoBytes(unsafe.Pointer(pNewPin), C.int(ulNewLen)))
 
 	err := backend.SetPIN(goSessionHandle, goOldPin, goNewPin)
+
 	return fromError(err)
 }
 
@@ -429,6 +430,7 @@ func goOpenSession(slotID C.CK_SLOT_ID, flags C.CK_FLAGS, phSession C.CK_SESSION
 	sessionsMutex.Unlock()
 
 	*phSession = C.CK_SESSION_HANDLE(sessionHandle)
+
 	return fromError(nil)
 }
 
@@ -437,6 +439,7 @@ func goCloseSession(sessionHandle C.CK_SESSION_HANDLE) C.CK_RV {
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 
 	err := backend.CloseSession(goSessionHandle)
+
 	return fromError(err)
 }
 

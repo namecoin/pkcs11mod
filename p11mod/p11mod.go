@@ -470,6 +470,7 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 			}
 			return nil, err
 		}
+
 		if value == nil {
 			// CKR_ATTRIBUTE_TYPE_INVALID, ErrAttributeNotFound, or ErrTooManyAttributesFound
 			if trace {
