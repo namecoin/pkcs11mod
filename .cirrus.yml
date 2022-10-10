@@ -180,7 +180,8 @@ task:
     - go mod tidy
     - go generate ./...
     - go mod tidy
-  lint_script: golangci-lint run --enable-all --disable exhaustivestruct,exhaustruct,gochecknoglobals,gochecknoinits $GOLANGCI_ARGS -v --out-format json > lint-report.json
+  # interfacebloat complains about miekg/pkcs11 API's that we can't change.
+  lint_script: golangci-lint run --enable-all --disable exhaustivestruct,exhaustruct,gochecknoglobals,gochecknoinits,interfacebloat $GOLANGCI_ARGS -v --out-format json > lint-report.json
   matrix:
     - name: Go Lint New
       env:
