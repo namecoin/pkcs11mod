@@ -466,10 +466,7 @@ task:
         CI_BAK_MODULE: "C:\\Program Files\\LibreWolf\\nssckbi.orig.dll"
         CI_MAIN_EXE:  "C:\\Program Files\\LibreWolf\\librewolf.exe"
         CI_APPDATA: "librewolf"
-    - allow_failures: true
-      # "choco install waterfox" fails as of Waterfox v22034.0.8, so don't fail
-      # the whole build.  TODO: remove allow_failures once the package is fixed.
-      env:
+    - env:
         GOARCH: "amd64"
         CI_CHANNEL: "Current"
         CI_PACKAGE_NAME: "Waterfox"
