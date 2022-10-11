@@ -36,9 +36,9 @@ Option B: Using Go build commands with Go modules (works on any platform with Ba
    go mod tidy
    ~~~
 
-2. Place your application's directory as a sibling of the `pkcs11mod` directory.
+2. Place your Go PKCS#11 module's directory as a sibling of the `pkcs11mod` directory.
 
-3. Run the following in your application's directory:
+3. Run the following in your Go PKCS#11 module's directory:
    
    ~~~
    go mod edit -replace github.com/namecoin/pkcs11mod=../pkcs11mod
