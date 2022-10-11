@@ -55,6 +55,10 @@ See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also
 
 Set the environment variable `PKCS11MOD_TRACE=1` to enable debug tracing.  To include sensitive data that might be a privacy leak, also set `PKCS11MOD_TRACE_SENSITIVE=1`.  The trace will be outputted to the log file.
 
+## What's the difference between pkcs11 and pkcs11mod?
+
+Miek Gieben's [pkcs11](https://github.com/miekg/pkcs11) and [p11](https://github.com/miekg/pkcs11/blob/master/p11) packages are for implementing applications that open PKCS#11 modules (e.g. you'd use pkcs11 or p11 if you're creating a web browser that will open a certificate database); pkcs11mod and p11mod are for implementing PKCS#11 modules that are opened by an application (e.g. you'd use pkcs11mod or p11mod if you're creating a certificate database that will be opened by a web browser).
+
 ## Should I use pkcs11mod or p11mod?
 
 p11mod is much easier to use and more idiomatic to Go.  However, p11mod implements less of the PKCS#11 specification than pkcs11mod.  If you only need functionality that p11mod has, you will probably find p11mod more pleasant to work with.  On the other hand, p11mod is much newer and less battle-tested, so you may find pkcs11mod more reliable.
