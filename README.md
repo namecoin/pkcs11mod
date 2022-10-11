@@ -55,6 +55,15 @@ See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also
 
 Set the environment variable `PKCS11MOD_TRACE=1` to enable debug tracing.  To include sensitive data that might be a privacy leak, also set `PKCS11MOD_TRACE_SENSITIVE=1`.  The trace will be outputted to the log file.
 
+## What's PKCS#11?
+
+PKCS#11 is a plugin specification frequently used with smartcards and certificate databases.  You may find the following links informative:
+
+* [Specification](https://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/pkcs11-base-v2.40.html)
+* [Wikipedia article](https://en.wikipedia.org/wiki/PKCS_11)
+* [Sharing Trust Policy (p11-glue)](https://p11-glue.github.io/p11-glue/sharing-trust-policy.html)
+* [Grayhat 2020 presentation (Namecoin)](https://www.namecoin.org/2021/01/01/namecoin-at-grayhat-2020-monero-village.html)
+
 ## What's the difference between pkcs11 and pkcs11mod?
 
 Miek Gieben's [pkcs11](https://github.com/miekg/pkcs11) and [p11](https://github.com/miekg/pkcs11/blob/master/p11) packages are for implementing applications that open PKCS#11 modules (e.g. you'd use pkcs11 or p11 if you're creating a web browser that will open a certificate database); pkcs11mod and p11mod are for implementing PKCS#11 modules that are opened by an application (e.g. you'd use pkcs11mod or p11mod if you're creating a certificate database that will be opened by a web browser).
