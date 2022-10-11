@@ -49,7 +49,7 @@ Option B: Using Go build commands with Go modules (works on any platform with Ba
 
 ## Example usage
 
-See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level p11mod library (see subdirectory) instead of using pkcs11mod directly (see next section).
+See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level p11mod library (see subdirectory) instead of using pkcs11mod directly (see [this section](#should-i-use-pkcs11mod-or-p11mod)).
 
 ## Tracing
 
