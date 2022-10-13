@@ -164,7 +164,7 @@ func (ll *llBackend) getSlotByID(slotID uint) (p11.Slot, error) {
 	defer ll.slotsMutex.Unlock()
 
 	if err := ll.updateSlots(); err != nil {
-		return p11.Slot{}, err
+		return nil, err
 	}
 
 	for _, slot := range ll.slots {
@@ -173,7 +173,7 @@ func (ll *llBackend) getSlotByID(slotID uint) (p11.Slot, error) {
 		}
 	}
 
-	return p11.Slot{}, pkcs11.Error(pkcs11.CKR_SLOT_ID_INVALID)
+	return nil, pkcs11.Error(pkcs11.CKR_SLOT_ID_INVALID)
 }
 
 func (ll *llBackend) GetSlotInfo(slotID uint) (pkcs11.SlotInfo, error) {
@@ -759,7 +759,7 @@ func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, erro
 		session.signKeyIndex = 0
 	}()
 
-	priv := p11.PrivateKey(session.objects[session.signKeyIndex])
+	priv := session.objects[session.signKeyIndex].(p11.PrivateKey)
 
 	signature, err := priv.Sign(*session.signMechanism, message)
 	if err != nil {
@@ -841,7 +841,7 @@ func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data, signature []byte) err
 		session.verifyKeyIndex = 0
 	}()
 
-	pub := p11.PublicKey(session.objects[session.verifyKeyIndex])
+	pub := session.objects[session.verifyKeyIndex].(p11.PublicKey)
 
 	err = pub.Verify(*session.verifyMechanism, data, signature)
 	if err != nil {
@@ -934,14 +934,14 @@ func (ll *llBackend) GenerateKeyPair(sh pkcs11.SessionHandle, m *pkcs11.Mechanis
 		return 0, 0, err
 	}
 
-	session.objects = append(session.objects, p11.Object(pair.Public))
+	session.objects = append(session.objects, pair.Public.(p11.Object))
 
 	// 0 is never a valid object handle, as per PKCS#11 spec.  So the object
 	// handle of the final object is its index + 1, which is the same as the
 	// length of the objects slice.
 	publicHandle := len(session.objects)
 
-	session.objects = append(session.objects, p11.Object(pair.Private))
+	session.objects = append(session.objects, pair.Private.(p11.Object))
 
 	// 0 is never a valid object handle, as per PKCS#11 spec.  So the object
 	// handle of the final object is its index + 1, which is the same as the
