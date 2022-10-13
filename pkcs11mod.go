@@ -345,10 +345,8 @@ func goGetMechanismInfo(slotID C.CK_SLOT_ID, mechType C.CK_MECHANISM_TYPE, pInfo
 	goSlotID := uint(slotID)
 	goMechType := uint(mechType)
 
-	m := []*pkcs11.Mechanism{
-		{
-			Mechanism: goMechType,
-		},
+	m := &pkcs11.Mechanism{
+		Mechanism: goMechType,
 	}
 
 	mi, err := backend.GetMechanismInfo(goSlotID, m)
@@ -766,7 +764,7 @@ func goEncryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
 
-	err := backend.EncryptInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+	err := backend.EncryptInit(goSessionHandle, goMechanism, goObjectHandle)
 
 	return fromError(err)
 }
@@ -885,7 +883,7 @@ func goDecryptInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
 
-	err := backend.DecryptInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+	err := backend.DecryptInit(goSessionHandle, goMechanism, goObjectHandle)
 
 	return fromError(err)
 }
@@ -1002,7 +1000,7 @@ func goDigestInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_P
 
 	goSessionHandle := pkcs11.SessionHandle(sessionHandle)
 	goMechanism := toMechanism(pMechanism)
-	err := backend.DigestInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism})
+	err := backend.DigestInit(goSessionHandle, goMechanism)
 
 	return fromError(err)
 }
@@ -1120,7 +1118,7 @@ func goSignInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
 
-	err := backend.SignInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+	err := backend.SignInit(goSessionHandle, goMechanism, goObjectHandle)
 
 	return fromError(err)
 }
@@ -1228,7 +1226,7 @@ func goSignRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHAN
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
 
-	err := backend.SignRecoverInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+	err := backend.SignRecoverInit(goSessionHandle, goMechanism, goObjectHandle)
 
 	return fromError(err)
 }
@@ -1268,7 +1266,7 @@ func goVerifyInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_P
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
 
-	err := backend.VerifyInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+	err := backend.VerifyInit(goSessionHandle, goMechanism, goObjectHandle)
 
 	return fromError(err)
 }
@@ -1326,7 +1324,7 @@ func goVerifyRecoverInit(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECH
 	goObjectHandle := pkcs11.ObjectHandle(hKey)
 	goMechanism := toMechanism(pMechanism)
 
-	err := backend.VerifyRecoverInit(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goObjectHandle)
+	err := backend.VerifyRecoverInit(goSessionHandle, goMechanism, goObjectHandle)
 
 	return fromError(err)
 }
@@ -1466,7 +1464,7 @@ func goGenerateKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_
 	goMechanism := toMechanism(pMechanism)
 	goTemplate := toTemplate(pTemplate, ulCount)
 
-	keyHandle, err := backend.GenerateKey(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goTemplate)
+	keyHandle, err := backend.GenerateKey(goSessionHandle, goMechanism, goTemplate)
 	if err != nil {
 		return fromError(err)
 	}
@@ -1487,7 +1485,7 @@ func goGenerateKeyPair(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHAN
 	goPublicTemplate := toTemplate(pPublicKeyTemplate, ulPublicKeyAttributeCount)
 	goPrivateTemplate := toTemplate(pPrivateKeyTemplate, ulPrivateKeyAttributeCount)
 
-	pubKeyHandle, privKeyHandle, err := backend.GenerateKeyPair(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goPublicTemplate, goPrivateTemplate)
+	pubKeyHandle, privKeyHandle, err := backend.GenerateKeyPair(goSessionHandle, goMechanism, goPublicTemplate, goPrivateTemplate)
 	if err != nil {
 		return fromError(err)
 	}
@@ -1510,7 +1508,7 @@ func goWrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PTR,
 	goKeyHandle := pkcs11.ObjectHandle(hKey)
 	goWrappedKey := (*[1 << 30]byte)(unsafe.Pointer(pWrappedKey))[:*pulWrappedKeyLen:*pulWrappedKeyLen]
 
-	wrappedKey, err := backend.WrapKey(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goWrappingKey, goKeyHandle)
+	wrappedKey, err := backend.WrapKey(goSessionHandle, goMechanism, goWrappingKey, goKeyHandle)
 	if err != nil {
 		return fromError(nil)
 	}
@@ -1537,7 +1535,7 @@ func goUnwrapKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PT
 	goUnwrappingKey := pkcs11.ObjectHandle(hUnwrappingKey)
 	goWrappedKey := C.GoBytes(unsafe.Pointer(pWrappedKey), C.int(ulWrappedKeyLen))
 
-	keyHandle, err := backend.UnwrapKey(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goUnwrappingKey, goWrappedKey, goTemplate)
+	keyHandle, err := backend.UnwrapKey(goSessionHandle, goMechanism, goUnwrappingKey, goWrappedKey, goTemplate)
 	if err != nil {
 		return fromError(nil)
 	}
@@ -1558,7 +1556,7 @@ func goDeriveKey(sessionHandle C.CK_SESSION_HANDLE, pMechanism C.CK_MECHANISM_PT
 	goTemplate := toTemplate(pTemplate, ulAttributeCount)
 	goBaseKey := pkcs11.ObjectHandle(hBaseKey)
 
-	keyHandle, err := backend.DeriveKey(goSessionHandle, []*pkcs11.Mechanism{goMechanism}, goBaseKey, goTemplate)
+	keyHandle, err := backend.DeriveKey(goSessionHandle, goMechanism, goBaseKey, goTemplate)
 	if err != nil {
 		return fromError(nil)
 	}
