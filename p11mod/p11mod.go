@@ -227,6 +227,12 @@ func (ll *llBackend) GetMechanismInfo(slotID uint, m *pkcs11.Mechanism) (pkcs11.
 	return pkcs11.MechanismInfo{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
+func (ll *llBackend) InitToken(slotID uint, pin, label string) error {
+	// TODO
+	log.Println("p11mod InitToken: not implemented")
+	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
+
 func (ll *llBackend) InitPIN(sh pkcs11.SessionHandle, pin string) error {
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
