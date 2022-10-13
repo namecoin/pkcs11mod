@@ -85,7 +85,7 @@ task:
       fetch_script:
         - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
         - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
-        - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1
+        - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1.1
         - go mod tidy
         - go generate ./...
         - go mod tidy
@@ -151,7 +151,7 @@ task:
       fetch_script:
         - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
         - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
-        - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1
+        - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1.1
         - go mod tidy
         - go generate ./...
         - go mod tidy
@@ -181,7 +181,7 @@ task:
     image: golangci/golangci-lint:latest
   fetch_script:
     - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
-    - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1
+    - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1.1
     - go mod tidy
     - go generate ./...
     - go mod tidy
@@ -221,7 +221,7 @@ task:
   fetch_script:
     - cd $(go env GOPATH)/src/github.com/"$CIRRUS_REPO_FULL_NAME"
     - go mod init github.com/"$CIRRUS_REPO_FULL_NAME"
-    - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1
+    - go mod edit -replace github.com/miekg/pkcs11=github.com/namecoin/pkcs11@master-1.1.1.1
     - go mod tidy
     - csbuild --build-cmd 'go generate ./...' | tee csbuild.txt
     - if ! grep -P -q -i -z 'CURRENT DEFECTS\n===============\n$' csbuild.txt
