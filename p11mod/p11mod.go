@@ -32,11 +32,11 @@ import (
 var (
 	trace bool
 
-	highBackend    Backend
+	highBackend    p11.Module
 	errHighBackend error
 )
 
-func SetBackend(b Backend, err error) {
+func SetBackend(b p11.Module, err error) {
 	highBackend = b
 	errHighBackend = err
 }
