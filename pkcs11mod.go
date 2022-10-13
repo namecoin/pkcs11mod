@@ -54,7 +54,7 @@ var (
 	traceSensitive bool
 
 	logfile io.Closer
-	backend Backend
+	backend pkcs11.Ctx
 )
 
 func init() {
@@ -95,7 +95,7 @@ func init() {
 	preventUnload()
 }
 
-func SetBackend(b Backend) {
+func SetBackend(b pkcs11.Ctx) {
 	backend = b
 }
 
