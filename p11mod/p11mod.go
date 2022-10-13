@@ -73,6 +73,12 @@ type llBackend struct {
 	sessionsMutex sync.RWMutex
 }
 
+func (ll *llBackend) Destroy() {
+	if trace {
+		log.Printf("p11mod Destroy: not implemented")
+	}
+}
+
 func (ll *llBackend) Initialize() error {
 	// Initialize() was already called by p11.OpenModule(), so there's
 	// nothing to do here other than check the error value.
