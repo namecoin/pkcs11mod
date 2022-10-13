@@ -23,7 +23,7 @@ if ( "$Env:CI_DISABLE_E10S" -eq "1" ) {
 
 $result = "fail"
 
-foreach ($i in 1..3) {
+foreach ($i in 1..5) {
     # Nuke whatever cached state might exist...
     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$Env:APPDATA/$Env:CI_APPDATA"
 
