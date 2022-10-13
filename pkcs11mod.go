@@ -725,7 +725,7 @@ func goFindObjects(sessionHandle C.CK_SESSION_HANDLE, phObject C.CK_OBJECT_HANDL
 		return C.CKR_ARGUMENTS_BAD
 	}
 
-	objectHandles, _, err := backend.FindObjects(goSessionHandle, goMax)
+	objectHandles, err := backend.FindObjects(goSessionHandle, goMax)
 	if err != nil {
 		if trace {
 			log.Printf("pkcs11mod FindObjects: %v", err)

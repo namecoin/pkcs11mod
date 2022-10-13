@@ -544,10 +544,10 @@ func (ll *llBackend) FindObjectsInit(sh pkcs11.SessionHandle, template []*pkcs11
 	return nil
 }
 
-func (ll *llBackend) FindObjects(sh pkcs11.SessionHandle, max int) ([]pkcs11.ObjectHandle, bool, error) {
+func (ll *llBackend) FindObjects(sh pkcs11.SessionHandle, max int) ([]pkcs11.ObjectHandle, error) {
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
-		return []pkcs11.ObjectHandle{}, false, err
+		return []pkcs11.ObjectHandle{}, err
 	}
 
 	// 0 is never a valid object handle, as per PKCS#11 spec.  So if all
@@ -567,7 +567,7 @@ func (ll *llBackend) FindObjects(sh pkcs11.SessionHandle, max int) ([]pkcs11.Obj
 
 	session.objectsPending = session.objectsPending[numResults:]
 
-	return results, false, nil
+	return results, nil
 }
 
 func (ll *llBackend) FindObjectsFinal(sh pkcs11.SessionHandle) error {
