@@ -55,8 +55,9 @@ func init() {
 }
 
 type llSession struct {
-	session         p11.Session
-	slotID          uint
+	session p11.Session
+	slotID  uint
+	// Used to keep track of mapping between object handles and objects, because object handles don't exist in the p11 API
 	objects         []p11.Object
 	objectsPending  []p11.Object
 	signMechanism   *pkcs11.Mechanism
