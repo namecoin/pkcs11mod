@@ -3,3 +3,5 @@
 /*.a
 /*.o
 /moz/web-ext-artifacts/
+go.mod
+go.sum
