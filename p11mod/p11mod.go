@@ -215,10 +215,17 @@ func (ll *llBackend) GetMechanismList(slotID uint) ([]*pkcs11.Mechanism, error) 
 	return []*pkcs11.Mechanism{}, nil
 }
 
-func (ll *llBackend) GetMechanismInfo(slotID uint, m []*pkcs11.Mechanism) (pkcs11.MechanismInfo, error) {
+func (ll *llBackend) GetMechanismInfo(slotID uint, m []*p11.Mechanism) (pkcs11.MechanismInfo, error) {
 	// TODO
-	log.Println("p11mod GetMechanismInfo: not implemented")
-	return pkcs11.MechanismInfo{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	// log.Println("p11mod GetMechanismInfo: not implemented")
+	// return pkcs11.MechanismInfo{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	_, err := ll.getSlotByID(slotID)
+
+	if err != nil {
+		return pkcs11.MechanismInfo{}, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	}
+	return m[0].Info()
+
 }
 
 func (ll *llBackend) InitPIN(sh pkcs11.SessionHandle, pin string) error {
