@@ -232,7 +232,7 @@ func (ll *llBackend) InitPIN(sh pkcs11.SessionHandle, pin string) error {
 		return err
 	}
 
-	if sessionErr := session.session.InitPIN(pin); err != nil {
+	if sessionErr := session.session.InitPIN(pin); sessionErr != nil {
 		return sessionErr
 	}
 
