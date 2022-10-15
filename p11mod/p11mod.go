@@ -222,15 +222,30 @@ func (ll *llBackend) GetMechanismInfo(slotID uint, m []*pkcs11.Mechanism) (pkcs1
 }
 
 func (ll *llBackend) InitPIN(sh pkcs11.SessionHandle, pin string) error {
-	// TODO
-	log.Println("p11mod InitPIN: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+
+	if err != nil {
+		return err
+	}
+
+	if err := session.session.InitPIN(pin); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (ll *llBackend) SetPIN(sh pkcs11.SessionHandle, oldpin, newpin string) error {
-	// TODO
-	log.Println("p11mod SetPIN: not implemented")
-	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	if err := session.session.SetPIN(oldpin, newpin); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Only call this when ll.sessionsMutex is locked for reading.
