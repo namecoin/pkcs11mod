@@ -5,3 +5,5 @@
 /moz/web-ext-artifacts/
 go.mod
 go.sum
+/spec
+strings.go
