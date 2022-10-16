@@ -411,9 +411,36 @@ func (ll *llBackend) CreateObject(sh pkcs11.SessionHandle, temp []*pkcs11.Attrib
 }
 
 func (ll *llBackend) CopyObject(sh pkcs11.SessionHandle, o pkcs11.ObjectHandle, temp []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
-	// TODO
-	log.Println("p11mod CopyObject: not implemented")
-	return 0, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return 0, err
+	}
+
+	// Handles are 1-indexed, while our slice is 0-indexed.
+	objectIndex := int(o - 1)
+
+	if objectIndex < 0 || objectIndex >= len(session.objects) {
+		log.Printf("p11mod CopyObject: Object index invalid: requested %d, object count %d\n", objectIndex,
+			len(session.objects))
+
+		return 0, pkcs11.Error(pkcs11.CKR_OBJECT_HANDLE_INVALID)
+	}
+
+	object := session.objects[objectIndex]
+
+	objectc, err := object.Copy(temp)
+	if err != nil {
+		return 0, err
+	}
+
+	session.objects = append(session.objects, objectc)
+
+	// 0 is never a valid object handle, as per PKCS#11 spec. So the object
+	// handle of the final object is its index + 1, which is the same as the
+	// length of the objects slice.
+	resultHandle := len(session.objects)
+
+	return pkcs11.ObjectHandle(resultHandle), nil
 }
 
 func (ll *llBackend) DestroyObject(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle) error {
