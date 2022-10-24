@@ -244,6 +244,10 @@ func (ll *llBackend) SetPIN(sh pkcs11.SessionHandle, oldpin, newpin string) erro
 		return err
 	}
 
+	if trace {
+		log.Printf("p11mod SetPIN")
+	}
+
 	if err := session.session.SetPIN(oldpin, newpin); err != nil {
 		return err
 	}
