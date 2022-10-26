@@ -325,7 +325,7 @@ task:
         - mkdir -p /var/run/dbus
         - dbus-daemon --config-file=/usr/share/dbus-1/system.conf --print-address
       env:
-        CI_DISTRO: debian-s
+        CI_DISTRO: debian
       matrix:
         env:
           CI_MAIN_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.so
