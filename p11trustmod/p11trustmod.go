@@ -19,7 +19,7 @@ package p11trustmod
 
 import (
 	"bytes"
-	"crypto/sha1"
+	"crypto/sha1" //nolint:gosec // TODO: file bug with Mozilla about SHA1 stupidity
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
