@@ -18,6 +18,7 @@
 package p11trustmod
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"crypto/x509"
 	"crypto/x509/pkix"
