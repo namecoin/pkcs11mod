@@ -102,6 +102,11 @@ func (s *slot) TokenInfo() (pkcs11.TokenInfo, error) {
 	return s.highBackend.TokenInfo()
 }
 
+// TODO: Remove this from the p11 interface
+func (s *session) Login(pin string) error {
+	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
+
 func (s *session) LoginAs(userType uint, pin string) error {
 	return nil
 }
