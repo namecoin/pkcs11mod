@@ -315,6 +315,11 @@ func (obj *builtinObject) Destroy() error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
+// TODO: Remove this from the p11 interface
+func (obj *builtinObject) Label() (string, error) {
+	return "", pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
+
 // TODO: Patch p11 to avoid marshalAttributeValue here
 func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
@@ -363,6 +368,11 @@ func (obj *certificateObject) Copy(template []*pkcs11.Attribute) (p11.Object, er
 
 func (obj *certificateObject) Destroy() error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
+// TODO: Remove this from the p11 interface
+func (obj *certificateObject) Label() (string, error) {
+	return "", pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
@@ -443,4 +453,9 @@ func (obj *trustObject) Copy(template []*pkcs11.Attribute) (p11.Object, error) {
 
 func (obj *trustObject) Destroy() error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
+// TODO: Remove this from the p11 interface
+func (obj *trustObject) Label() (string, error) {
+	return "", pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
