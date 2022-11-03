@@ -78,7 +78,7 @@ func (s *slot) Mechanisms() ([]p11.Mechanism, error) {
 	return []p11.Mechanism{}, nil
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (s *slot) OpenSession() (p11.Session, error) {
 	return &session{
 		slot: s,
@@ -93,7 +93,7 @@ func (s *slot) OpenSessionWithFlags(flags uint) (p11.Session, error) {
 	return s.OpenSession()
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (s *slot) OpenWriteSession() (p11.Session, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
@@ -102,7 +102,7 @@ func (s *slot) TokenInfo() (pkcs11.TokenInfo, error) {
 	return s.highBackend.TokenInfo()
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (s *session) Login(pin string) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
