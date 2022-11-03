@@ -194,7 +194,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 			return []p11.Object{}, err
 		}
 
-		candidateCertificates = append(candidateCertificates, searchCertificateResults)
+		candidateCertificates = append(candidateCertificates, searchCertificateResults...)
 	}
 
 	if searchSubject != nil {
@@ -203,7 +203,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 			return []p11.Object{}, err
 		}
 
-		candidateCertificates = append(candidateCertificates, searchSubjectResults)
+		candidateCertificates = append(candidateCertificates, searchSubjectResults...)
 	}
 
 	if searchIssuer != nil || searchSerial != nil {
@@ -212,7 +212,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 			return []p11.Object{}, err
 		}
 
-		candidateCertificates = append(candidateCertificates, searchIssuerSerialResults)
+		candidateCertificates = append(candidateCertificates, searchIssuerSerialResults...)
 	}
 
 	candidateObjects := []p11.Object{}
