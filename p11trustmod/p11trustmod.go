@@ -107,6 +107,11 @@ func (s *session) Login(pin string) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
+// TODO: Remove this from the p11 interface
+func (s *session) LoginSecurityOfficer(pin string) error {
+	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
+
 func (s *session) LoginAs(userType uint, pin string) error {
 	return nil
 }
