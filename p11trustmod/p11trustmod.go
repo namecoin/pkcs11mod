@@ -380,6 +380,8 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 			asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
 			if err != nil {
 				log.Printf("Error marshaling SerialNumber\n")
+				// We treat an unmarshalable serial number as a nonexistent attribute.
+				//nolint:nilerr
 				return nil, nil
 			}
 
@@ -456,6 +458,8 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 			asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
 			if err != nil {
 				log.Printf("Error marshaling SerialNumber\n")
+				// We treat an unmarshalable serial number as a nonexistent attribute.
+				//nolint:nilerr
 				return nil, nil
 			}
 
