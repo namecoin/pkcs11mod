@@ -271,7 +271,7 @@ func marshalAttributeValue(x interface{}) []byte {
 	return a.Value
 }
 
-func (obj builtinObject) Attribute(attributeType uint) ([]byte, error) {
+func (obj *builtinObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 		case pkcs11.CKA_CLASS:
 			return marshalAttributeValue(pkcs11.CKO_NSS_BUILTIN_ROOT_LIST), nil
@@ -288,10 +288,10 @@ func (obj builtinObject) Attribute(attributeType uint) ([]byte, error) {
 	}
 }
 
-func (obj builtinObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+func (obj *builtinObject) Copy(template []*pkcs11.Attribute) (Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
-func (obj certificateObject) Attribute(attributeType uint) ([]byte, error) {
+func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 		case pkcs11.CKA_CLASS:
 			return marshalAttributeValue(pkcs11.CKO_CERTIFICATE), nil
@@ -332,11 +332,11 @@ func (obj certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	}
 }
 
-func (obj certificateObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+func (obj *certificateObject) Copy(template []*pkcs11.Attribute) (Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-func (obj trustObject) Attribute(attributeType uint) ([]byte, error) {
+func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 		case pkcs11.CKA_CLASS:
 			return marshalAttributeValue(pkcs11.CKO_NSS_TRUST), nil
@@ -408,6 +408,6 @@ func (obj trustObject) Attribute(attributeType uint) ([]byte, error) {
 	}
 }
 
-func (obj trustObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+func (obj *trustObject) Copy(template []*pkcs11.Attribute) (Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
