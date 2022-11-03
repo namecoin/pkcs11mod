@@ -452,7 +452,8 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 		case pkcs11.CKA_CERT_SHA1_HASH:
 			// Yes, NSS is a pile of fail and uses SHA1 to identify
 			// certificates.  They should probably fix this in the
-			// future.
+			// future.  TODO: File bug with Mozilla.
+			//nolint:gosec
 			sha1Array := sha1.Sum(obj.data.Certificate.Raw)
 
 			return marshalAttributeValue(sha1Array[:]), nil
