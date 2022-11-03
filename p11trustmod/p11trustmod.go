@@ -223,13 +223,13 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	for _, cert := range candidateCertificates {
 		candidateObjects = append(candidateObjects, &certificateObject{
-			Data: cert,
-			IncludeBuiltinPolicy: includeBuiltin,
+			data: cert,
+			includeBuiltinPolicy: includeBuiltin,
 		})
 
 		if isTrusted {
 			candidateObjects = append(candidateObjects, &trustObject{
-				Data: cert,
+				data: cert,
 			})
 		}
 	}
