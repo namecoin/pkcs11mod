@@ -199,7 +199,9 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 			serialRest, err := asn1.Unmarshal(attr.Value, &searchSerial)
 			if err != nil {
 				log.Printf("Error unmarshaling X.509 serial number: %s", err)
+
 				searchSerial = nil
+
 				continue
 			} else if len(serialRest) != 0 {
 				log.Printf("Error: trailing data after X.509 serial number\n")
