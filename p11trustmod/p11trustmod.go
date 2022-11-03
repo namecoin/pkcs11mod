@@ -81,6 +81,10 @@ func (s *slot) OpenWriteSession() (p11.Session, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
+func (s *slot) CloseAllSessions() error {
+	return nil
+}
+
 func (s *session) LoginAs(userType uint, pin string) error {
 	return nil
 }
