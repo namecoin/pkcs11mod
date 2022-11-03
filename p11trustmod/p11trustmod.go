@@ -282,7 +282,7 @@ func (s *session) InitPIN(pin string) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-func (s *session) SetPIN(old, new string) error {
+func (s *session) SetPIN(oldpin, newpin string) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
