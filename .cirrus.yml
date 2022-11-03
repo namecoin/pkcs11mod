@@ -187,8 +187,9 @@ task:
     - go mod tidy
   # gomoddirectives is temporarily disabled until miekg/pkcs11 merges our changes.
   # interfacebloat complains about miekg/pkcs11 API's that we can't change.
+  # ireturn doesn't make sense for us, since our functions can return arbitrary types provided by the user, so we need to return interfaces.
   # nosnakecase complains about miekg/pkcs11 API's that we can't change.
-  lint_script: golangci-lint run --enable-all --disable exhaustivestruct,exhaustruct,gochecknoglobals,gochecknoinits,gomoddirectives,interfacebloat,nosnakecase $GOLANGCI_ARGS -v --out-format json > lint-report.json
+  lint_script: golangci-lint run --enable-all --disable exhaustivestruct,exhaustruct,gochecknoglobals,gochecknoinits,gomoddirectives,interfacebloat,ireturn,nosnakecase $GOLANGCI_ARGS -v --out-format json > lint-report.json
   matrix:
     - name: Go Lint New
       env:
