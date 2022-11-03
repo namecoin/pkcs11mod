@@ -116,6 +116,10 @@ func (s *session) LoginAs(userType uint, pin string) error {
 	return nil
 }
 
+func (s *session) Logout() error {
+	return nil
+}
+
 func (s *session) Close() error {
 	return nil
 }
