@@ -245,6 +245,10 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	return result, nil
 }
 
+func (s *session) GenerateKeyPair(request p11.GenerateKeyPairRequest) (*p11.KeyPair, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
 func checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute) bool {
 	for _, tempAttr := range template {
 		objData, err := obj.Attribute(tempAttr.Type)
