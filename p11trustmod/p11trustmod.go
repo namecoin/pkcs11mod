@@ -249,6 +249,10 @@ func (s *session) GenerateKeyPair(request p11.GenerateKeyPairRequest) (*p11.KeyP
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
+func (s *session) GenerateRandom(length int) ([]byte, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_RANDOM_NO_RNG)
+}
+
 func checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute) bool {
 	for _, tempAttr := range template {
 		objData, err := obj.Attribute(tempAttr.Type)
