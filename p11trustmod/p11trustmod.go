@@ -343,6 +343,18 @@ func (obj *builtinObject) Value() ([]byte, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
+func (obj *builtinObject) PrivateKey() p11.PrivateKey {
+	return nil
+}
+
+func (obj *builtinObject) PublicKey() p11.PublicKey {
+	return nil
+}
+
+func (obj *builtinObject) SecretKey() p11.SecretKey {
+	return nil
+}
+
 // TODO: Patch p11 to avoid marshalAttributeValue here
 func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
@@ -405,6 +417,18 @@ func (obj *certificateObject) Set(attributeType uint, value []byte) error {
 // TODO: Remove this from the p11 interface
 func (obj *certificateObject) Value() ([]byte, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
+}
+
+func (obj *certificateObject) PrivateKey() p11.PrivateKey {
+	return nil
+}
+
+func (obj *certificateObject) PublicKey() p11.PublicKey {
+	return nil
+}
+
+func (obj *certificateObject) SecretKey() p11.SecretKey {
+	return nil
 }
 
 func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
@@ -501,3 +525,14 @@ func (obj *trustObject) Value() ([]byte, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
+func (obj *trustObject) PrivateKey() p11.PrivateKey {
+	return nil
+}
+
+func (obj *trustObject) PublicKey() p11.PublicKey {
+	return nil
+}
+
+func (obj *trustObject) SecretKey() p11.SecretKey {
+	return nil
+}
