@@ -73,6 +73,10 @@ func (s *slot) InitToken(securityOfficerPIN, tokenLabel string) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
+func (s *slot) Mechanisms() ([]p11.Mechanism, error) {
+	return []p11.Mechanism{}, nil
+}
+
 func (s *slot) TokenInfo() (pkcs11.TokenInfo, error) {
 	return s.highBackend.TokenInfo()
 }
