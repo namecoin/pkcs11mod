@@ -103,6 +103,8 @@ task:
     - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/${SO_PREFIX}pkcs11proxy.$SO_EXT
     - cd ../p11proxy
     - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/${SO_PREFIX}p11proxy.$SO_EXT
+    - cd ../p11trustmod
+    - CGO_ENABLED=1 go build
   dist_script:
     - SO_PREFIX=lib
     - SO_EXT=so
@@ -164,6 +166,8 @@ task:
     - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/${SO_PREFIX}pkcs11proxy.$SO_EXT
     - cd ../p11proxy
     - CGO_ENABLED=1 go build -buildmode c-shared -o ../dist/${SO_PREFIX}p11proxy.$SO_EXT
+    - cd ../p11trustmod
+    - CGO_ENABLED=1 go build
   dist_script:
     - SO_PREFIX=lib
     - SO_EXT=dylib
@@ -243,6 +247,12 @@ task:
     - fi
     - cd ../p11proxy
     - CGO_ENABLED=1 csbuild --build-cmd "go build -buildmode c-shared -o ../dist/${SO_PREFIX}p11proxy.$SO_EXT" | tee csbuild.txt
+    - if ! grep -P -q -i -z 'CURRENT DEFECTS\n===============\n$' csbuild.txt
+    - then
+    - exit 1
+    - fi
+    - cd ../p11trustmod
+    - CGO_ENABLED=1 csbuild --build-cmd "go build" | tee csbuild.txt
     - if ! grep -P -q -i -z 'CURRENT DEFECTS\n===============\n$' csbuild.txt
     - then
     - exit 1
