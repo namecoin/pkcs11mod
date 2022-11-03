@@ -307,7 +307,7 @@ func marshalAttributeValue(x interface{}) []byte {
 func (obj *builtinObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 		case pkcs11.CKA_CLASS:
-			return marshalAttributeValue(pkcs11.CKO_NSS_BUILTIN_ROOT_LIST), nil
+			return marshalAttributeValue(uint(pkcs11.CKO_NSS_BUILTIN_ROOT_LIST)), nil
 		case pkcs11.CKA_TOKEN:
 			return marshalAttributeValue(true), nil
 		case pkcs11.CKA_PRIVATE:
@@ -434,7 +434,7 @@ func (obj *certificateObject) SecretKey() p11.SecretKey {
 func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 		case pkcs11.CKA_CLASS:
-			return marshalAttributeValue(pkcs11.CKO_NSS_TRUST), nil
+			return marshalAttributeValue(uint(pkcs11.CKO_NSS_TRUST)), nil
 		case pkcs11.CKA_TOKEN:
 			return marshalAttributeValue(true), nil
 		case pkcs11.CKA_PRIVATE:
@@ -462,25 +462,25 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 			return marshalAttributeValue(asn1SerialNumber), nil
 		case pkcs11.CKA_TRUST_SERVER_AUTH:
 			if obj.data.TrustServerAuth == 0 {
-				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
+				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
 			}
 
 			return marshalAttributeValue(obj.data.TrustServerAuth), nil
 		case pkcs11.CKA_TRUST_CLIENT_AUTH:
 			if obj.data.TrustClientAuth == 0 {
-				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
+				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
 			}
 
 			return marshalAttributeValue(obj.data.TrustClientAuth), nil
 		case pkcs11.CKA_TRUST_CODE_SIGNING:
 			if obj.data.TrustCodeSigning == 0 {
-				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
+				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
 			}
 
 			return marshalAttributeValue(obj.data.TrustCodeSigning), nil
 		case pkcs11.CKA_TRUST_EMAIL_PROTECTION:
 			if obj.data.TrustEmailProtection == 0 {
-				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
+				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
 			}
 
 			return marshalAttributeValue(obj.data.TrustEmailProtection), nil
