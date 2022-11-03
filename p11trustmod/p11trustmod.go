@@ -288,6 +288,9 @@ func (obj builtinObject) Attribute(attributeType uint) ([]byte, error) {
 	}
 }
 
+func (obj builtinObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
 func (obj certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 		case pkcs11.CKA_CLASS:
@@ -327,6 +330,10 @@ func (obj certificateObject) Attribute(attributeType uint) ([]byte, error) {
 		default:
 			return nil, nil
 	}
+}
+
+func (obj certificateObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
 func (obj trustObject) Attribute(attributeType uint) ([]byte, error) {
@@ -399,4 +406,8 @@ func (obj trustObject) Attribute(attributeType uint) ([]byte, error) {
 		default:
 			return nil, nil
 	}
+}
+
+func (obj trustObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
