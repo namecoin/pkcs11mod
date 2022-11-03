@@ -21,7 +21,7 @@ import (
 	"crypto/sha1"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"encodiing/asn1"
+	"encoding/asn1"
 	"log"
 	"sync"
 
