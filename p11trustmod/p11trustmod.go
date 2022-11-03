@@ -61,6 +61,10 @@ type trustObject struct {
 	data *CertificateData
 }
 
+func (s *slot) CloseAllSessions() error {
+	return nil
+}
+
 func (s *slot) ID() uint {
 	return s.slotID
 }
@@ -77,10 +81,6 @@ func (s *slot) Mechanisms() ([]p11.Mechanism, error) {
 	return []p11.Mechanism{}, nil
 }
 
-func (s *slot) TokenInfo() (pkcs11.TokenInfo, error) {
-	return s.highBackend.TokenInfo()
-}
-
 func (s *slot) OpenSession() (p11.Session, error) {
 	return &session{
 		slot: s,
@@ -91,8 +91,8 @@ func (s *slot) OpenWriteSession() (p11.Session, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-func (s *slot) CloseAllSessions() error {
-	return nil
+func (s *slot) TokenInfo() (pkcs11.TokenInfo, error) {
+	return s.highBackend.TokenInfo()
 }
 
 func (s *session) LoginAs(userType uint, pin string) error {
