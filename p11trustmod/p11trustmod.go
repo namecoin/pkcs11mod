@@ -44,7 +44,7 @@ type slot struct {
 }
 
 type session struct {
-	slot slot
+	slot *slot
 }
 
 type builtinObject struct {
