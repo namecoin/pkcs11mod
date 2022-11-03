@@ -67,6 +67,10 @@ func (s *slot) Info() (pkcs11.SlotInfo, error) {
 	return s.highBackend.Info()
 }
 
+func (s *slot) InitToken(securityOfficerPIN, tokenLabel string) error {
+	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
 func (s *slot) TokenInfo() (pkcs11.TokenInfo, error) {
 	return s.highBackend.TokenInfo()
 }
@@ -95,6 +99,11 @@ func (s *session) Close() error {
 
 func (s *session) CreateObject(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
+// TODO: Remove this from the p11 interface
+func (s *session) FindObject(template []*pkcs11.Attribute) (p11.Object, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
 func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
