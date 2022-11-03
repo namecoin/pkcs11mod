@@ -395,9 +395,9 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 		case pkcs11.CKA_NSS_MOZILLA_CA_POLICY:
 			if obj.includeBuiltinPolicy {
 				return marshalAttributeValue(obj.data.BuiltinPolicy), nil
-			} else {
-				return nil, nil
 			}
+
+			return nil, nil
 		default:
 			return nil, nil
 	}
