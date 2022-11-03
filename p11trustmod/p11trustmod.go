@@ -26,11 +26,12 @@ import (
 	"sync"
 
 	"github.com/miekg/pkcs11"
+	"github.com/miekg/pkcs11/p11"
 
 	"github.com/namecoin/pkcs11mod/p11mod"
 )
 
-func Slot(b Backend, id uint) p11mod.Slot {
+func Slot(b Backend, id uint) p11.Slot {
 	return &slot{
 		highBackend: b,
 		slotID: id,
@@ -70,13 +71,13 @@ func (s *slot) TokenInfo() (pkcs11.TokenInfo, error) {
 	return s.highBackend.TokenInfo()
 }
 
-func (s *slot) OpenSession() (p11mod.Session, error) {
+func (s *slot) OpenSession() (p11.Session, error) {
 	return &session{
 		slot: s,
 	}, nil
 }
 
-func (s *slot) OpenWriteSession() (p11mod.Session, error) {
+func (s *slot) OpenWriteSession() (p11.Session, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
@@ -88,20 +89,20 @@ func (s *session) Close() error {
 	return nil
 }
 
-func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11mod.Object, error) {
+func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
 	includeBuiltin, err := s.slot.highBackend.IsBuiltinRootList()
 	if err != nil {
-		return []p11mod.Object{}, err
+		return []p11.Object{}, err
 	}
 
 	isTrusted, err := s.slot.highBackend.IsTrusted()
 	if err != nil {
-		return []p11mod.Object{}, err
+		return []p11.Object{}, err
 	}
 
 	candidateCertificates, err := s.slot.highBackend.QueryAll()
 	if err != nil {
-		return []p11mod.Object{}, err
+		return []p11.Object{}, err
 	}
 
 	var searchCertificate *x509.Certificate
@@ -167,7 +168,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11mod.Object, er
 	if searchCertificate != nil {
 		searchCertificateResults, err := s.slot.highBackend.QueryCertificate(searchCertificate)
 		if err != nil {
-			return []p11mod.Object{}, err
+			return []p11.Object{}, err
 		}
 
 		candidateCertificates = append(candidateCertificates, searchCertificateResults)
@@ -176,7 +177,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11mod.Object, er
 	if searchSubject != nil {
 		searchSubjectResults, err := s.slot.highBackend.QuerySubject(searchSubject)
 		if err != nil {
-			return []p11mod.Object{}, err
+			return []p11.Object{}, err
 		}
 
 		candidateCertificates = append(candidateCertificates, searchSubjectResults)
@@ -185,13 +186,13 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11mod.Object, er
 	if searchIssuer != nil || searchSerial != nil {
 		searchIssuerSerialResults, err := s.slot.highBackend.QueryIssuerSerial(searchIssuer, searchSerial)
 		if err != nil {
-			return []p11mod.Object{}, err
+			return []p11.Object{}, err
 		}
 
 		candidateCertificates = append(candidateCertificates, searchIssuerSerialResults)
 	}
 
-	candidateObjects := []p11mod.Object{}
+	candidateObjects := []p11.Object{}
 
 	if includeBuiltin {
 		candidateObjects = append(candidateObjects, &builtinObject{})
@@ -210,7 +211,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11mod.Object, er
 		}
 	}
 
-	result := []p11mod.Object{}
+	result := []p11.Object{}
 
 	for _, obj := range candidateObjects {
 		if checkObjectTemplate(obj, template) {
@@ -221,7 +222,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11mod.Object, er
 	return result, nil
 }
 
-func checkObjectTemplate(obj p11mod.Object, template []*pkcs11.Attribute) bool {
+func checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute) bool {
 	for _, tempAttr := range template {
 		objData, err := obj.Attribute(tempAttr.Type)
 		if err != nil {
