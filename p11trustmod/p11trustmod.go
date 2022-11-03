@@ -302,9 +302,11 @@ func (obj *builtinObject) Attribute(attributeType uint) ([]byte, error) {
 	}
 }
 
-func (obj *builtinObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+func (obj *builtinObject) Copy(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
+
+// TODO: Patch p11 to avoid marshalAttributeValue here
 func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 		case pkcs11.CKA_CLASS:
@@ -346,7 +348,7 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	}
 }
 
-func (obj *certificateObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+func (obj *certificateObject) Copy(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
@@ -384,25 +386,25 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
 			}
 
-			return obj.data.TrustServerAuth
+			return marshalAttributeValue(obj.data.TrustServerAuth), nil
 		case pkcs11.CKA_TRUST_CLIENT_AUTH:
 			if obj.data.TrustClientAuth == 0 {
 				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
 			}
 
-			return obj.data.TrustClientAuth
+			return marshalAttributeValue(obj.data.TrustClientAuth)
 		case pkcs11.CKA_TRUST_CODE_SIGNING:
 			if obj.data.TrustCodeSigning == 0 {
 				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
 			}
 
-			return obj.data.TrustCodeSigning
+			return marshalAttributeValue(obj.data.TrustCodeSigning), nil
 		case pkcs11.CKA_TRUST_EMAIL_PROTECTION:
 			if obj.data.TrustEmailProtection == 0 {
 				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
 			}
 
-			return obj.data.TrustEmailProtection
+			return marshalAttributeValue(obj.data.TrustEmailProtection), nil
 		case pkcs11.CKA_TRUST_STEP_UP_APPROVED:
 			// According to "certutil --help", "make step-up cert"
 			// is the description of the "g" trust attribute.
@@ -422,6 +424,6 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	}
 }
 
-func (obj *trustObject) Copy(template []*pkcs11.Attribute) (Object, error) {
+func (obj *trustObject) Copy(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
