@@ -311,6 +311,10 @@ func (obj *builtinObject) Copy(template []*pkcs11.Attribute) (p11.Object, error)
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
+func (obj *builtinObject) Destroy() error {
+	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
 // TODO: Patch p11 to avoid marshalAttributeValue here
 func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
@@ -355,6 +359,10 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 
 func (obj *certificateObject) Copy(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
+func (obj *certificateObject) Destroy() error {
+	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
 func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
@@ -431,4 +439,8 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 
 func (obj *trustObject) Copy(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
+func (obj *trustObject) Destroy() error {
+	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
