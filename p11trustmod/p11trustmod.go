@@ -25,12 +25,9 @@ import (
 	"encoding/asn1"
 	"log"
 	"math/big"
-	"sync"
 
 	"github.com/miekg/pkcs11"
 	"github.com/miekg/pkcs11/p11"
-
-	"github.com/namecoin/pkcs11mod/p11mod"
 )
 
 func Slot(b Backend, id uint) p11.Slot {
