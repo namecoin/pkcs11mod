@@ -267,6 +267,10 @@ func (s *session) InitPIN(pin string) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
+func (s *session) SetPIN(old, new string) error {
+	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
 func checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute) bool {
 	for _, tempAttr := range template {
 		objData, err := obj.Attribute(tempAttr.Type)
