@@ -760,7 +760,7 @@ func (ll *llBackend) Sign(sh pkcs11.SessionHandle, message []byte) ([]byte, erro
 		session.signKeyIndex = 0
 	}()
 
-	priv := session.objects[session.signKeyIndex].(p11.PrivateKey)
+	priv := session.objects[session.signKeyIndex].PrivateKey()
 
 	signature, err := priv.Sign(*session.signMechanism, message)
 	if err != nil {
@@ -842,7 +842,7 @@ func (ll *llBackend) Verify(sh pkcs11.SessionHandle, data, signature []byte) err
 		session.verifyKeyIndex = 0
 	}()
 
-	pub := session.objects[session.verifyKeyIndex].(p11.PublicKey)
+	pub := session.objects[session.verifyKeyIndex].PublicKey()
 
 	err = pub.Verify(*session.verifyMechanism, data, signature)
 	if err != nil {
