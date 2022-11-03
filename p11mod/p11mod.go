@@ -935,14 +935,14 @@ func (ll *llBackend) GenerateKeyPair(sh pkcs11.SessionHandle, m *pkcs11.Mechanis
 		return 0, 0, err
 	}
 
-	session.objects = append(session.objects, pair.Public.(p11.Object))
+	session.objects = append(session.objects, pair.Public.Object())
 
 	// 0 is never a valid object handle, as per PKCS#11 spec.  So the object
 	// handle of the final object is its index + 1, which is the same as the
 	// length of the objects slice.
 	publicHandle := len(session.objects)
 
-	session.objects = append(session.objects, pair.Private.(p11.Object))
+	session.objects = append(session.objects, pair.Private.Object())
 
 	// 0 is never a valid object handle, as per PKCS#11 spec.  So the object
 	// handle of the final object is its index + 1, which is the same as the
