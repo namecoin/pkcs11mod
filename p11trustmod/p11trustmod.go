@@ -23,6 +23,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"log"
+	"math/big"
 	"sync"
 
 	"github.com/miekg/pkcs11"
