@@ -81,12 +81,22 @@ func (s *slot) Mechanisms() ([]p11.Mechanism, error) {
 	return []p11.Mechanism{}, nil
 }
 
+// TODO: Remove this from the p11 interface
 func (s *slot) OpenSession() (p11.Session, error) {
 	return &session{
 		slot: s,
 	}, nil
 }
 
+func (s *slot) OpenSessionWithFlags(flags uint) (p11.Session, error) {
+	if flags&pkcs11.CKF_RW_SESSION != 0 {
+		return s.OpenWriteSession()
+	}
+
+	return s.OpenSession()
+}
+
+// TODO: Remove this from the p11 interface
 func (s *slot) OpenWriteSession() (p11.Session, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
