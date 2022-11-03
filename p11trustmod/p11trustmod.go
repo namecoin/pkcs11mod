@@ -93,6 +93,10 @@ func (s *session) Close() error {
 	return nil
 }
 
+func (s *session) CreateObject(template []*pkcs11.Attribute) (p11.Object, error) {
+	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
+}
+
 func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
 	includeBuiltin, err := s.slot.highBackend.IsBuiltinRootList()
 	if err != nil {
