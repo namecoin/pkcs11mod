@@ -447,7 +447,7 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
 			}
 
-			return marshalAttributeValue(obj.data.TrustClientAuth)
+			return marshalAttributeValue(obj.data.TrustClientAuth), nil
 		case pkcs11.CKA_TRUST_CODE_SIGNING:
 			if obj.data.TrustCodeSigning == 0 {
 				return marshalAttributeValue(pkcs11.CKT_NSS_TRUST_UNKNOWN), nil
