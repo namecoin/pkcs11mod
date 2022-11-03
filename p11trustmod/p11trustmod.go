@@ -149,10 +149,12 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 		return []p11.Object{}, err
 	}
 
-	var searchCertificate *x509.Certificate
-	var searchSubject *pkix.Name
-	var searchIssuer *pkix.Name
-	var searchSerial *big.Int
+	var (
+		searchCertificate *x509.Certificate
+		searchSubject *pkix.Name
+		searchIssuer *pkix.Name
+		searchSerial *big.Int
+	)
 
 	for _, attr := range template {
 		if searchCertificate == nil && attr.Type == pkcs11.CKA_VALUE {
