@@ -33,24 +33,23 @@ import (
 func Slot(b Backend, id uint) p11.Slot {
 	return &slot{
 		highBackend: b,
-		slotID: id,
+		slotID:      id,
 	}
 }
 
 type slot struct {
 	highBackend Backend
-	slotID uint
+	slotID      uint
 }
 
 type session struct {
 	slot *slot
 }
 
-type builtinObject struct {
-}
+type builtinObject struct{}
 
 type certificateObject struct {
-	data *CertificateData
+	data                 *CertificateData
 	includeBuiltinPolicy bool
 }
 
@@ -107,7 +106,7 @@ func (s *session) Login(pin string) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (s *session) LoginSecurityOfficer(pin string) error {
 	return pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
@@ -128,7 +127,7 @@ func (s *session) CreateObject(template []*pkcs11.Attribute) (p11.Object, error)
 	return nil, pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (s *session) FindObject(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
@@ -151,9 +150,9 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	var (
 		searchCertificate *x509.Certificate
-		searchSubject *pkix.Name
-		searchIssuer *pkix.Name
-		searchSerial *big.Int
+		searchSubject     *pkix.Name
+		searchIssuer      *pkix.Name
+		searchSerial      *big.Int
 	)
 
 	for _, attr := range template {
@@ -248,7 +247,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	for _, cert := range candidateCertificates {
 		candidateObjects = append(candidateObjects, &certificateObject{
-			data: cert,
+			data:                 cert,
 			includeBuiltinPolicy: includeBuiltin,
 		})
 
@@ -295,7 +294,7 @@ func checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute) bool {
 
 		tempData := tempAttr.Value
 
-		if ! bytes.Equal(objData, tempData) {
+		if !bytes.Equal(objData, tempData) {
 			return false
 		}
 	}
@@ -310,18 +309,18 @@ func marshalAttributeValue(x interface{}) []byte {
 
 func (obj *builtinObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
-		case pkcs11.CKA_CLASS:
-			return marshalAttributeValue(uint(pkcs11.CKO_NSS_BUILTIN_ROOT_LIST)), nil
-		case pkcs11.CKA_TOKEN:
-			return marshalAttributeValue(true), nil
-		case pkcs11.CKA_PRIVATE:
-			return marshalAttributeValue(false), nil
-		case pkcs11.CKA_MODIFIABLE:
-			return marshalAttributeValue(false), nil
-		case pkcs11.CKA_LABEL:
-			return marshalAttributeValue("Mozilla Builtin Roots"), nil
-		default:
-			return nil, nil
+	case pkcs11.CKA_CLASS:
+		return marshalAttributeValue(uint(pkcs11.CKO_NSS_BUILTIN_ROOT_LIST)), nil
+	case pkcs11.CKA_TOKEN:
+		return marshalAttributeValue(true), nil
+	case pkcs11.CKA_PRIVATE:
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_MODIFIABLE:
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_LABEL:
+		return marshalAttributeValue("Mozilla Builtin Roots"), nil
+	default:
+		return nil, nil
 	}
 }
 
@@ -333,7 +332,7 @@ func (obj *builtinObject) Destroy() error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (obj *builtinObject) Label() (string, error) {
 	return "", pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
@@ -342,7 +341,7 @@ func (obj *builtinObject) Set(attributeType uint, value []byte) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (obj *builtinObject) Value() ([]byte, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
@@ -359,47 +358,47 @@ func (obj *builtinObject) SecretKey() p11.SecretKey {
 	return nil
 }
 
-// TODO: Patch p11 to avoid marshalAttributeValue here
+// TODO: Patch p11 to avoid marshalAttributeValue here.
 func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
-		case pkcs11.CKA_CLASS:
-			return marshalAttributeValue(pkcs11.CKO_CERTIFICATE), nil
-		case pkcs11.CKA_TOKEN:
-			return marshalAttributeValue(true), nil
-		case pkcs11.CKA_PRIVATE:
-			return marshalAttributeValue(false), nil
-		case pkcs11.CKA_MODIFIABLE:
-			return marshalAttributeValue(false), nil
-		case pkcs11.CKA_LABEL:
-			return marshalAttributeValue(obj.data.Label), nil
-		case pkcs11.CKA_CERTIFICATE_TYPE:
-			return marshalAttributeValue(pkcs11.CKC_X_509), nil
-		case pkcs11.CKA_SUBJECT:
-			return marshalAttributeValue(obj.data.Certificate.RawSubject), nil
-		case pkcs11.CKA_ID:
-			return marshalAttributeValue("0"), nil
-		case pkcs11.CKA_ISSUER:
-			return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
-		case pkcs11.CKA_SERIAL_NUMBER:
-			asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
-			if err != nil {
-				log.Printf("Error marshaling SerialNumber\n")
-				// We treat an unmarshalable serial number as a nonexistent attribute.
-				//nolint:nilerr
-				return nil, nil
-			}
-
-			return marshalAttributeValue(asn1SerialNumber), nil
-		case pkcs11.CKA_VALUE:
-			return marshalAttributeValue(obj.data.Certificate.Raw), nil
-		case pkcs11.CKA_NSS_MOZILLA_CA_POLICY:
-			if obj.includeBuiltinPolicy {
-				return marshalAttributeValue(obj.data.BuiltinPolicy), nil
-			}
-
+	case pkcs11.CKA_CLASS:
+		return marshalAttributeValue(pkcs11.CKO_CERTIFICATE), nil
+	case pkcs11.CKA_TOKEN:
+		return marshalAttributeValue(true), nil
+	case pkcs11.CKA_PRIVATE:
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_MODIFIABLE:
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_LABEL:
+		return marshalAttributeValue(obj.data.Label), nil
+	case pkcs11.CKA_CERTIFICATE_TYPE:
+		return marshalAttributeValue(pkcs11.CKC_X_509), nil
+	case pkcs11.CKA_SUBJECT:
+		return marshalAttributeValue(obj.data.Certificate.RawSubject), nil
+	case pkcs11.CKA_ID:
+		return marshalAttributeValue("0"), nil
+	case pkcs11.CKA_ISSUER:
+		return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
+	case pkcs11.CKA_SERIAL_NUMBER:
+		asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
+		if err != nil {
+			log.Printf("Error marshaling SerialNumber\n")
+			// We treat an unmarshalable serial number as a nonexistent attribute.
+			//nolint:nilerr
 			return nil, nil
-		default:
-			return nil, nil
+		}
+
+		return marshalAttributeValue(asn1SerialNumber), nil
+	case pkcs11.CKA_VALUE:
+		return marshalAttributeValue(obj.data.Certificate.Raw), nil
+	case pkcs11.CKA_NSS_MOZILLA_CA_POLICY:
+		if obj.includeBuiltinPolicy {
+			return marshalAttributeValue(obj.data.BuiltinPolicy), nil
+		}
+
+		return nil, nil
+	default:
+		return nil, nil
 	}
 }
 
@@ -411,7 +410,7 @@ func (obj *certificateObject) Destroy() error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (obj *certificateObject) Label() (string, error) {
 	return "", pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
@@ -420,7 +419,7 @@ func (obj *certificateObject) Set(attributeType uint, value []byte) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (obj *certificateObject) Value() ([]byte, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
@@ -439,76 +438,76 @@ func (obj *certificateObject) SecretKey() p11.SecretKey {
 
 func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
-		case pkcs11.CKA_CLASS:
-			return marshalAttributeValue(uint(pkcs11.CKO_NSS_TRUST)), nil
-		case pkcs11.CKA_TOKEN:
-			return marshalAttributeValue(true), nil
-		case pkcs11.CKA_PRIVATE:
-			return marshalAttributeValue(false), nil
-		case pkcs11.CKA_MODIFIABLE:
-			return marshalAttributeValue(false), nil
-		case pkcs11.CKA_LABEL:
-			return marshalAttributeValue(obj.data.Label), nil
-		case pkcs11.CKA_CERT_SHA1_HASH:
-			// Yes, NSS is a pile of fail and uses SHA1 to identify
-			// certificates.  They should probably fix this in the
-			// future.  TODO: File bug with Mozilla.
-			//nolint:gosec
-			sha1Array := sha1.Sum(obj.data.Certificate.Raw)
+	case pkcs11.CKA_CLASS:
+		return marshalAttributeValue(uint(pkcs11.CKO_NSS_TRUST)), nil
+	case pkcs11.CKA_TOKEN:
+		return marshalAttributeValue(true), nil
+	case pkcs11.CKA_PRIVATE:
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_MODIFIABLE:
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_LABEL:
+		return marshalAttributeValue(obj.data.Label), nil
+	case pkcs11.CKA_CERT_SHA1_HASH:
+		// Yes, NSS is a pile of fail and uses SHA1 to identify
+		// certificates.  They should probably fix this in the
+		// future.  TODO: File bug with Mozilla.
+		//nolint:gosec
+		sha1Array := sha1.Sum(obj.data.Certificate.Raw)
 
-			return marshalAttributeValue(sha1Array[:]), nil
-		case pkcs11.CKA_ISSUER:
-			return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
-		case pkcs11.CKA_SERIAL_NUMBER:
-			asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
-			if err != nil {
-				log.Printf("Error marshaling SerialNumber\n")
-				// We treat an unmarshalable serial number as a nonexistent attribute.
-				//nolint:nilerr
-				return nil, nil
-			}
-
-			return marshalAttributeValue(asn1SerialNumber), nil
-		case pkcs11.CKA_TRUST_SERVER_AUTH:
-			if obj.data.TrustServerAuth == 0 {
-				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-			}
-
-			return marshalAttributeValue(obj.data.TrustServerAuth), nil
-		case pkcs11.CKA_TRUST_CLIENT_AUTH:
-			if obj.data.TrustClientAuth == 0 {
-				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-			}
-
-			return marshalAttributeValue(obj.data.TrustClientAuth), nil
-		case pkcs11.CKA_TRUST_CODE_SIGNING:
-			if obj.data.TrustCodeSigning == 0 {
-				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-			}
-
-			return marshalAttributeValue(obj.data.TrustCodeSigning), nil
-		case pkcs11.CKA_TRUST_EMAIL_PROTECTION:
-			if obj.data.TrustEmailProtection == 0 {
-				return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-			}
-
-			return marshalAttributeValue(obj.data.TrustEmailProtection), nil
-		case pkcs11.CKA_TRUST_STEP_UP_APPROVED:
-			// According to "certutil --help", "make step-up cert"
-			// is the description of the "g" trust attribute.
-			// According to the NSS "CERT_DecodeTrustString"
-			// function, the "g" trust attribute corresponds to the
-			// "CERTDB_GOVT_APPROVED_CA" flag.  The #define for
-			// "CERTDB_GOVT_APPROVED_CA" includes the comment "can
-			// do strong crypto in export ver".  So, I infer that
-			// "step-up" refers to some kind of governmental
-			// regulatory approval involving crypto export
-			// controls.  According to "certdata.txt" in Mozilla's
-			// Mercurial repo, all of the CKBI CA's have this
-			// attribute set to false.
-			return marshalAttributeValue(false), nil
-		default:
+		return marshalAttributeValue(sha1Array[:]), nil
+	case pkcs11.CKA_ISSUER:
+		return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
+	case pkcs11.CKA_SERIAL_NUMBER:
+		asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
+		if err != nil {
+			log.Printf("Error marshaling SerialNumber\n")
+			// We treat an unmarshalable serial number as a nonexistent attribute.
+			//nolint:nilerr
 			return nil, nil
+		}
+
+		return marshalAttributeValue(asn1SerialNumber), nil
+	case pkcs11.CKA_TRUST_SERVER_AUTH:
+		if obj.data.TrustServerAuth == 0 {
+			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
+		}
+
+		return marshalAttributeValue(obj.data.TrustServerAuth), nil
+	case pkcs11.CKA_TRUST_CLIENT_AUTH:
+		if obj.data.TrustClientAuth == 0 {
+			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
+		}
+
+		return marshalAttributeValue(obj.data.TrustClientAuth), nil
+	case pkcs11.CKA_TRUST_CODE_SIGNING:
+		if obj.data.TrustCodeSigning == 0 {
+			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
+		}
+
+		return marshalAttributeValue(obj.data.TrustCodeSigning), nil
+	case pkcs11.CKA_TRUST_EMAIL_PROTECTION:
+		if obj.data.TrustEmailProtection == 0 {
+			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
+		}
+
+		return marshalAttributeValue(obj.data.TrustEmailProtection), nil
+	case pkcs11.CKA_TRUST_STEP_UP_APPROVED:
+		// According to "certutil --help", "make step-up cert"
+		// is the description of the "g" trust attribute.
+		// According to the NSS "CERT_DecodeTrustString"
+		// function, the "g" trust attribute corresponds to the
+		// "CERTDB_GOVT_APPROVED_CA" flag.  The #define for
+		// "CERTDB_GOVT_APPROVED_CA" includes the comment "can
+		// do strong crypto in export ver".  So, I infer that
+		// "step-up" refers to some kind of governmental
+		// regulatory approval involving crypto export
+		// controls.  According to "certdata.txt" in Mozilla's
+		// Mercurial repo, all of the CKBI CA's have this
+		// attribute set to false.
+		return marshalAttributeValue(false), nil
+	default:
+		return nil, nil
 	}
 }
 
@@ -520,7 +519,7 @@ func (obj *trustObject) Destroy() error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (obj *trustObject) Label() (string, error) {
 	return "", pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
@@ -529,7 +528,7 @@ func (obj *trustObject) Set(attributeType uint, value []byte) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-// TODO: Remove this from the p11 interface
+// TODO: Remove this from the p11 interface.
 func (obj *trustObject) Value() ([]byte, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }

@@ -21,8 +21,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"math/big"
-	
-	
+
 	"github.com/miekg/pkcs11"
 )
 
@@ -42,11 +41,11 @@ type Backend interface {
 }
 
 type CertificateData struct {
-	Label string
-	Certificate *x509.Certificate
-	BuiltinPolicy bool
-	TrustServerAuth uint
-	TrustClientAuth uint
-	TrustCodeSigning uint
+	Label                string
+	Certificate          *x509.Certificate
+	BuiltinPolicy        bool
+	TrustServerAuth      uint
+	TrustClientAuth      uint
+	TrustCodeSigning     uint
 	TrustEmailProtection uint
 }
