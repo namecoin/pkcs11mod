@@ -32,6 +32,15 @@ spec2: spec
 	awk '/#define CKA_/{ print "pkcs11."$$2":\""$$2"\"," }' spec/pkcs11t.h | grep -v CKA_SUB_PRIME_BITS | grep -v CKA_EC_PARAMS >> strings.go
 	awk '/CKA_/{ print "pkcs11."$$1":\""$$1"\"," }' spec/vendor.go_ >> strings.go
 	echo '}' >> strings.go
+	echo '' >> strings.go
+	echo 'var strCKO = map[uint]string{' >> strings.go
+	awk '/#define CKO_/{ print "pkcs11."$$2":\""$$2"\"," }' spec/pkcs11t.h >> strings.go
+	awk '/CKO_/{ print "pkcs11."$$1":\""$$1"\"," }' spec/vendor.go_ >> strings.go
+	echo '}' >> strings.go
+	echo '' >> strings.go
+	echo 'var strCKT = map[uint]string{' >> strings.go
+	awk '/CKT_/{ print "pkcs11."$$1":\""$$1"\"," }' spec/vendor.go_ >> strings.go
+	echo '}' >> strings.go
 	gofmt -s -w strings.go
 
 clean:

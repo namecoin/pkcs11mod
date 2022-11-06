@@ -202,6 +202,30 @@ func toMechanism(pMechanism C.CK_MECHANISM_PTR) *pkcs11.Mechanism {
 	}
 }
 
+func attrTraceValueCKO(value []byte) string {
+	vint, err := BytesToULong(value)
+	if err == nil {
+		vPretty, ok := strCKO[vint]
+		if ok {
+			return vPretty
+		}
+	}
+
+	return fmt.Sprintf("%v", value)
+}
+
+func attrTraceValueCKT(value []byte) string {
+	vint, err := BytesToULong(value)
+	if err == nil {
+		vPretty, ok := strCKT[vint]
+		if ok {
+			return vPretty
+		}
+	}
+
+	return fmt.Sprintf("%v", value)
+}
+
 func AttrTrace(a *pkcs11.Attribute) string {
 	t, ok := strCKA[a.Type]
 	if !ok {
@@ -209,6 +233,14 @@ func AttrTrace(a *pkcs11.Attribute) string {
 	}
 
 	if traceSensitive {
+		if a.Type == pkcs11.CKA_CLASS {
+			return fmt.Sprintf("%s: %s", t, attrTraceValueCKO(a.Value))
+		}
+
+		if a.Type >= pkcs11.CKA_TRUST_SERVER_AUTH && a.Type <= pkcs11.CKA_TRUST_EMAIL_PROTECTION {
+			return fmt.Sprintf("%s: %s", t, attrTraceValueCKT(a.Value))
+		}
+
 		return fmt.Sprintf("%s: %v", t, a.Value)
 	}
 
