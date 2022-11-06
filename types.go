@@ -202,6 +202,19 @@ func toMechanism(pMechanism C.CK_MECHANISM_PTR) *pkcs11.Mechanism {
 	}
 }
 
+func attrTraceValueBool(value []byte) string {
+	vbool, err := BytesToBool(value)
+	if err == nil {
+		if vbool {
+			return "CK_TRUE"
+		}
+
+		return "CK_FALSE"
+	}
+
+	return fmt.Sprintf("%v", value)
+}
+
 func attrTraceValueCKO(value []byte) string {
 	vint, err := BytesToULong(value)
 	if err == nil {
@@ -233,6 +246,11 @@ func AttrTrace(a *pkcs11.Attribute) string {
 	}
 
 	if traceSensitive {
+		if a.Type == pkcs11.CKA_TOKEN || a.Type == pkcs11.CKA_PRIVATE ||
+			a.Type == pkcs11.CKA_MODIFIABLE || a.Type == pkcs11.CKA_TRUST_STEP_UP_APPROVED {
+			return fmt.Sprintf("%s: %s", t, attrTraceValueBool(a.Value))
+		}
+
 		if a.Type == pkcs11.CKA_CLASS {
 			return fmt.Sprintf("%s: %s", t, attrTraceValueCKO(a.Value))
 		}
