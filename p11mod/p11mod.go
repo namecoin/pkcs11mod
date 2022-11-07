@@ -77,9 +77,7 @@ func (ll *llBackend) Initialize() error {
 	// Initialize() was already called by p11.OpenModule(), so there's
 	// nothing to do here other than check the error value.
 	if errHighBackend != nil {
-		if trace {
-			log.Printf("p11mod Initialize: %s", errHighBackend)
-		}
+		log.Printf("p11mod Initialize: %s", errHighBackend)
 
 		return pkcs11.Error(pkcs11.CKR_GENERAL_ERROR)
 	}
@@ -500,9 +498,7 @@ func (ll *llBackend) GetObjectSize(sh pkcs11.SessionHandle, oh pkcs11.ObjectHand
 func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.ObjectHandle, a []*pkcs11.Attribute) ([]*pkcs11.Attribute, error) {
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
-		if trace {
-			log.Printf("p11mod GetAttributeValue: %v", err)
-		}
+		log.Printf("p11mod GetAttributeValue: %v", err)
 
 		return []*pkcs11.Attribute{}, err
 	}
@@ -526,18 +522,15 @@ func (ll *llBackend) GetAttributeValue(sh pkcs11.SessionHandle, oh pkcs11.Object
 
 		value, err := object.Attribute(t.Type)
 		if err != nil && !errors.Is(err, p11.ErrAttributeNotFound) && !errors.Is(err, p11.ErrTooManyAttributesFound) {
-			if trace {
-				log.Printf("p11mod GetAttributeValue: %v", err)
-			}
+			log.Printf("p11mod GetAttributeValue: %v", err)
 
 			return nil, err
 		}
 
 		if value == nil {
 			// CKR_ATTRIBUTE_TYPE_INVALID, ErrAttributeNotFound, or ErrTooManyAttributesFound
-			if trace {
-				log.Println("p11mod GetAttributeValue: suppressing CKR_ATTRIBUTE_TYPE_INVALID")
-			}
+			log.Println("p11mod GetAttributeValue: suppressing CKR_ATTRIBUTE_TYPE_INVALID.  " +
+				"The module may be unaware of an attribute type that the application wants.")
 
 			value = []byte{}
 		}
@@ -564,15 +557,14 @@ func (ll *llBackend) SetAttributeValue(sh pkcs11.SessionHandle, o pkcs11.ObjectH
 func (ll *llBackend) FindObjectsInit(sh pkcs11.SessionHandle, template []*pkcs11.Attribute) error {
 	session, err := ll.getSessionByHandle(sh)
 	if err != nil {
-		if trace {
-			log.Printf("p11mod FindObjectsInit: %v", err)
-		}
+		log.Printf("p11mod FindObjectsInit: %v", err)
 
 		return err
 	}
 
 	objects, err := session.session.FindObjects(template)
 	if err != nil {
+		// Often harmless, e.g. p11.ErrNoObjectsFound
 		if trace {
 			log.Printf("p11mod FindObjectsInit: %v", err)
 		}
