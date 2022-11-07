@@ -397,6 +397,11 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 		}
 
 		return nil, nil
+	// TODO: Support the DISTRUST_AFTER attributes properly.
+	case pkcs11.CKA_NSS_SERVER_DISTRUST_AFTER:
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_NSS_EMAIL_DISTRUST_AFTER:
+		return marshalAttributeValue(false), nil
 	default:
 		return nil, nil
 	}
