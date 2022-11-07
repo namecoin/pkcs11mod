@@ -233,6 +233,10 @@ func (ll *llBackend) SetPIN(sh pkcs11.SessionHandle, oldpin, newpin string) erro
 		return err
 	}
 
+	if trace {
+		log.Printf("p11mod SetPIN")
+	}
+
 	if err := session.session.SetPIN(oldpin, newpin); err != nil {
 		return err
 	}
@@ -391,9 +395,16 @@ func (ll *llBackend) Login(sh pkcs11.SessionHandle, userType uint, pin string) e
 }
 
 func (ll *llBackend) Logout(sh pkcs11.SessionHandle) error {
-	// TODO
-	log.Println("p11mod Logout: not implemented")
-	return nil
+	session, err := ll.getSessionByHandle(sh)
+	if err != nil {
+		return err
+	}
+
+	if trace {
+		log.Println("p11mod Logout")
+	}
+
+	return session.session.Logout()
 }
 
 func (ll *llBackend) CreateObject(sh pkcs11.SessionHandle, temp []*pkcs11.Attribute) (pkcs11.ObjectHandle, error) {
