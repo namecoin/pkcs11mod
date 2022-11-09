@@ -8,7 +8,7 @@ export P11PROXY_CKBI_TARGET=$PKCS11PROXY_CKBI_TARGET
 
 echo "===== init DB ====="
 
-ln -s -T "$CI_MAIN_MODULE" ./libsoftokn3.so
+ln -s -T "$CI_MAIN_MODULE" ./libnssckbi.so
 certutil -N -d . --empty-password
 
 echo "===== list all (default) ====="
