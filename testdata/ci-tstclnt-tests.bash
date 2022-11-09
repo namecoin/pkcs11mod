@@ -1,4 +1,4 @@
-#!/usr/bin/env bashkbi
+#!/usr/bin/env bash
 
 set -euo pipefail
 shopt -s nullglob globstar
