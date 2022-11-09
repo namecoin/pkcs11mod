@@ -21,7 +21,7 @@ testdata/assert-proxy-log.bash missing
 echo "===== list all (via pkcs11proxy) ====="
 
 mv "$CI_MAIN_MODULE" "$CI_BAK_MODULE"
-cp libsoftokn3proxy.so "$CI_MAIN_MODULE"
+cp libpkcs11proxy.so "$CI_MAIN_MODULE"
 
 certutil -L -d . -h all | tee list-all-pkcs11proxy.txt || true
 grep -q ",C," list-all-pkcs11proxy.txt
@@ -33,7 +33,7 @@ testdata/assert-proxy-log.bash present
 
 echo "===== list all (via p11proxy) ====="
 
-cp libsoftokn3proxy.so "$CI_MAIN_MODULE"
+cp libp11proxy.so "$CI_MAIN_MODULE"
 
 certutil -L -d . -h all | tee list-all-p11proxy.txt || true
 grep -q ",C," list-all-p11proxy.txt
