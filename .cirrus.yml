@@ -561,8 +561,13 @@ task:
         - apt-get install -y curl libnss3-tools
       env:
         CI_DISTRO: debian
-        CI_MAIN_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.so
-        CI_BAK_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.orig.so
+      matrix:
+          env:
+            CI_MAIN_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.so
+            CI_BAK_MODULE: /usr/lib/x86_64-linux-gnu/nss/libnssckbi.orig.so
+          env:
+            CI_MAIN_MODULE: /usr/lib/x86_64-linux-gnu/nss/libsoftokn3.so
+            CI_BAK_MODULE: /usr/lib/x86_64-linux-gnu/nss/libsoftokn3.orig.so
   install_script:
     - curl -o pkcs11mod.tar.gz https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/Compile%20Go%20latest%20linux%20amd64/binaries/dist/pkcs11mod.tar.gz
     - tar -xaf ./pkcs11mod.tar.gz
