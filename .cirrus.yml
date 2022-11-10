@@ -334,7 +334,7 @@ task:
         - apt-get install -y curl chromium
         - ln -s -T /usr/bin/chromium /usr/bin/chromium-browser
       env:
-        CI_DISTRO: debian
+        CI_DISTRO: debian-s
         CI_MAIN_MODULE: /usr/lib/x86_64-linux-gnu/nss/libsoftokn3.so
         CI_BAK_MODULE: /usr/lib/x86_64-linux-gnu/nss/libsoftokn3.orig.so
   install_script:
