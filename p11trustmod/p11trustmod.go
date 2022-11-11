@@ -271,7 +271,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	}
 
 	for _, obj := range candidateObjects {
-		if s.slot.checkObjectTemplate(obj, template) {
+		if s.slot.checkObjectTemplate(obj, template) && checkValueUnique(obj, result) {
 			result = append(result, obj)
 		}
 	}
@@ -317,6 +317,34 @@ func (s *slot) checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute)
 					pkcs11mod.AttrTrace(&pkcs11.Attribute{Type: tempAttr.Type, Value: objData}))
 			}
 
+			return false
+		}
+	}
+
+	return true
+}
+
+// checkValueUnique returns true if the object is not in the existing slice.
+// Required because NSS seems to get unhappy (stops querying objects) if
+// multiple object handles point to the same certificate.
+// TODO: Make p11mod filter duplicates via reflect.DeepEqual, then we can remove this function.
+func checkValueUnique(obj p11.Object, existing []p11.Object) bool {
+	// TODO: Use obj.Value() once p11mod supports it.
+	objValue, err := obj.Attribute(pkcs11.CKA_VALUE)
+	if err != nil {
+		log.Printf("p11trustmod: Rejected object, couldn't read value: %s\n", err)
+		return false
+	}
+
+	for _, eObj := range existing {
+		// TODO: Use eObj.Value() once p11mod supports it.
+		eValue, err := eObj.Attribute(pkcs11.CKA_VALUE)
+		if err != nil {
+			log.Printf("p11trustmod: Rejected object, couldn't read previous value: %s\n", err)
+			return false
+		}
+
+		if bytes.Equal(objValue, eValue) {
 			return false
 		}
 	}
