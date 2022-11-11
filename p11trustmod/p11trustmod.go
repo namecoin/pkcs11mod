@@ -25,19 +25,25 @@ import (
 	"encoding/asn1"
 	"log"
 	"math/big"
+	"os"
 
 	"github.com/miekg/pkcs11"
 	"github.com/miekg/pkcs11/p11"
+
+	"github.com/namecoin/pkcs11mod"
 )
 
 func Slot(b Backend, id uint) p11.Slot {
 	return &slot{
+		trace:       os.Getenv("P11TRUSTMOD_TRACE") == "1",
 		highBackend: b,
 		slotID:      id,
 	}
 }
 
 type slot struct {
+	trace bool
+
 	highBackend Backend
 	slotID      uint
 }
@@ -260,10 +266,18 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	result := []p11.Object{}
 
+	if s.slot.trace {
+		log.Printf("p11trustmod FindObjects: Object cache size: %d\n", len(candidateObjects))
+	}
+
 	for _, obj := range candidateObjects {
-		if checkObjectTemplate(obj, template) {
+		if s.slot.checkObjectTemplate(obj, template) {
 			result = append(result, obj)
 		}
+	}
+
+	if s.slot.trace {
+		log.Printf("p11trustmod FindObjects: Returned %d objects\n", len(result))
 	}
 
 	return result, nil
@@ -285,16 +299,24 @@ func (s *session) SetPIN(oldpin, newpin string) error {
 	return pkcs11.Error(pkcs11.CKR_TOKEN_WRITE_PROTECTED)
 }
 
-func checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute) bool {
+// checkObjectTemplate returns true if the object matches the template.
+func (s *slot) checkObjectTemplate(obj p11.Object, template []*pkcs11.Attribute) bool {
 	for _, tempAttr := range template {
 		objData, err := obj.Attribute(tempAttr.Type)
 		if err != nil {
+			log.Printf("p11trustmod: Rejected object, missing attribute: %s\n", pkcs11mod.AttrTrace(tempAttr))
 			return false
 		}
 
 		tempData := tempAttr.Value
 
 		if !bytes.Equal(objData, tempData) {
+			if s.trace {
+				log.Printf("p11trustmod: Rejected object, non-matching attribute: template %s, object %s\n",
+					pkcs11mod.AttrTrace(tempAttr),
+					pkcs11mod.AttrTrace(&pkcs11.Attribute{Type: tempAttr.Type, Value: objData}))
+			}
+
 			return false
 		}
 	}
