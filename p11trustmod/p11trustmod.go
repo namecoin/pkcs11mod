@@ -169,10 +169,10 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 			var subjectRDN pkix.RDNSequence
 
 			if subjectRest, err := asn1.Unmarshal(attr.Value, &subjectRDN); err != nil {
-				log.Printf("Error unmarshaling X.509 subject: %v\n", err)
+				log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 subject: %s\n", err)
 				continue
 			} else if len(subjectRest) != 0 {
-				log.Printf("Error: trailing data after X.509 subject\n")
+				log.Println("p11trustmod FindObjects: Trailing data after X.509 subject")
 				continue
 			}
 
@@ -184,10 +184,10 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 			var issuerRDN pkix.RDNSequence
 
 			if issuerRest, err := asn1.Unmarshal(attr.Value, &issuerRDN); err != nil {
-				log.Printf("Error unmarshaling X.509 issuer: %v\n", err)
+				log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 issuer: %s\n", err)
 				continue
 			} else if len(issuerRest) != 0 {
-				log.Printf("Error: trailing data after X.509 issuer\n")
+				log.Println("p11trustmod FindObjects: Trailing data after X.509 issuer")
 				continue
 			}
 
@@ -199,13 +199,13 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 			// Yes, we pass a pointer to a pointer to Unmarshal, see https://stackoverflow.com/questions/53139020/why-is-unmarshalling-of-a-der-asn-1-large-integer-limited-to-sequence-in-golang
 			serialRest, err := asn1.Unmarshal(attr.Value, &searchSerial)
 			if err != nil {
-				log.Printf("Error unmarshaling X.509 serial number: %s", err)
+				log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 serial number: %s", err)
 
 				searchSerial = nil
 
 				continue
 			} else if len(serialRest) != 0 {
-				log.Printf("Error: trailing data after X.509 serial number\n")
+				log.Println("p11trustmod FindObjects: Trailing data after X.509 serial number")
 				searchSerial = nil
 				continue
 			}
@@ -382,7 +382,7 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	case pkcs11.CKA_SERIAL_NUMBER:
 		asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
 		if err != nil {
-			log.Printf("Error marshaling SerialNumber\n")
+			log.Printf("p11trustmod Certificate Attribute: Error marshaling SerialNumber: %s\n", err)
 			// We treat an unmarshalable serial number as a nonexistent attribute.
 			//nolint:nilerr
 			return nil, nil
@@ -466,7 +466,7 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	case pkcs11.CKA_SERIAL_NUMBER:
 		asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
 		if err != nil {
-			log.Printf("Error marshaling SerialNumber\n")
+			log.Printf("p11trustmod Trust Attribute: Error marshaling SerialNumber: %s\n", err)
 			// We treat an unmarshalable serial number as a nonexistent attribute.
 			//nolint:nilerr
 			return nil, nil
