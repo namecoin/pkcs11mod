@@ -384,7 +384,6 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 		if err != nil {
 			log.Printf("p11trustmod Certificate Attribute: Error marshaling SerialNumber: %s\n", err)
 			// We treat an unmarshalable serial number as a nonexistent attribute.
-			//nolint:nilerr
 			return nil, nil
 		}
 
@@ -468,7 +467,6 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 		if err != nil {
 			log.Printf("p11trustmod Trust Attribute: Error marshaling SerialNumber: %s\n", err)
 			// We treat an unmarshalable serial number as a nonexistent attribute.
-			//nolint:nilerr
 			return nil, nil
 		}
 
