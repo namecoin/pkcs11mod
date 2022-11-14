@@ -22,7 +22,7 @@ rm -f screenshot.png
 # Disable sandbox because Google Chrome doesn't support running the sandbox as root,
 # and the Cirrus container runs as root.  See
 # https://github.com/Zenika/alpine-chrome .
-google-chrome --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --screenshot=./screenshot.png "https://$SERVER_HOST" 2>&1 | tee log.txt
+google-chrome --no-sandbox --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --screenshot=./screenshot.png "https://$SERVER_HOST" 2>&1 | tee log.txt
 TEXTOUT=$(cat log.txt)
 
 if echo "$TEXTOUT" | grep -q "SSL error"
