@@ -341,11 +341,7 @@ task:
         cpu: 1
         memory: 1G
       package_install_script:
-        - localectl set-locale LANG=en_US.UTF-8
-        - dnf install -y fedora-workstation-repositories glibc-all-langpacks langpacks-en
-        - dnf install glibc-langpack-fr
-        - dnf config-manager --set-enabled google-chrome
-        - dnf install -y google-chrome-stable
+        - dnf install https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
       env:
         CI_DISTRO: fedora
         CI_MAIN_MODULE: /usr/lib64/pkcs11/p11-kit-trust.so
