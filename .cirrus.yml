@@ -318,10 +318,10 @@ task:
         cpu: 1
         memory: 1G
       package_install_script:
+        - apt update
         - apt-get install wget
         - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
         - add-apt-repository "deb http://dl.google.com/linux/chrome/deb/ stable main"
-        - apt update
         - apt install google-chrome-stable
       env:
         CI_DISTRO: debian
