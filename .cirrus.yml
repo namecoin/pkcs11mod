@@ -341,7 +341,9 @@ task:
         cpu: 1
         memory: 1G
       package_install_script:
-        - dnf install -y fedora-workstation-repositories config-manager
+        - localectl set-locale LANG=en_US.UTF-8
+        - dnf install -y fedora-workstation-repositories glibc-all-langpacks langpacks-en
+        - dnf install glibc-langpack-fr
         - dnf config-manager --set-enabled google-chrome
         - dnf install -y google-chrome-stable
       env:
