@@ -341,7 +341,7 @@ task:
         cpu: 1
         memory: 1G
       package_install_script:
-        - dnf install -y fedora-workstation-repositories
+        - dnf install -y fedora-workstation-repositories config-manager
         - dnf config-manager --set-enabled google-chrome
         - dnf install -y google-chrome-stable
       env:
