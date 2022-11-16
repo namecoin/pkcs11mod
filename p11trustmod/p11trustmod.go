@@ -138,6 +138,51 @@ func (s *session) FindObject(template []*pkcs11.Attribute) (p11.Object, error) {
 	return nil, pkcs11.Error(pkcs11.CKR_FUNCTION_NOT_SUPPORTED)
 }
 
+func extractSearchCertificate(attrVal []byte) *x509.Certificate {
+	searchCertificate, err := x509.ParseCertificate(attrVal)
+	if err != nil {
+		// Invalid cert; ignore
+		return nil
+	}
+
+	return searchCertificate
+}
+
+func extractSearchPKIXName(attrVal []byte) *pkix.Name {
+	var subjectRDN pkix.RDNSequence
+
+	if subjectRest, err := asn1.Unmarshal(attrVal, &subjectRDN); err != nil {
+		log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 subject/issuer: %s\n", err)
+		return nil
+	} else if len(subjectRest) != 0 {
+		log.Println("p11trustmod FindObjects: Trailing data after X.509 subject/issuer")
+		return nil
+	}
+
+	searchSubject := &pkix.Name{}
+	searchSubject.FillFromRDNSequence(&subjectRDN)
+
+	return searchSubject
+}
+
+func extractSearchSerial(attrVal []byte) *big.Int {
+	var searchSerial *big.Int
+
+	// Yes, we pass a pointer to a pointer to Unmarshal, see https://stackoverflow.com/questions/53139020/why-is-unmarshalling-of-a-der-asn-1-large-integer-limited-to-sequence-in-golang
+	serialRest, err := asn1.Unmarshal(attrVal, &searchSerial)
+	if err != nil {
+		log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 serial number: %s", err)
+
+		return nil
+	} else if len(serialRest) != 0 {
+		log.Println("p11trustmod FindObjects: Trailing data after X.509 serial number")
+
+		return nil
+	}
+
+	return searchSerial
+}
+
 func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
 	includeBuiltin, err := s.slot.highBackend.IsBuiltinRootList()
 	if err != nil {
@@ -163,58 +208,19 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	for _, attr := range template {
 		if searchCertificate == nil && attr.Type == pkcs11.CKA_VALUE {
-			searchCertificate, err = x509.ParseCertificate(attr.Value)
-			if err != nil {
-				// Invalid cert; ignore
-				searchCertificate = nil
-				continue
-			}
+			searchCertificate = extractSearchCertificate(attr.Value)
 		}
 
 		if searchSubject == nil && attr.Type == pkcs11.CKA_SUBJECT {
-			var subjectRDN pkix.RDNSequence
-
-			if subjectRest, err := asn1.Unmarshal(attr.Value, &subjectRDN); err != nil {
-				log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 subject: %s\n", err)
-				continue
-			} else if len(subjectRest) != 0 {
-				log.Println("p11trustmod FindObjects: Trailing data after X.509 subject")
-				continue
-			}
-
-			searchSubject = &pkix.Name{}
-			searchSubject.FillFromRDNSequence(&subjectRDN)
+			searchSubject = extractSearchPKIXName(attr.Value)
 		}
 
 		if searchIssuer == nil && attr.Type == pkcs11.CKA_ISSUER {
-			var issuerRDN pkix.RDNSequence
-
-			if issuerRest, err := asn1.Unmarshal(attr.Value, &issuerRDN); err != nil {
-				log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 issuer: %s\n", err)
-				continue
-			} else if len(issuerRest) != 0 {
-				log.Println("p11trustmod FindObjects: Trailing data after X.509 issuer")
-				continue
-			}
-
-			searchIssuer = &pkix.Name{}
-			searchIssuer.FillFromRDNSequence(&issuerRDN)
+			searchIssuer = extractSearchPKIXName(attr.Value)
 		}
 
 		if searchSerial == nil && attr.Type == pkcs11.CKA_SERIAL_NUMBER {
-			// Yes, we pass a pointer to a pointer to Unmarshal, see https://stackoverflow.com/questions/53139020/why-is-unmarshalling-of-a-der-asn-1-large-integer-limited-to-sequence-in-golang
-			serialRest, err := asn1.Unmarshal(attr.Value, &searchSerial)
-			if err != nil {
-				log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 serial number: %s", err)
-
-				searchSerial = nil
-
-				continue
-			} else if len(serialRest) != 0 {
-				log.Println("p11trustmod FindObjects: Trailing data after X.509 serial number")
-				searchSerial = nil
-				continue
-			}
+			searchSerial = extractSearchSerial(attr.Value)
 		}
 	}
 
