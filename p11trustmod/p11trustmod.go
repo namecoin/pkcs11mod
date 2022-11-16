@@ -183,7 +183,7 @@ func extractSearchSerial(attrVal []byte) *big.Int {
 	return searchSerial
 }
 
-func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
+func (s *session) objectsFromCertificates(candidateCertificates []*CertificateData) ([]p11.Object, error) {
 	includeBuiltin, err := s.slot.highBackend.IsBuiltinRootList()
 	if err != nil {
 		return []p11.Object{}, err
@@ -194,6 +194,29 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 		return []p11.Object{}, err
 	}
 
+	candidateObjects := []p11.Object{}
+
+	if includeBuiltin {
+		candidateObjects = append(candidateObjects, &builtinObject{})
+	}
+
+	for _, cert := range candidateCertificates {
+		candidateObjects = append(candidateObjects, &certificateObject{
+			data:                 cert,
+			includeBuiltinPolicy: includeBuiltin,
+		})
+
+		if isTrusted {
+			candidateObjects = append(candidateObjects, &trustObject{
+				data: cert,
+			})
+		}
+	}
+
+	return candidateObjects, nil
+}
+
+func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
 	candidateCertificates, err := s.slot.highBackend.QueryAll()
 	if err != nil {
 		return []p11.Object{}, err
@@ -251,23 +274,9 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 		candidateCertificates = append(candidateCertificates, searchIssuerSerialResults...)
 	}
 
-	candidateObjects := []p11.Object{}
-
-	if includeBuiltin {
-		candidateObjects = append(candidateObjects, &builtinObject{})
-	}
-
-	for _, cert := range candidateCertificates {
-		candidateObjects = append(candidateObjects, &certificateObject{
-			data:                 cert,
-			includeBuiltinPolicy: includeBuiltin,
-		})
-
-		if isTrusted {
-			candidateObjects = append(candidateObjects, &trustObject{
-				data: cert,
-			})
-		}
+	candidateObjects, err := s.objectsFromCertificates(candidateCertificates)
+	if err != nil {
+		return []p11.Object{}, err
 	}
 
 	result := []p11.Object{}
