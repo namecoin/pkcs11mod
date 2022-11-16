@@ -507,6 +507,14 @@ var trustAttrConsts = map[uint]interface{}{
 	pkcs11.CKA_TRUST_STEP_UP_APPROVED: false,
 }
 
+func marshalCKTValue(ckt interface{}) []byte {
+	if ckt == 0 {
+		return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN))
+	}
+
+	return marshalAttributeValue(ckt)
+}
+
 func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
 	case pkcs11.CKA_LABEL:
@@ -531,29 +539,13 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 
 		return marshalAttributeValue(asn1SerialNumber), nil
 	case pkcs11.CKA_TRUST_SERVER_AUTH:
-		if obj.data.TrustServerAuth == 0 {
-			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-		}
-
-		return marshalAttributeValue(obj.data.TrustServerAuth), nil
+		return marshalCKTValue(obj.data.TrustServerAuth), nil
 	case pkcs11.CKA_TRUST_CLIENT_AUTH:
-		if obj.data.TrustClientAuth == 0 {
-			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-		}
-
-		return marshalAttributeValue(obj.data.TrustClientAuth), nil
+		return marshalCKTValue(obj.data.TrustClientAuth), nil
 	case pkcs11.CKA_TRUST_CODE_SIGNING:
-		if obj.data.TrustCodeSigning == 0 {
-			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-		}
-
-		return marshalAttributeValue(obj.data.TrustCodeSigning), nil
+		return marshalCKTValue(obj.data.TrustCodeSigning), nil
 	case pkcs11.CKA_TRUST_EMAIL_PROTECTION:
-		if obj.data.TrustEmailProtection == 0 {
-			return marshalAttributeValue(uint(pkcs11.CKT_NSS_TRUST_UNKNOWN)), nil
-		}
-
-		return marshalAttributeValue(obj.data.TrustEmailProtection), nil
+		return marshalCKTValue(obj.data.TrustEmailProtection), nil
 	default:
 		constResult, ok := trustAttrConsts[attributeType]
 		if ok {
