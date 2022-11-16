@@ -183,6 +183,35 @@ func extractSearchSerial(attrVal []byte) *big.Int {
 	return searchSerial
 }
 
+func extractSearch(template []*pkcs11.Attribute) (*x509.Certificate, *pkix.Name, *pkix.Name, *big.Int) {
+	var (
+		searchCertificate *x509.Certificate
+		searchSubject     *pkix.Name
+		searchIssuer      *pkix.Name
+		searchSerial      *big.Int
+	)
+
+	for _, attr := range template {
+		if searchCertificate == nil && attr.Type == pkcs11.CKA_VALUE {
+			searchCertificate = extractSearchCertificate(attr.Value)
+		}
+
+		if searchSubject == nil && attr.Type == pkcs11.CKA_SUBJECT {
+			searchSubject = extractSearchPKIXName(attr.Value)
+		}
+
+		if searchIssuer == nil && attr.Type == pkcs11.CKA_ISSUER {
+			searchIssuer = extractSearchPKIXName(attr.Value)
+		}
+
+		if searchSerial == nil && attr.Type == pkcs11.CKA_SERIAL_NUMBER {
+			searchSerial = extractSearchSerial(attr.Value)
+		}
+	}
+
+	return searchCertificate, searchSubject, searchIssuer, searchSerial
+}
+
 func (s *session) objectsFromCertificates(candidateCertificates []*CertificateData) ([]p11.Object, error) {
 	includeBuiltin, err := s.slot.highBackend.IsBuiltinRootList()
 	if err != nil {
@@ -222,30 +251,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 		return []p11.Object{}, err
 	}
 
-	var (
-		searchCertificate *x509.Certificate
-		searchSubject     *pkix.Name
-		searchIssuer      *pkix.Name
-		searchSerial      *big.Int
-	)
-
-	for _, attr := range template {
-		if searchCertificate == nil && attr.Type == pkcs11.CKA_VALUE {
-			searchCertificate = extractSearchCertificate(attr.Value)
-		}
-
-		if searchSubject == nil && attr.Type == pkcs11.CKA_SUBJECT {
-			searchSubject = extractSearchPKIXName(attr.Value)
-		}
-
-		if searchIssuer == nil && attr.Type == pkcs11.CKA_ISSUER {
-			searchIssuer = extractSearchPKIXName(attr.Value)
-		}
-
-		if searchSerial == nil && attr.Type == pkcs11.CKA_SERIAL_NUMBER {
-			searchSerial = extractSearchSerial(attr.Value)
-		}
-	}
+	searchCertificate, searchSubject, searchIssuer, searchSerial := extractSearch(template)
 
 	if searchCertificate != nil {
 		searchCertificateResults, err := s.slot.highBackend.QueryCertificate(searchCertificate)
