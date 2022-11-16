@@ -357,21 +357,21 @@ func marshalAttributeValue(x interface{}) []byte {
 	return a.Value
 }
 
+var builtinAttrConsts = map[uint]interface{}{
+	pkcs11.CKA_CLASS:      uint(pkcs11.CKO_NSS_BUILTIN_ROOT_LIST),
+	pkcs11.CKA_TOKEN:      true,
+	pkcs11.CKA_PRIVATE:    false,
+	pkcs11.CKA_MODIFIABLE: false,
+	pkcs11.CKA_LABEL:      "Mozilla Builtin Roots",
+}
+
 func (obj *builtinObject) Attribute(attributeType uint) ([]byte, error) {
-	switch attributeType {
-	case pkcs11.CKA_CLASS:
-		return marshalAttributeValue(uint(pkcs11.CKO_NSS_BUILTIN_ROOT_LIST)), nil
-	case pkcs11.CKA_TOKEN:
-		return marshalAttributeValue(true), nil
-	case pkcs11.CKA_PRIVATE:
-		return marshalAttributeValue(false), nil
-	case pkcs11.CKA_MODIFIABLE:
-		return marshalAttributeValue(false), nil
-	case pkcs11.CKA_LABEL:
-		return marshalAttributeValue("Mozilla Builtin Roots"), nil
-	default:
-		return nil, nil
+	constResult, ok := builtinAttrConsts[attributeType]
+	if ok {
+		return marshalAttributeValue(constResult), nil
 	}
+
+	return nil, nil
 }
 
 func (obj *builtinObject) Copy(template []*pkcs11.Attribute) (p11.Object, error) {
@@ -408,25 +408,25 @@ func (obj *builtinObject) SecretKey() p11.SecretKey {
 	return nil
 }
 
+var certificateAttrConsts = map[uint]interface{}{
+	pkcs11.CKA_CLASS:            uint(pkcs11.CKO_CERTIFICATE),
+	pkcs11.CKA_TOKEN:            true,
+	pkcs11.CKA_PRIVATE:          false,
+	pkcs11.CKA_MODIFIABLE:       false,
+	pkcs11.CKA_CERTIFICATE_TYPE: pkcs11.CKC_X_509,
+	pkcs11.CKA_ID:               "0",
+	// TODO: Support the DISTRUST_AFTER attributes properly.
+	pkcs11.CKA_NSS_SERVER_DISTRUST_AFTER: false,
+	pkcs11.CKA_NSS_EMAIL_DISTRUST_AFTER:  false,
+}
+
 // TODO: Patch p11 to avoid marshalAttributeValue here.
 func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
-	case pkcs11.CKA_CLASS:
-		return marshalAttributeValue(pkcs11.CKO_CERTIFICATE), nil
-	case pkcs11.CKA_TOKEN:
-		return marshalAttributeValue(true), nil
-	case pkcs11.CKA_PRIVATE:
-		return marshalAttributeValue(false), nil
-	case pkcs11.CKA_MODIFIABLE:
-		return marshalAttributeValue(false), nil
 	case pkcs11.CKA_LABEL:
 		return marshalAttributeValue(obj.data.Label), nil
-	case pkcs11.CKA_CERTIFICATE_TYPE:
-		return marshalAttributeValue(pkcs11.CKC_X_509), nil
 	case pkcs11.CKA_SUBJECT:
 		return marshalAttributeValue(obj.data.Certificate.RawSubject), nil
-	case pkcs11.CKA_ID:
-		return marshalAttributeValue("0"), nil
 	case pkcs11.CKA_ISSUER:
 		return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
 	case pkcs11.CKA_SERIAL_NUMBER:
@@ -446,12 +446,12 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 		}
 
 		return nil, nil
-	// TODO: Support the DISTRUST_AFTER attributes properly.
-	case pkcs11.CKA_NSS_SERVER_DISTRUST_AFTER:
-		return marshalAttributeValue(false), nil
-	case pkcs11.CKA_NSS_EMAIL_DISTRUST_AFTER:
-		return marshalAttributeValue(false), nil
 	default:
+		constResult, ok := certificateAttrConsts[attributeType]
+		if ok {
+			return marshalAttributeValue(constResult), nil
+		}
+
 		return nil, nil
 	}
 }
@@ -490,16 +490,25 @@ func (obj *certificateObject) SecretKey() p11.SecretKey {
 	return nil
 }
 
+var trustAttrConsts = map[uint]interface{}{
+	pkcs11.CKA_CLASS:      uint(pkcs11.CKO_NSS_TRUST),
+	pkcs11.CKA_TOKEN:      true,
+	pkcs11.CKA_PRIVATE:    false,
+	pkcs11.CKA_MODIFIABLE: false,
+	// According to "certutil --help", "make step-up cert" is the description
+	// of the "g" trust attribute.  According to the NSS
+	// "CERT_DecodeTrustString" function, the "g" trust attribute corresponds
+	// to the "CERTDB_GOVT_APPROVED_CA" flag.  The #define for
+	// "CERTDB_GOVT_APPROVED_CA" includes the comment "can do strong crypto in
+	// export ver".  So, I infer that "step-up" refers to some kind of
+	// governmental regulatory approval involving crypto export controls.
+	// According to "certdata.txt" in Mozilla's Mercurial repo, all of the CKBI
+	// CA's have this attribute set to false.
+	pkcs11.CKA_TRUST_STEP_UP_APPROVED: false,
+}
+
 func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	switch attributeType {
-	case pkcs11.CKA_CLASS:
-		return marshalAttributeValue(uint(pkcs11.CKO_NSS_TRUST)), nil
-	case pkcs11.CKA_TOKEN:
-		return marshalAttributeValue(true), nil
-	case pkcs11.CKA_PRIVATE:
-		return marshalAttributeValue(false), nil
-	case pkcs11.CKA_MODIFIABLE:
-		return marshalAttributeValue(false), nil
 	case pkcs11.CKA_LABEL:
 		return marshalAttributeValue(obj.data.Label), nil
 	case pkcs11.CKA_CERT_SHA1_HASH:
@@ -545,21 +554,12 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 		}
 
 		return marshalAttributeValue(obj.data.TrustEmailProtection), nil
-	case pkcs11.CKA_TRUST_STEP_UP_APPROVED:
-		// According to "certutil --help", "make step-up cert"
-		// is the description of the "g" trust attribute.
-		// According to the NSS "CERT_DecodeTrustString"
-		// function, the "g" trust attribute corresponds to the
-		// "CERTDB_GOVT_APPROVED_CA" flag.  The #define for
-		// "CERTDB_GOVT_APPROVED_CA" includes the comment "can
-		// do strong crypto in export ver".  So, I infer that
-		// "step-up" refers to some kind of governmental
-		// regulatory approval involving crypto export
-		// controls.  According to "certdata.txt" in Mozilla's
-		// Mercurial repo, all of the CKBI CA's have this
-		// attribute set to false.
-		return marshalAttributeValue(false), nil
 	default:
+		constResult, ok := trustAttrConsts[attributeType]
+		if ok {
+			return marshalAttributeValue(constResult), nil
+		}
+
 		return nil, nil
 	}
 }
