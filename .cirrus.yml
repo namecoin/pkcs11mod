@@ -301,7 +301,7 @@ task:
         CI_CHANNEL: "Stable"
 
 task:
-  name: "Chromium $CI_DISTRO"
+  name: "$CI_PACKAGE_NAME $CI_DISTRO"
   matrix:
     - container:
         image: fedora:latest
@@ -309,10 +309,18 @@ task:
         memory: 1G
       package_install_script:
         - dnf install -y chromium
+        - dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
       env:
         CI_DISTRO: fedora
-        CI_MAIN_MODULE: /usr/lib64/pkcs11/p11-kit-trust.so
-        CI_BAK_MODULE: /usr/lib64/pkcs11/p11-kit-trust.orig.so
+      matrix:
+        - env:
+            CI_PACKAGE_NAME: "chromium-browser"
+            CI_MAIN_MODULE: /usr/lib64/pkcs11/p11-kit-trust.so
+            CI_BAK_MODULE: /usr/lib64/pkcs11/p11-kit-trust.orig.so
+        - env:
+            CI_PACKAGE_NAME: "google-chrome"
+            CI_MAIN_MODULE: /usr/lib64/pkcs11/p11-kit-trust.so
+            CI_BAK_MODULE: /usr/lib64/pkcs11/p11-kit-trust.orig.so
     - container:
         image: debian:latest
         cpu: 1
