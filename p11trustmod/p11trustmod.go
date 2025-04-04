@@ -236,9 +236,15 @@ func (s *session) objectsFromCertificates(candidateCertificates []*CertificateDa
 		})
 
 		if isTrusted {
-			candidateObjects = append(candidateObjects, &trustObject{
-				data: cert,
-			})
+			// Don't return a trust object if the trust attributes aren't set.
+			// Otherwise, Firefox will treat the cert as explicitly distrusted.
+			// Yes, I know the docs say CKT_NSS_TRUST_UNKNOWN will work fine.
+			// The docs are wrong.
+			if cert.TrustServerAuth != 0 || cert.TrustClientAuth != 0 || cert.TrustCodeSigning != 0 || cert.TrustEmailProtection != 0 {
+				candidateObjects = append(candidateObjects, &trustObject{
+					data: cert,
+				})
+			}
 		}
 	}
 
