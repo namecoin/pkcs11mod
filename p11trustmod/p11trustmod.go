@@ -398,6 +398,8 @@ func (obj *builtinObject) Attribute(attributeType uint) ([]byte, error) {
 		return marshalAttributeValue(constResult), nil
 	}
 
+	log.Printf("p11trustmod Builtin Attribute: unexpected type: %d\n", attributeType)
+
 	return nil, nil
 }
 
@@ -442,9 +444,6 @@ var certificateAttrConsts = map[uint]interface{}{
 	pkcs11.CKA_MODIFIABLE:       false,
 	pkcs11.CKA_CERTIFICATE_TYPE: pkcs11.CKC_X_509,
 	pkcs11.CKA_ID:               "0",
-	// TODO: Support the DISTRUST_AFTER attributes properly.
-	pkcs11.CKA_NSS_SERVER_DISTRUST_AFTER: false,
-	pkcs11.CKA_NSS_EMAIL_DISTRUST_AFTER:  false,
 }
 
 // TODO: Patch p11 to avoid marshalAttributeValue here.
@@ -473,11 +472,22 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 		}
 
 		return nil, nil
+	// TODO: Support the DISTRUST_AFTER attributes properly.
+	case pkcs11.CKA_NSS_SERVER_DISTRUST_AFTER:
+		log.Printf("p11trustmod Certificate Attribute: unsupported type: CKA_NSS_SERVER_DISTRUST_AFTER\n")
+
+		return marshalAttributeValue(false), nil
+	case pkcs11.CKA_NSS_EMAIL_DISTRUST_AFTER:
+		log.Printf("p11trustmod Certificate Attribute: unsupported type: CKA_NSS_EMAIL_DISTRUST_AFTER\n")
+
+		return marshalAttributeValue(false), nil
 	default:
 		constResult, ok := certificateAttrConsts[attributeType]
 		if ok {
 			return marshalAttributeValue(constResult), nil
 		}
+
+		log.Printf("p11trustmod Certificate Attribute: unexpected type: %d\n", attributeType)
 
 		return nil, nil
 	}
@@ -578,6 +588,8 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 		if ok {
 			return marshalAttributeValue(constResult), nil
 		}
+
+		log.Printf("p11trustmod Trust Attribute: unexpected type: %d\n", attributeType)
 
 		return nil, nil
 	}
