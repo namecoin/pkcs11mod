@@ -16,4 +16,4 @@ See the `p11proxy` sibling directory for an example of how to use p11mod.
 
 ## Tracing
 
-Set the environment variable `P11MOD_TRACE=1` to enable debug tracing.  The trace will be outputted to the log file.
+Set the environment variable `P11MOD_TRACE=1` to enable debug tracing.  The trace will be outputted to the log file. Also see the [pkcs11mod tracing](../#tracing) documentation.
