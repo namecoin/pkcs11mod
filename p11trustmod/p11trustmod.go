@@ -233,10 +233,15 @@ func (s *session) objectsFromCertificates(candidateCertificates []*CertificateDa
 	}
 
 	for _, cert := range candidateCertificates {
-		candidateObjects = append(candidateObjects, &certificateObject{
-			data:                 cert,
-			includeBuiltinPolicy: includeBuiltin,
-		})
+		if cert.Certificate.Raw != nil {
+			// Don't return a certificate object if we don't have the full
+			// certificate. This might be the case if we're trying to revoke a
+			// certificate based on only its issuer+serial.
+			candidateObjects = append(candidateObjects, &certificateObject{
+				data:                 cert,
+				includeBuiltinPolicy: includeBuiltin,
+			})
+		}
 
 		if isTrusted {
 			// Don't return a trust object if the trust attributes aren't set.
@@ -588,6 +593,13 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 	case pkcs11.CKA_LABEL:
 		return marshalAttributeValue(obj.data.Label), nil
 	case pkcs11.CKA_CERT_SHA1_HASH:
+		if obj.data.Certificate.Raw == nil {
+			// Don't return a certificate hash we don't have the full
+			// certificate. This might be the case if we're trying to revoke a
+			// certificate based on only its issuer+serial.
+			return nil, nil
+		}
+
 		// Yes, NSS is a pile of fail and uses SHA1 to identify
 		// certificates.  They should probably fix this in the
 		// future.  TODO: File bug with Mozilla.
