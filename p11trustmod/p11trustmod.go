@@ -252,6 +252,10 @@ func (s *session) objectsFromCertificates(candidateCertificates []*CertificateDa
 }
 
 func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
+	if s.slot.trace {
+		log.Println("p11trustmod FindObjects: QueryAll")
+	}
+
 	candidateCertificates, err := s.slot.highBackend.QueryAll()
 	if err != nil {
 		return []p11.Object{}, err
@@ -260,6 +264,10 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	searchCertificate, searchSubject, searchIssuer, searchSerial := extractSearch(template)
 
 	if searchCertificate != nil {
+		if s.slot.trace {
+			log.Println("p11trustmod FindObjects: QueryCertificate")
+		}
+
 		searchCertificateResults, err := s.slot.highBackend.QueryCertificate(searchCertificate)
 		if err != nil {
 			return []p11.Object{}, err
@@ -269,6 +277,10 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	}
 
 	if searchSubject != nil {
+		if s.slot.trace {
+			log.Println("p11trustmod FindObjects: QuerySubject")
+		}
+
 		searchSubjectResults, err := s.slot.highBackend.QuerySubject(searchSubject)
 		if err != nil {
 			return []p11.Object{}, err
@@ -278,6 +290,10 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	}
 
 	if searchIssuer != nil || searchSerial != nil {
+		if s.slot.trace {
+			log.Println("p11trustmod FindObjects: QueryIssuerSerial")
+		}
+
 		searchIssuerSerialResults, err := s.slot.highBackend.QueryIssuerSerial(searchIssuer, searchSerial)
 		if err != nil {
 			return []p11.Object{}, err
