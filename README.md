@@ -49,7 +49,7 @@ Option B: Using Go build commands with Go modules (works on any platform with Ba
 
 ## Example usage
 
-See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level [p11mod](p11mod/) library instead of using pkcs11mod directly (see [this section](#should-i-use-pkcs11mod-or-p11mod)).
+See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level [p11mod](p11mod/) or [p11trustmod](p11trustmod/) libraries instead of using pkcs11mod directly (see [this section](#should-i-use-pkcs11mod-or-p11mod)).
 
 ## Tracing
 
@@ -72,15 +72,21 @@ Miek Gieben's [pkcs11](https://github.com/miekg/pkcs11) and [p11](https://github
 
 [p11mod](p11mod/) is much easier to use and more idiomatic to Go.  However, p11mod implements less of the PKCS#11 specification than pkcs11mod.  If you only need functionality that p11mod has, you will probably find p11mod more pleasant to work with.  On the other hand, p11mod is much newer and less battle-tested, so you may find pkcs11mod more reliable.
 
+[p11trustmod](p11trustmod/) is specifically designed for trust databases. If you are implementing a PKCS#11 module that is used as a trust database, you will probably find p11trustmod more pleasant to work with than either pkcs11mod or p11mod. On the other hand, p11trustmod is much newer and less battle-tested, so you may find pkcs11mod or p11mod more reliable.
+
 ## Development focus/status
 
 pkcs11mod is primarily motivated by the use cases that Namecoin has; as such, the PKCS#11 features we've implemented so far are mostly the features used by applications such as NSS's certificate verifier and PKCS#11 modules such as NSS's CKBI (built-in certificates).  We don't have any objection to implementing the rest of the PKCS#11 spec (and we'd happily accept pull requests to this end), but it's unlikely that we'll spend much of our free time on features that aren't relevant to Namecoin.
 
 While we do plan to use pkcs11mod in production in the future, it is not yet used in production, and any horrifying bugs in pkcs11mod probably haven't been noticed by us yet.
 
+## Projects using pkcs11mod
+
+* [ncp11](https://github.com/namecoin/ncp11)
+
 ## Credits / License
 
-Copyright (C) 2018-2022  Namecoin Developers
+Copyright (C) 2018-2025 Namecoin Developers
 
 pkcs11mod is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
