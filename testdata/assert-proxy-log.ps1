@@ -9,15 +9,15 @@ if ( ("$desired" -ne "present" ) -and ( "$desired" -ne "missing" ) ) {
     exit 1
 }
 
-if ( ( Test-Path -Path "$Env:APPDATA/pkcs11mod.log" ) -Or ( Test-Path -Path "./pkcs11mod.log" ) ) {
+if ( ( Test-Path -Path "$Env:APPDATA/pkcs11proxy.log" ) -Or ( Test-Path -Path "./pkcs11proxy.log" ) ) {
     $result="present"
 }
 else {
     $result="missing"
 }
 
-Remove-Item -Force -ErrorAction SilentlyContinue "$Env:APPDATA/pkcs11mod.log"
-Remove-Item -Force -ErrorAction SilentlyContinue "./pkcs11mod.log"
+Remove-Item -Force -ErrorAction SilentlyContinue "$Env:APPDATA/pkcs11proxy.log"
+Remove-Item -Force -ErrorAction SilentlyContinue "./pkcs11proxy.log"
 
 if ( "$result" -ne "$desired" ) {
     Write-Host "Log test failed"
