@@ -49,7 +49,7 @@ Option B: Using Go build commands with Go modules (works on any platform with Ba
 
 ## Example usage
 
-See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level [p11mod](p11mod/) library instead of using pkcs11mod directly (see [this section](#should-i-use-pkcs11mod-or-p11mod)).
+See the `pkcs11proxy` subdirectory for an example of how to use pkcs11mod.  Also consider using the higher-level [p11mod](p11mod/) or [p11trustmod](p11trustmod/) libraries instead of using pkcs11mod directly (see [this section](#should-i-use-pkcs11mod-or-p11mod)).
 
 ## Tracing
 
@@ -71,6 +71,8 @@ Miek Gieben's [pkcs11](https://github.com/miekg/pkcs11) and [p11](https://github
 ## Should I use pkcs11mod or p11mod?
 
 [p11mod](p11mod/) is much easier to use and more idiomatic to Go.  However, p11mod implements less of the PKCS#11 specification than pkcs11mod.  If you only need functionality that p11mod has, you will probably find p11mod more pleasant to work with.  On the other hand, p11mod is much newer and less battle-tested, so you may find pkcs11mod more reliable.
+
+[p11trustmod](p11trustmod/) is specifically designed for trust databases. If you are implementing a PKCS#11 module that is used as a trust database, you will probably find p11trustmod more pleasant to work with than either pkcs11mod or p11mod. On the other hand, p11trustmod is much newer and less battle-tested, so you may find pkcs11mod or p11mod more reliable.
 
 ## Development focus/status
 
