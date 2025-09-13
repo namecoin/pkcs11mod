@@ -35,14 +35,17 @@ import (
 
 func Slot(b Backend, id uint) p11.Slot {
 	return &slot{
-		trace:       os.Getenv("P11TRUSTMOD_TRACE") == "1",
+		trace:          os.Getenv("P11TRUSTMOD_TRACE") == "1",
+		traceSensitive: os.Getenv("P11TRUSTMOD_TRACE_SENSITIVE") == "1",
+
 		highBackend: b,
 		slotID:      id,
 	}
 }
 
 type slot struct {
-	trace bool
+	trace          bool
+	traceSensitive bool
 
 	highBackend Backend
 	slotID      uint
@@ -265,7 +268,11 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	if searchCertificate != nil {
 		if s.slot.trace {
-			log.Println("p11trustmod FindObjects: QueryCertificate")
+			if s.slot.traceSensitive {
+				log.Printf("p11trustmod FindObjects: QueryCertificate: %v\n", searchCertificate.Raw)
+			} else {
+				log.Println("p11trustmod FindObjects: QueryCertificate")
+			}
 		}
 
 		searchCertificateResults, err := s.slot.highBackend.QueryCertificate(searchCertificate)
@@ -278,7 +285,11 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	if searchSubject != nil {
 		if s.slot.trace {
-			log.Println("p11trustmod FindObjects: QuerySubject")
+			if s.slot.traceSensitive {
+				log.Printf("p11trustmod FindObjects: QuerySubject: %s\n", searchSubject)
+			} else {
+				log.Println("p11trustmod FindObjects: QuerySubject")
+			}
 		}
 
 		searchSubjectResults, err := s.slot.highBackend.QuerySubject(searchSubject)
@@ -291,7 +302,11 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 
 	if searchIssuer != nil || searchSerial != nil {
 		if s.slot.trace {
-			log.Println("p11trustmod FindObjects: QueryIssuerSerial")
+			if s.slot.traceSensitive {
+				log.Printf("p11trustmod FindObjects: QueryIssuerSerial: %s, %s\n", searchIssuer, searchSerial)
+			} else {
+				log.Println("p11trustmod FindObjects: QueryIssuerSerial")
+			}
 		}
 
 		searchIssuerSerialResults, err := s.slot.highBackend.QueryIssuerSerial(searchIssuer, searchSerial)
