@@ -492,7 +492,7 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 			return marshalAttributeValue(obj.data.Certificate.RawSubject), nil
 		}
 
-		rawSubject, err := asn1.Marshal(obj.data.Certificate.Subject)
+		rawSubject, err := asn1.Marshal(obj.data.Certificate.Subject.ToRDNSequence())
 		if err != nil {
 			log.Printf("p11trustmod Certificate Attribute: Error marshaling Subject: %s\n", err)
 			// We treat an unmarshalable subject as a nonexistent attribute.
@@ -505,7 +505,7 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 			return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
 		}
 
-		rawIssuer, err := asn1.Marshal(obj.data.Certificate.Issuer)
+		rawIssuer, err := asn1.Marshal(obj.data.Certificate.Issuer.ToRDNSequence())
 		if err != nil {
 			log.Printf("p11trustmod Certificate Attribute: Error marshaling Issuer: %s\n", err)
 			// We treat an unmarshalable issuer as a nonexistent attribute.
@@ -634,7 +634,7 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 			return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
 		}
 
-		rawIssuer, err := asn1.Marshal(obj.data.Certificate.Issuer)
+		rawIssuer, err := asn1.Marshal(obj.data.Certificate.Issuer.ToRDNSequence())
 		if err != nil {
 			log.Printf("p11trustmod Certificate Attribute: Error marshaling Issuer: %s\n", err)
 			// We treat an unmarshalable issuer as a nonexistent attribute.
