@@ -39,7 +39,6 @@ import "C"
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"strings"
@@ -53,37 +52,10 @@ var (
 	trace          bool
 	traceSensitive bool
 
-	logfile io.Closer
 	backend pkcs11.Ctx
 )
 
 func init() {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		log.Printf("error reading config dir (will try fallback): %v", err)
-
-		dir = "."
-	}
-
-	f, err := os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
-	if err != nil {
-		log.Printf("error opening file (will try fallback): %v", err)
-
-		dir = "."
-		f, err = os.OpenFile(dir+"/pkcs11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
-	}
-
-	if err != nil {
-		log.Printf("error opening file (will fallback to console logging): %v", err)
-	}
-
-	if err == nil {
-		log.SetOutput(f)
-		logfile = f
-	}
-
-	log.Println("Namecoin PKCS#11 module loading")
-
 	if os.Getenv("PKCS11MOD_TRACE") == "1" {
 		trace = true
 	}

@@ -27,7 +27,6 @@ then
     echo "TLS test failed"
     echo "Got $RESULT, wanted $DESIRED"
     echo "$TEXTOUT"
-    cat "$HOME/pkcs11mod.log" || true
     exit 1
 fi
 
@@ -36,7 +35,6 @@ then
     echo "TLS test failed"
     echo "Missing output: $TEXTMATCH"
     echo "$TEXTOUT"
-    cat "$HOME/pkcs11mod.log" || true
     exit 1
 fi
 
