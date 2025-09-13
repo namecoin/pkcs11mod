@@ -80,6 +80,10 @@ pkcs11mod is primarily motivated by the use cases that Namecoin has; as such, th
 
 While we do plan to use pkcs11mod in production in the future, it is not yet used in production, and any horrifying bugs in pkcs11mod probably haven't been noticed by us yet.
 
+## Projects using pkcs11mod
+
+* [ncp11](https://github.com/namecoin/ncp11)
+
 ## Credits / License
 
 Copyright (C) 2018-2025 Namecoin Developers
