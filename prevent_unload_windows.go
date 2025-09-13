@@ -88,7 +88,7 @@ func exitSoon() {
 	case "certutil.exe":
 		shouldForceExitSoon = true
 	default:
-		log.Println("pkcs11mod: Unknown exe name '%s'.  This is probably fine, but if you see this application hang on exit immediately after this message was logged, consider reporting a bug to pkcs11mod; provide the exe name from this log message.", exe)
+		log.Printf("pkcs11mod: Unknown exe name '%s'.  This is probably fine, but if you see this application hang on exit immediately after this message was logged, consider reporting a bug to pkcs11mod; provide the exe name from this log message.\n", exe)
 	}
 
 	if shouldForceExitSoon {
