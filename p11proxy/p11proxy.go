@@ -18,6 +18,8 @@
 package main
 
 import (
+	"io"
+	"log"
 	"os"
 
 	"github.com/miekg/pkcs11/p11"
@@ -25,11 +27,41 @@ import (
 	"github.com/namecoin/pkcs11mod/p11mod"
 )
 
+var logfile io.Closer
+
 func init() {
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		log.Printf("error reading config dir (will try fallback): %v", err)
+
+		dir = "."
+	}
+
+	f, err := os.OpenFile(dir+"/p11proxy.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
+	if err != nil {
+		log.Printf("error opening file (will try fallback): %v", err)
+
+		dir = "."
+		f, err = os.OpenFile(dir+"/p11proxy.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
+	}
+
+	if err != nil {
+		log.Printf("error opening file (will fallback to console logging): %v", err)
+	}
+
+	if err == nil {
+		log.SetOutput(f)
+		logfile = f
+	}
+
+	log.Println("p11proxy: module loading")
+
 	backendPath := os.Getenv("P11PROXY_CKBI_TARGET")
 	if backendPath == "" {
 		backendPath = "/usr/lib64/nss/libnssckbi.so"
 	}
+
+	log.Printf("p11proxy: backend path: %s\n", backendPath)
 
 	backend, err := p11.OpenModule(backendPath)
 

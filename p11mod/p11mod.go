@@ -19,7 +19,6 @@ package p11mod
 
 import (
 	"errors"
-	"io"
 	"log"
 	"os"
 	"sync"
@@ -33,8 +32,6 @@ import (
 var (
 	trace bool
 
-	logfile io.Closer
-
 	highBackend    p11.Module
 	errHighBackend error
 )
@@ -45,32 +42,6 @@ func SetBackend(b p11.Module, err error) {
 }
 
 func init() {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		log.Printf("error reading config dir (will try fallback): %v", err)
-
-		dir = "."
-	}
-
-	f, err := os.OpenFile(dir+"/p11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
-	if err != nil {
-		log.Printf("error opening file (will try fallback): %v", err)
-
-		dir = "."
-		f, err = os.OpenFile(dir+"/p11mod.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
-	}
-
-	if err != nil {
-		log.Printf("error opening file (will fallback to console logging): %v", err)
-	}
-
-	if err == nil {
-		log.SetOutput(f)
-		logfile = f
-	}
-
-	log.Println("Namecoin PKCS#11 module loading")
-
 	b := &llBackend{
 		slots:    []p11.Slot{},
 		sessions: map[pkcs11.SessionHandle]*llSession{},
