@@ -308,7 +308,7 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	if searchIssuer != nil || searchSerial != nil {
 		if s.slot.trace {
 			if s.slot.traceSensitive {
-				log.Printf("p11trustmod FindObjects: QueryIssuerSerial: %s, %s\n", searchIssuer, searchSerial)
+				log.Printf("p11trustmod FindObjects: QueryIssuerSerial: %s, CertSerialNumber=0x%s\n", searchIssuer, searchSerial.Text(16))
 			} else {
 				log.Println("p11trustmod FindObjects: QueryIssuerSerial")
 			}
