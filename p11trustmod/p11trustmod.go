@@ -488,9 +488,31 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 	case pkcs11.CKA_LABEL:
 		return marshalAttributeValue(obj.data.Label), nil
 	case pkcs11.CKA_SUBJECT:
-		return marshalAttributeValue(obj.data.Certificate.RawSubject), nil
+		if obj.data.Certificate.RawSubject != nil {
+			return marshalAttributeValue(obj.data.Certificate.RawSubject), nil
+		}
+
+		rawSubject, err := asn1.Marshal(obj.data.Certificate.Subject)
+		if err != nil {
+			log.Printf("p11trustmod Certificate Attribute: Error marshaling Subject: %s\n", err)
+			// We treat an unmarshalable subject as a nonexistent attribute.
+			return nil, nil
+		}
+
+		return marshalAttributeValue(rawSubject), nil
 	case pkcs11.CKA_ISSUER:
-		return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
+		if obj.data.Certificate.RawIssuer != nil {
+			return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
+		}
+
+		rawIssuer, err := asn1.Marshal(obj.data.Certificate.Issuer)
+		if err != nil {
+			log.Printf("p11trustmod Certificate Attribute: Error marshaling Issuer: %s\n", err)
+			// We treat an unmarshalable issuer as a nonexistent attribute.
+			return nil, nil
+		}
+
+		return marshalAttributeValue(rawIssuer), nil
 	case pkcs11.CKA_SERIAL_NUMBER:
 		asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
 		if err != nil {
@@ -608,7 +630,18 @@ func (obj *trustObject) Attribute(attributeType uint) ([]byte, error) {
 
 		return marshalAttributeValue(sha1Array[:]), nil
 	case pkcs11.CKA_ISSUER:
-		return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
+		if obj.data.Certificate.RawIssuer != nil {
+			return marshalAttributeValue(obj.data.Certificate.RawIssuer), nil
+		}
+
+		rawIssuer, err := asn1.Marshal(obj.data.Certificate.Issuer)
+		if err != nil {
+			log.Printf("p11trustmod Certificate Attribute: Error marshaling Issuer: %s\n", err)
+			// We treat an unmarshalable issuer as a nonexistent attribute.
+			return nil, nil
+		}
+
+		return marshalAttributeValue(rawIssuer), nil
 	case pkcs11.CKA_SERIAL_NUMBER:
 		asn1SerialNumber, err := asn1.Marshal(obj.data.Certificate.SerialNumber)
 		if err != nil {
