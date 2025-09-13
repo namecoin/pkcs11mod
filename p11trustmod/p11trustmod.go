@@ -174,7 +174,7 @@ func extractSearchSerial(attrVal []byte) *big.Int {
 	// Yes, we pass a pointer to a pointer to Unmarshal, see https://stackoverflow.com/questions/53139020/why-is-unmarshalling-of-a-der-asn-1-large-integer-limited-to-sequence-in-golang
 	serialRest, err := asn1.Unmarshal(attrVal, &searchSerial)
 	if err != nil {
-		log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 serial number: %s", err)
+		log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 serial number: %s\n", err)
 
 		return nil
 	} else if len(serialRest) != 0 {
