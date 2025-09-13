@@ -82,7 +82,7 @@ While we do plan to use pkcs11mod in production in the future, it is not yet use
 
 ## Credits / License
 
-Copyright (C) 2018-2022  Namecoin Developers
+Copyright (C) 2018-2025 Namecoin Developers
 
 pkcs11mod is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public

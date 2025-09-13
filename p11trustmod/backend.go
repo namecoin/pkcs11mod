@@ -1,5 +1,5 @@
 // pkcs11mod
-// Copyright (C) 2021-2022  Namecoin Developers
+// Copyright (C) 2021-2025 Namecoin Developers
 //
 // pkcs11mod is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
