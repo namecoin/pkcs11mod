@@ -74,9 +74,7 @@ type llBackend struct {
 }
 
 func (ll *llBackend) Destroy() {
-	if trace {
-		log.Printf("p11mod Destroy: not implemented")
-	}
+	log.Printf("p11mod Destroy: not implemented")
 }
 
 func (ll *llBackend) Initialize() error {
