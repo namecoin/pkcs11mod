@@ -16,4 +16,4 @@ TODO.
 
 ## Tracing
 
-Set the environment variable `P11TRUSTMOD_TRACE=1` to enable debug tracing.  The trace will be outputted to the log file. Also see the [p11mod tracing](../p11mod/#tracing) documentation.
+Set the environment variable `P11TRUSTMOD_TRACE=1` to enable debug tracing. To include sensitive data that might be a privacy leak, also set `P11TRUSTMOD_TRACE_SENSITIVE=1`. The trace will be outputted to the log file. Also see the [p11mod tracing](../p11mod/#tracing) documentation.

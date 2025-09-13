@@ -35,14 +35,17 @@ import (
 
 func Slot(b Backend, id uint) p11.Slot {
 	return &slot{
-		trace:       os.Getenv("P11TRUSTMOD_TRACE") == "1",
+		trace:          os.Getenv("P11TRUSTMOD_TRACE") == "1",
+		traceSensitive: os.Getenv("P11TRUSTMOD_TRACE_SENSITIVE") == "1",
+
 		highBackend: b,
 		slotID:      id,
 	}
 }
 
 type slot struct {
-	trace bool
+	trace          bool
+	traceSensitive bool
 
 	highBackend Backend
 	slotID      uint
@@ -171,7 +174,7 @@ func extractSearchSerial(attrVal []byte) *big.Int {
 	// Yes, we pass a pointer to a pointer to Unmarshal, see https://stackoverflow.com/questions/53139020/why-is-unmarshalling-of-a-der-asn-1-large-integer-limited-to-sequence-in-golang
 	serialRest, err := asn1.Unmarshal(attrVal, &searchSerial)
 	if err != nil {
-		log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 serial number: %s", err)
+		log.Printf("p11trustmod FindObjects: Error unmarshaling X.509 serial number: %s\n", err)
 
 		return nil
 	} else if len(serialRest) != 0 {
@@ -252,6 +255,10 @@ func (s *session) objectsFromCertificates(candidateCertificates []*CertificateDa
 }
 
 func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error) {
+	if s.slot.trace {
+		log.Println("p11trustmod FindObjects: QueryAll")
+	}
+
 	candidateCertificates, err := s.slot.highBackend.QueryAll()
 	if err != nil {
 		return []p11.Object{}, err
@@ -260,6 +267,14 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	searchCertificate, searchSubject, searchIssuer, searchSerial := extractSearch(template)
 
 	if searchCertificate != nil {
+		if s.slot.trace {
+			if s.slot.traceSensitive {
+				log.Printf("p11trustmod FindObjects: QueryCertificate: %v\n", searchCertificate.Raw)
+			} else {
+				log.Println("p11trustmod FindObjects: QueryCertificate")
+			}
+		}
+
 		searchCertificateResults, err := s.slot.highBackend.QueryCertificate(searchCertificate)
 		if err != nil {
 			return []p11.Object{}, err
@@ -269,6 +284,14 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	}
 
 	if searchSubject != nil {
+		if s.slot.trace {
+			if s.slot.traceSensitive {
+				log.Printf("p11trustmod FindObjects: QuerySubject: %s\n", searchSubject)
+			} else {
+				log.Println("p11trustmod FindObjects: QuerySubject")
+			}
+		}
+
 		searchSubjectResults, err := s.slot.highBackend.QuerySubject(searchSubject)
 		if err != nil {
 			return []p11.Object{}, err
@@ -278,6 +301,14 @@ func (s *session) FindObjects(template []*pkcs11.Attribute) ([]p11.Object, error
 	}
 
 	if searchIssuer != nil || searchSerial != nil {
+		if s.slot.trace {
+			if s.slot.traceSensitive {
+				log.Printf("p11trustmod FindObjects: QueryIssuerSerial: %s, %s\n", searchIssuer, searchSerial)
+			} else {
+				log.Println("p11trustmod FindObjects: QueryIssuerSerial")
+			}
+		}
+
 		searchIssuerSerialResults, err := s.slot.highBackend.QueryIssuerSerial(searchIssuer, searchSerial)
 		if err != nil {
 			return []p11.Object{}, err
