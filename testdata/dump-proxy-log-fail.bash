@@ -9,7 +9,7 @@ echo ""
 
 cat "$HOME/.config/pkcs11proxy.log" || true
 cat "./pkcs11proxy.log" || true
-cat "$HOME/.config/p11mod.log" || true
-cat "./p11mod.log" || true
+cat "$HOME/.config/p11proxy.log" || true
+cat "./p11proxy.log" || true
 
 exit 1
