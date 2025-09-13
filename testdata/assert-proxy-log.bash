@@ -11,7 +11,7 @@ then
     exit 1
 fi
 
-if [[ -e "$HOME/.config/pkcs11proxy.log" ]] || [[ -e "./pkcs11proxy.log" ]] || [[ -e "$HOME/.config/p11mod.log" ]] || [[ -e "./p11mod.log" ]]
+if [[ -e "$HOME/.config/pkcs11proxy.log" ]] || [[ -e "./pkcs11proxy.log" ]] || [[ -e "$HOME/.config/p11proxy.log" ]] || [[ -e "./p11proxy.log" ]]
 then
     RESULT="present"
 else
@@ -20,8 +20,8 @@ fi
 
 rm -f "$HOME/.config/pkcs11proxy.log"
 rm -f "./pkcs11proxy.log"
-rm -f "$HOME/.config/p11mod.log"
-rm -f "./p11mod.log"
+rm -f "$HOME/.config/p11proxy.log"
+rm -f "./p11proxy.log"
 
 if [[ "$RESULT" != "$DESIRED" ]]
 then
