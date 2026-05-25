@@ -44,6 +44,7 @@ type CertificateData struct {
 	Label                string
 	Certificate          *x509.Certificate
 	BuiltinPolicy        bool
+	Trusted              bool
 	TrustServerAuth      uint
 	TrustClientAuth      uint
 	TrustCodeSigning     uint
