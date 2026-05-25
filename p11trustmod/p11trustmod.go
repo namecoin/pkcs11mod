@@ -524,6 +524,8 @@ func (obj *certificateObject) Attribute(attributeType uint) ([]byte, error) {
 		return marshalAttributeValue(asn1SerialNumber), nil
 	case pkcs11.CKA_VALUE:
 		return marshalAttributeValue(obj.data.Certificate.Raw), nil
+	case pkcs11.CKA_TRUSTED:
+		return marshalAttributeValue(obj.data.Trusted), nil
 	case pkcs11.CKA_NSS_MOZILLA_CA_POLICY:
 		if obj.includeBuiltinPolicy {
 			return marshalAttributeValue(obj.data.BuiltinPolicy), nil
